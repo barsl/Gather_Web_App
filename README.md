@@ -75,32 +75,3 @@ Learning the different APIs
 There will be various APIs used throughout this project which will take plenty of time to learn and practice with them. We will need to also learn how we can use them to implement specific features that fit our applications requirements.
 
 
-Jan 16th 2020 meeting
-
-1. meet-up social network kind of thing 
-
-where algorithm matches users with similar interests, locations, and availability
-
-helps friends schedule activities in times that work for everyone
-
-public- find new friends
-
-we're gonna use react
-
-(vr)
-
-user flow:
-
-1. create account
-specify:
-locations, interests, schedule
-
-2. connect with friends
-
-3. plan a meeting:
-- specify location and time and activity
-- Or suggest a time when everyone’s available
-3.a. get suggestions for available friends who are interested
-send invitations
-3.b. open to public
-
