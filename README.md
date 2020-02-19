@@ -8,21 +8,21 @@ Bar Slutsky, Dasha Besshaposhnikova, Jason Chen
 The application will help users to plan social meet-ups by allowing users to create scheduled plans including the location, time, attending members, and topic/interest of the meeting. The meetings can either be private among friends or a public gathering for people who have similar interests. There will be an algorithm for the application that will suggest public meetings to the user based on their personal interests in their profile and allow them to meet new people. The main purpose of this app will be to allow users to schedule activities that work for everybody by keeping track of everyone’s times of availability. The application will also include a calendar view and map view to display planned meet-ups. There will also be an interactive map that allows users to create plans and suggest locations for their meet-ups. Lastly there will be a voice chat and messaging service that allows users to discuss their meet-ups.
 
 ### Beta Version Deliverables
-Sign up process:
-Creating a new account
-Importing google calendar
-Setting up preferences (interests, addresses)
-Adding friends
-Profile pages
-Updating profile info / editing preferences
-Meeting scheduling process
-Create an event, specifying time window and inviting friends
-Algorithm will give suggestions for locations and times based on friends’ availability and preferences
-Friends will be able to accept the event or suggest alternatives
-Friends can view the event on a map, get directions
-Algorithm for suggesting events based on common preferences
-Smart way to automatically suggest events for friends groups
-Will look at schedules of meeting members and figure out a time to meet, also considering the locations of the people and their personal preferences
+* Sign up process:
+   * Creating a new account
+   * Importing google calendar
+   * Setting up preferences (interests, addresses)
+   * Adding friends
+* Profile pages
+   * Updating profile info / editing preferences
+* Meeting scheduling process
+   * Create an event, specifying time window and inviting friends
+   * Algorithm will give suggestions for locations and times based on friends’ availability and preferences
+   * Friends will be able to accept the event or suggest alternatives
+   * Friends can view the event on a map, get directions
+* Algorithm for suggesting events based on common preferences
+   * Smart way to automatically suggest events for friends groups
+   * Will look at schedules of meeting members and figure out a time to meet, also considering the locations of the people and      their personal preferences
 
 
 ### Additional features for Final Version
@@ -43,7 +43,7 @@ Will look at schedules of meeting members and figure out a time to meet, also co
 
 ### Tech stack
 * React:
-Our chosen framework for creating the frontend and UI
+   * Our chosen framework for creating the frontend and UI
 * SQLite:
    * The database management system for the application’s data
 * Google calendar
