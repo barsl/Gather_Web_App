@@ -61,15 +61,15 @@ The application will help users to plan social meet-ups by allowing users to cre
 
 
 ### 5 Technical Challenges
-Integrating the application 
-This will be challenging due to understanding how each component will interact with another component and understanding how to implement the components in a way that will allow them to communicate with each other.
-React 
-Most of us are not familiar with it which will shift more work to the team members who are familiar with using React and take time for the new users to learn it.
-The interactive map feature
-This feature will take time to learn, practice, and implement it into the application, involving a lot of trial and error until it is implemented exactly as we need it.
-Creating a suggestions algorithm 
-We will need to think about what factors to consider when suggesting meetings to users and also to suggest meet-up locations when creating new meetings. There is also the need to understand how to incorporate this algorithm with various components of the app such as the app and the dashboard.
-Learning the different APIs 
-There will be various APIs used throughout this project which will take plenty of time to learn and practice with them. We will need to also learn how we can use them to implement specific features that fit our applications requirements.
+* Integrating the application 
+   * This will be challenging due to understanding how each component will interact with another component and understanding      how to implement the components in a way that will allow them to communicate with each other.
+* React 
+   * Most of us are not familiar with it which will shift more work to the team members who are familiar with using React and      take time for the new users to learn it.
+* The interactive map feature
+   * This feature will take time to learn, practice, and implement it into the application, involving a lot of trial and error      until it is implemented exactly as we need it.
+* Creating a suggestions algorithm 
+   * We will need to think about what factors to consider when suggesting meetings to users and also to suggest meet-up            locations when creating new meetings. There is also the need to understand how to incorporate this algorithm with various      components of the app such as the app and the dashboard.
+* Learning the different APIs 
+   * There will be various APIs used throughout this project which will take plenty of time to learn and practice with them.        We will need to also learn how we can use them to implement specific features that fit our applications requirements.
 
 
