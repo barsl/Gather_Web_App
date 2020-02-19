@@ -26,38 +26,36 @@ Will look at schedules of meeting members and figure out a time to meet, also co
 
 
 ### Additional features for Final Version
-Interactive map to plan meetings and events
-Real time synchronization between the users
-A shared map view
-Users can highlight locations they want to suggest for the meeting
+* Interactive map to plan meetings and events
+   * Real time synchronization between the users
+   * A shared map view
+   * Users can highlight locations they want to suggest for the meeting
 
+* voice/messaging interaction 
+   * Users will be able to interact using voice and messaging when coordinating meeting in real-time
+   * Users will be able to leave each other voice messages
 
-
- voice/messaging interaction 
-Users will be able to interact using voice and messaging when coordinating meeting in real-time
-Users will be able to leave each other voice messages
-
-Shareable slideshow of the event from users’ uploads
-Users will be able to update the event page with relevant photos/videos and other types of content
-App will create a slideshow animation to document the event
-Users will be able to share the slideshow on social media
+* Shareable slideshow of the event from users’ uploads
+   * Users will be able to update the event page with relevant photos/videos and other types of content
+   * App will create a slideshow animation to document the event
+   * Users will be able to share the slideshow on social media
 
 
 ### Tech stack
-React:
+* React:
 Our chosen framework for creating the frontend and UI
-SQLite:
-The database management system for the application’s data
-Google calendar
-API to manage and coordinate users’ availability
-Google API for maps
-API to manage and coordinate locations for meetings
-Speech to text
-API to turn users’ speech to text for better accessibility
-Voice call/messaging
-API to enable voice calls and messages between users
-Media sharing
-Social media APIs for content sharing
+* SQLite:
+   * The database management system for the application’s data
+* Google calendar
+   * API to manage and coordinate users’ availability
+* Google API for maps
+   * API to manage and coordinate locations for meetings
+* Speech to text
+   * API to turn users’ speech to text for better accessibility
+* Voice call/messaging
+   * API to enable voice calls and messages between users
+* Media sharing
+   * Social media APIs for content sharing
 
 
 
