@@ -1,0 +1,45 @@
+.Centered {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  align-items: center;
+}
+
+.HorizontalFlex {
+  display: flex;
+  flex-direction: row;
+}
+
+.VerticalFlex {
+  display: flex;
+  flex-direction: column;
+}
+
+.LeftSide {
+  margin-right: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.RightSide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.Logo {
+  font-size: 90px;
+}
+
+.Image {
+  max-width: 180px;
+  justify-self: auto;
+}
+
+.Link {
+  margin-left: 1rem;
+}
+
+.Form {
+  margin-top: 1rem;
+}
