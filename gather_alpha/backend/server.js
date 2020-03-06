@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb+srv://group:12345!%40%23@cluster0-ilww9.mongodb.net/test?retryWrites=true&w=majority";
+const uri = "mongodb+srv://group:12345@cluster0-8mim2.mongodb.net/test?retryWrites=true&w=majority";
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
 );
 const connection = mongoose.connection;
@@ -25,5 +25,5 @@ app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 
 app.listen(port, () => {
-    console.log(`Server is running on port: ${port}`);
+  console.log(`Server is running on port: ${port}`);
 });
