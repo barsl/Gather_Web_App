@@ -10,6 +10,12 @@ const userSchema = new Schema({
     trim: true,
     minlength: 3
   },
+  password: { type: String, required: true, trim: true, minlength: 8 },
+  salt: { type: String, required: true },
+  email: { type: String, required: true, unique: true, trim: true },
+  interests: { type: [String], required: true },
+  friends: { type: [String], required: true },
+  attendedEvents: { type: [String], required: true },
 }, {
   timestamps: true,
 });
