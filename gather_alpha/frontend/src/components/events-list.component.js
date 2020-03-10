@@ -1,28 +1,32 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { getEvents } from '../actions/eventActions';
+import { PropTypes } from 'prop-types';
 
 const Event = props => (
   <tr>
     <td>{props.event.username}</td>
     <td>{props.event.description}</td>
-    <td>{props.event.date.substring(0,10)}</td>
+    <td>{props.event.date.substring(0, 10)}</td>
     <td>
-      <Link to={"/edit/"+props.event._id}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id) }}>delete</a>
+      <Link to={"/edit/" + props.event._id}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id) }}>delete</a>
     </td>
   </tr>
 )
 
-export default class EventsList extends Component {
+class EventsList extends Component {
   constructor(props) {
     super(props);
 
     this.deleteEvent = this.deleteEvent.bind(this)
 
-    this.state = {events: []};
+    this.state = { events: [] };
   }
 
   componentDidMount() {
+    this.props.getEvents;
     axios.get('http://localhost:5000/events/')
       .then(response => {
         this.setState({ events: response.data })
@@ -33,8 +37,8 @@ export default class EventsList extends Component {
   }
 
   deleteEvent(id) {
-    axios.delete('http://localhost:5000/events/'+id)
-      .then(response => { console.log(response.data)});
+    axios.delete('http://localhost:5000/events/' + id)
+      .then(response => { console.log(response.data) });
 
     this.setState({
       events: this.state.events.filter(el => el._id !== id)
@@ -43,11 +47,13 @@ export default class EventsList extends Component {
 
   eventList() {
     return this.state.events.map(currentevent => {
-      return <Event event={currentevent} deleteEvent={this.deleteEvent} key={currentevent._id}/>;
+      return <Event event={currentevent} deleteEvent={this.deleteEvent} key={currentevent._id} />;
     })
   }
 
   render() {
+    const { events } = this.props.event;
+
     return (
       <div>
         <h3>Logged Events</h3>
@@ -61,10 +67,21 @@ export default class EventsList extends Component {
             </tr>
           </thead>
           <tbody>
-            { this.eventList() }
+            {this.eventList()}
           </tbody>
         </table>
       </div>
     )
   }
 }
+
+EventsList.propTypes = {
+  getEvents: propTypes.func.isRequired,
+  event: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+  event: state.event
+});
+
+export default connect(mapStateToProps, { getEvents, deleteEvent, addEvent })(EventsList);
