@@ -82,7 +82,7 @@ router.route('/add').post(checkEmail, (req, res) => {
 
         jwt.sign(
           { id: savedUser._id },
-          "gatherC09ProjectJwtSecret",
+          process.env.jwtSecret,
           { expiresIn: 3600 },
           (err, token) => {
             if (err) throw err;

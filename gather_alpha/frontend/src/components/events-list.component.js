@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { connect } from 'react-redux';
-import { getEvents } from '../actions/eventActions';
-import { PropTypes } from 'prop-types';
+import { getEvents, deleteEventAction } from '../actions/eventActions';
+import PropTypes from 'prop-types';
 
 const Event = props => (
   <tr>
@@ -19,41 +18,24 @@ const Event = props => (
 class EventsList extends Component {
   constructor(props) {
     super(props);
-
     this.deleteEvent = this.deleteEvent.bind(this)
-
-    this.state = { events: [] };
   }
 
   componentDidMount() {
-    this.props.getEvents;
-    axios.get('http://localhost:5000/events/')
-      .then(response => {
-        this.setState({ events: response.data })
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+    this.props.getEvents();
   }
 
   deleteEvent(id) {
-    axios.delete('http://localhost:5000/events/' + id)
-      .then(response => { console.log(response.data) });
-
-    this.setState({
-      events: this.state.events.filter(el => el._id !== id)
-    })
+    this.props.deleteEvent(id);
   }
 
   eventList() {
-    return this.state.events.map(currentevent => {
+    return this.props.event.events.map(currentevent => {
       return <Event event={currentevent} deleteEvent={this.deleteEvent} key={currentevent._id} />;
     })
   }
 
   render() {
-    const { events } = this.props.event;
-
     return (
       <div>
         <h3>Logged Events</h3>
@@ -76,7 +58,8 @@ class EventsList extends Component {
 }
 
 EventsList.propTypes = {
-  getEvents: propTypes.func.isRequired,
+  getEvents: PropTypes.func.isRequired,
+  deleteEventAction: PropTypes.func.isRequired,
   event: PropTypes.object.isRequired
 }
 
@@ -84,4 +67,4 @@ const mapStateToProps = (state) => ({
   event: state.event
 });
 
-export default connect(mapStateToProps, { getEvents, deleteEvent, addEvent })(EventsList);
+export default connect(mapStateToProps, { getEvents, deleteEventAction })(EventsList);
