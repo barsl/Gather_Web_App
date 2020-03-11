@@ -18,20 +18,15 @@ const Event = props => (
 class EventsList extends Component {
   constructor(props) {
     super(props);
-    this.deleteEvent = this.deleteEvent.bind(this)
   }
 
   componentDidMount() {
     this.props.getEvents();
   }
 
-  deleteEvent(id) {
-    this.props.deleteEvent(id);
-  }
-
   eventList() {
     return this.props.event.events.map(currentevent => {
-      return <Event event={currentevent} deleteEvent={this.deleteEvent} key={currentevent._id} />;
+      return <Event event={currentevent} deleteEvent={this.props.deleteEventAction} key={currentevent._id} />;
     })
   }
 

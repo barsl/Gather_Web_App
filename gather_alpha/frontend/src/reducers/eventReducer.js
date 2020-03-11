@@ -16,7 +16,7 @@ export default function (state = initialState, action) {
         case DELETE_EVENT:
             return {
                 ...state,
-                events: this.state.events.filter(el => el._id !== action.payload)
+                events: state.events.filter(el => el._id !== action.payload)
             }
         case EVENTS_LOADING:
             return {
