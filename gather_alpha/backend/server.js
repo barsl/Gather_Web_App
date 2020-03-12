@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -14,6 +15,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
 app.use(express.json());
 const MongoStore = require('connect-mongo')(session);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+  });
+}
 
 app.use(session({
   name: process.env.SESS_NAME,
