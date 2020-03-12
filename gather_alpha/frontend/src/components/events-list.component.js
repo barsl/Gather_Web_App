@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { getEvents, deleteEventAction } from '../actions/eventActions';
-import PropTypes from 'prop-types';
+import { Link, withRouter, Redirect } from 'react-router-dom';
+import axios from 'axios';
+import Navbar from "./navbar.component"
+import verifyAuth from '../helper/authHelper';
 
 const Event = props => (
   <tr>
@@ -18,11 +18,21 @@ const Event = props => (
 class EventsList extends Component {
   constructor(props) {
     super(props);
+
     this.deleteEvent = this.deleteEvent.bind(this)
-    this.state = { events: [] };
+
+    this.state = { events: [], isAuthenticated: false };
   }
 
   componentDidMount() {
+    verifyAuth.verifyAuth(function (isAuthenticated) {
+      if (isAuthenticated) {
+        this.setState({
+          isAuthenticated: isAuthenticated
+        })
+      }
+    })
+
     axios.get('http://localhost:5000/events/')
       .then(response => {
         this.setState({ events: response.data })
@@ -48,8 +58,10 @@ class EventsList extends Component {
   }
 
   render() {
+    if (!this.state.isAuthenticated) return <Redirect to="/"></Redirect>
     return (
       <div>
+        <Navbar />
         <h3>Logged Events</h3>
         <table className="table">
           <thead className="thead-light">
@@ -69,14 +81,4 @@ class EventsList extends Component {
   }
 }
 
-EventsList.propTypes = {
-  getEvents: PropTypes.func.isRequired,
-  deleteEventAction: PropTypes.func.isRequired,
-  event: PropTypes.object.isRequired
-}
-
-const mapStateToProps = (state) => ({
-  event: state.event
-});
-
-export default connect(mapStateToProps, { getEvents, deleteEventAction })(EventsList);
+export default withRouter(EventsList);

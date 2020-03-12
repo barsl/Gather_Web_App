@@ -1,16 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const MongoStore = connectStore(session);
-
+const session = require('express-session');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-
+const corsOptions = {
+  origin: ['http://localhost:3000'],
+  credentials: true
+}
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
+const MongoStore = require('connect-mongo')(session);
 
 app.use(session({
   name: process.env.SESS_NAME,
@@ -20,12 +23,13 @@ app.use(session({
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
     collection: 'session',
-    ttl: parseInt(process.env.SESS_LIFETIME) / 1000
+    ttl: parseInt(process.env.SESS_LIFETIME)
   }),
   cookie: {
     sameSite: true,
+    httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    maxAge: parseInt(SESS_LIFETIME)
+    maxAge: parseInt(process.env.SESS_LIFETIME)
   }
 }));
 
@@ -43,7 +47,7 @@ const authRouter = require('./routes/auth');
 
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
-app.use('/auth', authRouter);
+app.use('/', authRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

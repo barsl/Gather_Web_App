@@ -25,7 +25,7 @@ router.route('/add').post((req, res) => {
 
 router.route('/:id').get((req, res) => {
   Event.findById(req.params.id)
-    .then(event => res.json(event))
+    .then(event => res.json(req.session))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
