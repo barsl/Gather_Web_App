@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Link, Redirect, withRouter } from 'react-router-dom';
-import verifyAuth from '../helper/authHelper';
 
 class Login extends Component {
     constructor(props) {
@@ -13,14 +12,21 @@ class Login extends Component {
         this.state = {
             email: '',
             password: '',
-            error: false
+            error: false,
+            isAuthenticated: false
         }
     }
 
     componentDidMount() {
-        verifyAuth.verifyAuth(function (isAuthenticated) {
-            if (isAuthenticated) this.props.history.push('/events');
-        });
+        axios.get('http://localhost:5000/verify', { withCredentials: true })
+            .then(res => {
+                if (res.data.isValid) this.setState({
+                    isAuthenticated: true
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            })
     }
 
     onChange(e) {
@@ -40,7 +46,7 @@ class Login extends Component {
         axios.post('http://localhost:5000/signin', user, { withCredentials: true })
             .then(res => {
                 console.log(res.data);
-                this.props.history.push('/events');
+                this.props.history.replace('/events');
             })
             .catch(err => {
                 this.setState({

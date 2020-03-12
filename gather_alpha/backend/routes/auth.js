@@ -3,7 +3,6 @@ const validator = require('validator');
 const crypto = require('crypto');
 require('dotenv').config();
 const cookie = require('cookie');
-const auth = require('../middleware/auth');
 let User = require('../models/user.model');
 
 function generateSalt() {
@@ -34,7 +33,6 @@ router.route('/signin').post(checkEmail, (req, res) => {
         }
 
         req.session.username = user;
-
         res.setHeader('Set-Cookie', cookie.serialize('username', user.username), {
             path: '/',
             maxAge: parseInt(process.env.SESS_LIFETIME)
@@ -70,7 +68,6 @@ router.route('/signup').post(checkEmail, (req, res) => {
         newUser.save()
             .then(savedUser => {
                 req.session.username = savedUser;
-
                 res.setHeader('Set-Cookie', cookie.serialize('username', savedUser.username), {
                     path: '/',
                     maxAge: parseInt(process.env.SESS_LIFETIME)

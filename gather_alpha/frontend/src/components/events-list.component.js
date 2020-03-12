@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from "./navbar.component"
-import verifyAuth from '../helper/authHelper';
 
 const Event = props => (
   <tr>
@@ -16,22 +15,28 @@ const Event = props => (
 )
 
 class EventsList extends Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
     this.deleteEvent = this.deleteEvent.bind(this)
 
-    this.state = { events: [], isAuthenticated: false };
+    this.state = { events: [], isAuthenticated: true };
   }
 
   componentDidMount() {
-    verifyAuth.verifyAuth(function (isAuthenticated) {
-      if (isAuthenticated) {
-        this.setState({
-          isAuthenticated: isAuthenticated
-        })
-      }
-    })
+    this._isMounted = true;
+
+    axios.get('http://localhost:5000/verify', { withCredentials: true })
+      .then(res => {
+        if (!res.data.isValid && this._isMounted) this.setState({
+          isAuthenticated: false
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      })
 
     axios.get('http://localhost:5000/events/')
       .then(response => {
@@ -40,6 +45,10 @@ class EventsList extends Component {
       .catch((error) => {
         console.log(error);
       })
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   deleteEvent(id) {
@@ -58,7 +67,7 @@ class EventsList extends Component {
   }
 
   render() {
-    if (!this.state.isAuthenticated) return <Redirect to="/"></Redirect>
+    if (!this.state.isAuthenticated) return <Redirect to="/" />
     return (
       <div>
         <Navbar />

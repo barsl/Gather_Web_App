@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
-import verifyAuth from '../helper/authHelper';
 
 class Signup extends Component {
     constructor(props) {
@@ -19,9 +18,13 @@ class Signup extends Component {
     }
 
     componentDidMount() {
-        verifyAuth.verifyAuth(function (isAuthenticated) {
-            if (isAuthenticated) this.props.history.push('/events');
-        });
+        axios.get('http://localhost:5000/verify', { withCredentials: true })
+            .then(res => {
+                if (res.data.isValid) this.props.history.push('/events');
+            })
+            .catch(err => {
+                console.error(err);
+            })
     }
 
     onChange(e) {
