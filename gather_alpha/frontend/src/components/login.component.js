@@ -10,7 +10,7 @@ class Login extends Component {
         this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
-            email: '',
+            username: '',
             password: '',
             error: false,
             isAuthenticated: false
@@ -39,7 +39,7 @@ class Login extends Component {
         e.preventDefault();
 
         const user = {
-            email: this.state.email,
+            username: this.state.username,
             password: this.state.password
         }
 
@@ -67,12 +67,12 @@ class Login extends Component {
                 <h3>Login</h3>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
-                        <label>Email: </label>
-                        <input type="email"
-                            name="email"
+                        <label>Username: </label>
+                        <input type="text"
+                            name="username"
                             required
                             className="form-control"
-                            value={this.state.email}
+                            value={this.state.username}
                             onChange={this.onChange}
                         />
                         <label>Password: </label>

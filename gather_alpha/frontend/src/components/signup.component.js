@@ -11,7 +11,8 @@ class Signup extends Component {
 
         this.state = {
             username: '',
-            email: '',
+            firstName: '',
+            lastName: '',
             password: '',
             error: false
         }
@@ -38,7 +39,7 @@ class Signup extends Component {
 
         const user = {
             username: this.state.username,
-            email: this.state.email,
+            name: this.state.firstName + ' ' + this.state.lastName,
             password: this.state.password
         }
 
@@ -70,12 +71,20 @@ class Signup extends Component {
                             value={this.state.username}
                             onChange={this.onChange}
                         />
-                        <label>Email: </label>
-                        <input type="email"
-                            name="email"
+                        <label>First Name: </label>
+                        <input type="text"
+                            name="firstName"
                             required
                             className="form-control"
-                            value={this.state.email}
+                            value={this.state.firstName}
+                            onChange={this.onChange}
+                        />
+                        <label>Last Name: </label>
+                        <input type="text"
+                            name="lastName"
+                            required
+                            className="form-control"
+                            value={this.state.lastName}
                             onChange={this.onChange}
                         />
                         <label>Password: </label>
