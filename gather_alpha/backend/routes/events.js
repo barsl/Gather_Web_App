@@ -19,19 +19,19 @@ router.route('/add').post((req, res) => {
   });
 
   newEvent.save()
-  .then(() => res.json('Event added!'))
-  .catch(err => res.status(400).json('Error: ' + err));
+    .then(() => res.json('Event added!'))
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/:id').get((req, res) => {
   Event.findById(req.params.id)
-    .then(event => res.json(event))
+    .then(event => res.json(req.session))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/:id').delete((req, res) => {
   Event.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Event deleted.'))
+    .then(() => res.json(req.params.id))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 

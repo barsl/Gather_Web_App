@@ -6,7 +6,6 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
     minlength: 3
   },
@@ -15,7 +14,10 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true, trim: true },
   interests: { type: [String], required: true },
   friends: { type: [String], required: true },
-  attendedEvents: { type: [String], required: true },
+  friend_requests: { type: [String] },
+  invitedEvents: { type: [String], required: true },
+  attendingEvents: { type: [String], required: true },
+  history: { type: [String], required: true },
 }, {
   timestamps: true,
 });

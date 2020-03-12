@@ -1,18 +1,17 @@
 const router = require('express').Router();
 const validator = require('validator');
 const crypto = require('crypto');
+const cookie = require('cookie');
+require('dotenv').config();
 
 let User = require('../models/user.model');
 
-function generateSalt() {
-  return crypto.randomBytes(16).toString('base64');
-}
-
-function generateHash(password, salt) {
-  let hash = crypto.createHmac('sha512', salt);
-  hash.update(password);
-  return hash.digest('base64');
-}
+function checkId(req, res, next) {
+  if (!validator.isAlphanumeric(req.params.id)) return res.status(400).json("Invalid user id");
+  req.params.id = validator.trim(req.params.id);
+  req.params.id = validator.escape(req.params.id);
+  next();
+};
 
 router.route('/').get((req, res) => {
   User.find()
@@ -20,33 +19,21 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/:id').get((req, res) => {
+router.route('/:id').get(checkId, (req, res) => {
   User.findById(req.params.id)
-    .then(user => res.json(user))
+    .then(user => {
+      if (!user) return res.status(404).json("User not found")
+      res.json(user)
+    })
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/add').post((req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const email = req.body.email;
-
-  let salt = generateSalt();
-  let saltedPassword = generateHash(password, salt);
-
-
-  const newUser = new User({
-    username,
-    password: saltedPassword,
-    salt,
-    email,
-    interests: [],
-    friends: [],
-    attendedEvents: []
-  });
-
-  newUser.save()
-    .then(() => res.json('User added!'))
+router.route('/:username').get((req, res) => {
+  User.find({ username: req.params.username })
+    .then(user => {
+      if (!user) return res.status(404).json("User not found")
+      res.json(user)
+    })
     .catch(err => res.status(400).json('Error: ' + err));
 });
 

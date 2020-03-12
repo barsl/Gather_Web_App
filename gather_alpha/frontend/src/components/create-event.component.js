@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import Navbar from "./navbar.component"
+import { withRouter } from 'react-router-dom';
 
-export default class CreateEvent extends Component {
+class CreateEvent extends Component {
   constructor(props) {
     super(props);
 
@@ -80,50 +82,53 @@ export default class CreateEvent extends Component {
 
   render() {
     return (
-    <div>
-      <h3>Create New Event Log</h3>
-      <form onSubmit={this.onSubmit}>
-        <div className="form-group"> 
-          <label>Username: </label>
-          <select ref="userInput"
+      <div>
+        <Navbar />
+        <h3>Create New Event Log</h3>
+        <form onSubmit={this.onSubmit}>
+          <div className="form-group">
+            <label>Username: </label>
+            <select ref="userInput"
               required
               className="form-control"
               value={this.state.username}
               onChange={this.onChangeUsername}>
               {
-                this.state.users.map(function(user) {
-                  return <option 
+                this.state.users.map(function (user) {
+                  return <option
                     key={user}
                     value={user}>{user}
-                    </option>;
+                  </option>;
                 })
               }
-          </select>
-        </div>
-        <div className="form-group"> 
-          <label>Description: </label>
-          <input  type="text"
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Description: </label>
+            <input type="text"
               required
               className="form-control"
               value={this.state.description}
               onChange={this.onChangeDescription}
-              />
-        </div>
-        <div className="form-group">
-          <label>Date: </label>
-          <div>
-            <DatePicker
-              selected={this.state.date}
-              onChange={this.onChangeDate}
             />
           </div>
-        </div>
+          <div className="form-group">
+            <label>Date: </label>
+            <div>
+              <DatePicker
+                selected={this.state.date}
+                onChange={this.onChangeDate}
+              />
+            </div>
+          </div>
 
-        <div className="form-group">
-          <input type="submit" value="Create Event Log" className="btn btn-primary" />
-        </div>
-      </form>
-    </div>
+          <div className="form-group">
+            <input type="submit" value="Create Event Log" className="btn btn-primary" />
+          </div>
+        </form>
+      </div>
     )
   }
 }
+
+export default withRouter(CreateEvent);
