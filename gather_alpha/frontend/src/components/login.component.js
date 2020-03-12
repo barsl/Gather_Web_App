@@ -18,7 +18,7 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/verify', { withCredentials: true })
+        axios.get('/verify', { withCredentials: true })
             .then(res => {
                 if (res.data.isValid) this.setState({
                     isAuthenticated: true
@@ -43,7 +43,7 @@ class Login extends Component {
             password: this.state.password
         }
 
-        axios.post('http://localhost:5000/signin', user, { withCredentials: true })
+        axios.post('/signin', user, { withCredentials: true })
             .then(res => {
                 console.log(res.data);
                 this.props.history.replace('/events');

@@ -24,7 +24,7 @@ class CreateEvent extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/users/')
+    axios.get('/users/')
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
@@ -74,7 +74,7 @@ class CreateEvent extends Component {
 
     console.log(event);
 
-    axios.post('http://localhost:5000/events/add', event)
+    axios.post('/events/add', event)
       .then(res => console.log(res.data));
 
     window.location = '/';

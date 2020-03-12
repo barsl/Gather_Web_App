@@ -21,19 +21,19 @@ export default class EditEvent extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/events/'+this.props.match.params.id)
+    axios.get('/events/' + this.props.match.params.id)
       .then(response => {
         this.setState({
           username: response.data.username,
           description: response.data.description,
           date: new Date(response.data.date)
-        })   
+        })
       })
       .catch(function (error) {
         console.log(error);
       })
 
-    axios.get('http://localhost:5000/users/')
+    axios.get('/users/')
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
@@ -82,7 +82,7 @@ export default class EditEvent extends Component {
 
     console.log(event);
 
-    axios.post('http://localhost:5000/events/update/' + this.props.match.params.id, event)
+    axios.post('/events/update/' + this.props.match.params.id, event)
       .then(res => console.log(res.data));
 
     window.location = '/';
@@ -90,50 +90,50 @@ export default class EditEvent extends Component {
 
   render() {
     return (
-    <div>
-      <h3>Edit Event Log</h3>
-      <form onSubmit={this.onSubmit}>
-        <div className="form-group"> 
-          <label>Username: </label>
-          <select ref="userInput"
+      <div>
+        <h3>Edit Event Log</h3>
+        <form onSubmit={this.onSubmit}>
+          <div className="form-group">
+            <label>Username: </label>
+            <select ref="userInput"
               required
               className="form-control"
               value={this.state.username}
               onChange={this.onChangeUsername}>
               {
-                this.state.users.map(function(user) {
-                  return <option 
+                this.state.users.map(function (user) {
+                  return <option
                     key={user}
                     value={user}>{user}
-                    </option>;
+                  </option>;
                 })
               }
-          </select>
-        </div>
-        <div className="form-group"> 
-          <label>Description: </label>
-          <input  type="text"
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Description: </label>
+            <input type="text"
               required
               className="form-control"
               value={this.state.description}
               onChange={this.onChangeDescription}
-              />
-        </div>
-        <div className="form-group">
-          <label>Date: </label>
-          <div>
-            <DatePicker
-              selected={this.state.date}
-              onChange={this.onChangeDate}
             />
           </div>
-        </div>
+          <div className="form-group">
+            <label>Date: </label>
+            <div>
+              <DatePicker
+                selected={this.state.date}
+                onChange={this.onChangeDate}
+              />
+            </div>
+          </div>
 
-        <div className="form-group">
-          <input type="submit" value="Edit Event Log" className="btn btn-primary" />
-        </div>
-      </form>
-    </div>
+          <div className="form-group">
+            <input type="submit" value="Edit Event Log" className="btn btn-primary" />
+          </div>
+        </form>
+      </div>
     )
   }
 }

@@ -17,7 +17,7 @@ app.use(express.json());
 const MongoStore = require('connect-mongo')(session);
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
+  app.use(express.static('../frontend/build'));
 
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
@@ -41,13 +41,6 @@ app.use(session({
     maxAge: parseInt(process.env.SESS_LIFETIME)
   }
 }));
-
-// app.use(function (req, res, next) {
-//   res.header('Access-Control-Allow-Credentials', true);
-//   res.header('Access-Control-Allow-Origin', req.headers.origin);
-//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//   res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
-// });
 
 const uri = process.env.MONGO_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }

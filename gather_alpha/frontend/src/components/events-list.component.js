@@ -28,7 +28,7 @@ class EventsList extends Component {
   componentDidMount() {
     this._isMounted = true;
 
-    axios.get('http://localhost:5000/verify', { withCredentials: true })
+    axios.get('/verify', { withCredentials: true })
       .then(res => {
         if (!res.data.isValid && this._isMounted) this.setState({
           isAuthenticated: false
@@ -38,7 +38,7 @@ class EventsList extends Component {
         console.error(err);
       })
 
-    axios.get('http://localhost:5000/events/')
+    axios.get('/events/')
       .then(response => {
         this.setState({ events: response.data })
       })
@@ -52,7 +52,7 @@ class EventsList extends Component {
   }
 
   deleteEvent(id) {
-    axios.delete('http://localhost:5000/events/' + id)
+    axios.delete('/events/' + id)
       .then(response => { console.log(response.data) });
 
     this.setState({

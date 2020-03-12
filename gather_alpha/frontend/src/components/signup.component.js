@@ -19,7 +19,7 @@ class Signup extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/verify', { withCredentials: true })
+        axios.get('/verify', { withCredentials: true })
             .then(res => {
                 if (res.data.isValid) this.props.history.push('/events');
             })
@@ -43,7 +43,7 @@ class Signup extends Component {
             password: this.state.password
         }
 
-        axios.post('http://localhost:5000/signup', user, { withCredentials: true })
+        axios.post('/signup', user, { withCredentials: true })
             .then(res => {
                 this.props.history.push('/events');
             })
