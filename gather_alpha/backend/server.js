@@ -22,7 +22,6 @@ app.use(session({
   resave: false,
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
-    collection: 'session',
     ttl: parseInt(process.env.SESS_LIFETIME) / 1000
   }),
   cookie: {

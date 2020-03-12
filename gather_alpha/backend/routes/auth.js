@@ -15,17 +15,17 @@ function generateHash(password, salt) {
     return hash.digest('base64');
 }
 
-function checkEmail(req, res, next) {
-    if (!validator.isEmail(req.body.email)) return res.status(400).json("Invalid email");
-    req.body.email = validator.normalizeEmail(req.body.email);
+function checkUsername(req, res, next) {
+    req.body.username = validator.trim(req.body.username);
+    req.body.username = validator.escape(req.body.username);
     next();
 }
 
-router.route('/signin').post(checkEmail, (req, res) => {
+router.route('/signin').post(checkUsername, (req, res) => {
     const password = req.body.password;
-    const email = req.body.email;
+    const username = req.body.username;
 
-    User.findOne({ email }).then(user => {
+    User.findOne({ username }).then(user => {
         if (!user) return res.status(404).json("No user with this email");
 
         if (user.password !== generateHash(password, user.salt)) {
@@ -41,13 +41,13 @@ router.route('/signin').post(checkEmail, (req, res) => {
     });
 });
 
-router.route('/signup').post(checkEmail, (req, res) => {
+router.route('/signup').post(checkUsername, (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    const email = req.body.email;
+    const name = req.body.name;
 
-    User.findOne({ email }).then(user => {
-        if (user) return res.status(409).json("User with this email already exists");
+    User.findOne({ username }).then(user => {
+        if (user) return res.status(409).json("User with this username already exists");
 
         let salt = generateSalt();
         let saltedPassword = generateHash(password, salt);
@@ -56,7 +56,7 @@ router.route('/signup').post(checkEmail, (req, res) => {
             username,
             password: saltedPassword,
             salt,
-            email,
+            name,
             interests: [],
             friends: [],
             friend_requests: [],
