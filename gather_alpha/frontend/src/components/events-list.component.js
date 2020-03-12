@@ -19,18 +19,30 @@ class EventsList extends Component {
   constructor(props) {
     super(props);
     this.deleteEvent = this.deleteEvent.bind(this)
+    this.state = { events: [] };
   }
 
   componentDidMount() {
-    this.props.getEvents();
+    axios.get('http://localhost:5000/events/')
+      .then(response => {
+        this.setState({ events: response.data })
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
   deleteEvent(id) {
-    this.props.deleteEvent(id);
+    axios.delete('http://localhost:5000/events/' + id)
+      .then(response => { console.log(response.data) });
+
+    this.setState({
+      events: this.state.events.filter(el => el._id !== id)
+    })
   }
 
   eventList() {
-    return this.props.event.events.map(currentevent => {
+    return this.state.events.map(currentevent => {
       return <Event event={currentevent} deleteEvent={this.deleteEvent} key={currentevent._id} />;
     })
   }

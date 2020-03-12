@@ -78,24 +78,14 @@ router.route('/add').post(checkEmail, (req, res) => {
     });
 
     newUser.save()
-      .then(savedUser =>
+      .then(savedUser => {
+        req.session.username = user;
 
-        jwt.sign(
-          { id: savedUser._id },
-          process.env.jwtSecret,
-          { expiresIn: 3600 },
-          (err, token) => {
-            if (err) throw err;
-            res.json({
-              token,
-              returnUser: {
-                username: savedUser.username,
-                email: savedUser.email
-              }
-            }
-            )
-          }))
-      .catch(err => res.status(400).json('Error: ' + err));
+        res.setHeader('Set-Cookie', cookie.serialize('username', user.username), {
+          path: '/',
+          maxAge: process.env.SESS_LIFETIME
+        })
+      });
   });
 });
 

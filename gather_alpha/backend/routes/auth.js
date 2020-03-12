@@ -1,10 +1,9 @@
 const router = require('express').Router();
 const validator = require('validator');
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
-const auth = require('../middleware/auth');
 require('dotenv').config();
-
+const cookie = require('cookie');
+const auth = require('../middleware/auth');
 let User = require('../models/user.model');
 
 function generateHash(password, salt) {
@@ -19,7 +18,7 @@ function checkEmail(req, res, next) {
     next();
 }
 
-router.route('/').post(checkEmail, (req, res) => {
+router.route('/signin').post(checkEmail, (req, res) => {
     const password = req.body.password;
     const email = req.body.email;
 
@@ -30,21 +29,13 @@ router.route('/').post(checkEmail, (req, res) => {
             return res.status(400).json("Invalid credentials");
         }
 
-        jwt.sign(
-            { id: user._id },
-            process.env.jwtSecret,
-            { expiresIn: 3600 },
-            (err, token) => {
-                if (err) throw err;
-                return res.json({
-                    token,
-                    returnUser: {
-                        username: user.username,
-                        email: user.email
-                    }
-                }
-                )
-            });
+        req.session.username = user;
+
+        res.setHeader('Set-Cookie', cookie.serialize('username', user.username), {
+            path: '/',
+            maxAge: process.env.SESS_LIFETIME
+        })
+        return res.json(user.username);
     });
 });
 
