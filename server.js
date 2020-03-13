@@ -31,7 +31,7 @@ app.use(session({
     path: '/',
     sameSite: true,
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
     maxAge: parseInt(process.env.SESS_LIFETIME)
   }
 }));
