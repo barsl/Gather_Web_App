@@ -8,7 +8,7 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 const corsOptions = {
-  origin: ['http://localhost:3000', ''],
+  origin: ['http://localhost:3000', 'https://gather-app-c09.herokuapp.com'],
   credentials: true
 }
 app.use(express.urlencoded({ extended: true }));
