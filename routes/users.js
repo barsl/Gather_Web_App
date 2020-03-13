@@ -19,6 +19,19 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/currentuser').get((req, res) => {
+  //get user from session
+  console.log("session username: " + req.session.username);
+
+  if (req.session.username) {
+    User.findOne({username: req.session.username.username})
+    .then(user => {
+      if (!user) return res.status(404).json("User not found")
+      res.json(user)})
+      .catch(err => res.status(400).json('Error: ' + err));
+  }
+});
+
 router.route('/:id').get(checkId, (req, res) => {
   User.findById(req.params.id)
     .then(user => {

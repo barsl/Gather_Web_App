@@ -4,22 +4,37 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "./navbar.component"
 import { withRouter } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class CreateEvent extends Component {
   constructor(props) {
     super(props);
 
+    this.onChangeStatus = this.onChangeStatus.bind(this);
+    this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangeDescription = this.onChangeDescription.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
+    this.onChangeDuration = this.onChangeDuration.bind(this);
+    this.onChangeInvited = this.onChangeInvited.bind(this);
+    this.onChangeAttending = this.onChangeAttending.bind(this);
+    this.onChangeLocation = this.onChangeLocation.bind(this);
+    this.onChangeTags = this.onChangeTags.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
+      publicStatus: false,
+      title: '',
       username: '',
       description: '',
       duration: 0,
       date: new Date(),
-      users: []
+      invited: [],
+      attending: [],
+      location: '',
+      tags: [],
+      users: [],
+      userFriends: []
     }
   }
 
@@ -28,15 +43,27 @@ class CreateEvent extends Component {
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
-            users: response.data.map(user => user.username),
-            username: response.data[0].username
+            username: user.username,
+            userFriends: user.friends
           })
+          console.log("got user: " + user.username);
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Unable to get current user. " + error);
       })
+  }
 
+  onChangeStatus(e) {
+    this.setState({
+      publicStatus: e.target.value
+    })
+  }
+
+  onChangeTitle(e) {
+    this.setState({
+      title: e.target.value
+    })
   }
 
   onChangeUsername(e) {
@@ -63,13 +90,43 @@ class CreateEvent extends Component {
     })
   }
 
+  onChangeInvited(e) {
+    this.setState({
+      invited: e.target.value
+    })
+  }
+
+  onChangeAttending(e) {
+    this.setState({
+      attending: e.target.value
+    })
+  }
+
+  onChangeLocation(e) {
+    this.setState({
+      location: e.target.value
+    })
+  }
+
+  onChangeTags(e) {
+    this.setState({
+      tags: e.target.value
+    })
+  }
+
   onSubmit(e) {
     e.preventDefault();
 
     const event = {
+      publicStatus: this.state.publicStatus,
+      title: this.state.title,
       username: this.state.username,
       description: this.state.description,
-      date: this.state.date
+      date: this.state.date,
+      invited: this.state.invited,
+      attending: this.state.attending,
+      location: this.state.location,
+      tags: this.state.tags
     }
 
     console.log(event);
@@ -84,10 +141,46 @@ class CreateEvent extends Component {
     return (
       <div>
         <Navbar />
-        <h3>Create New Event Log</h3>
+        <h3>Create New Event</h3>
         <form onSubmit={this.onSubmit}>
+
+          <div className="form-group">
+            <label>Event Title: </label>
+            <input type="text"
+              required
+              className="form-control"
+              value={this.state.title}
+              onChange={this.onChangeTitle}
+            />
+          </div>
+
           <div className="form-group">
             <label>Username: </label>
+
+          </div>
+
+          <div className="form-group">
+            <label>Description: </label>
+            <input type="text"
+              required
+              className="form-control"
+              value={this.state.description}
+              onChange={this.onChangeDescription}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Date: </label>
+            <div>
+              <DatePicker
+                selected={this.state.date}
+                onChange={this.onChangeDate}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Select friends to invite</label>
             <select ref="userInput"
               required
               className="form-control"
@@ -103,27 +196,9 @@ class CreateEvent extends Component {
               }
             </select>
           </div>
-          <div className="form-group">
-            <label>Description: </label>
-            <input type="text"
-              required
-              className="form-control"
-              value={this.state.description}
-              onChange={this.onChangeDescription}
-            />
-          </div>
-          <div className="form-group">
-            <label>Date: </label>
-            <div>
-              <DatePicker
-                selected={this.state.date}
-                onChange={this.onChangeDate}
-              />
-            </div>
-          </div>
 
           <div className="form-group">
-            <input type="submit" value="Create Event Log" className="btn btn-primary" />
+            <input type="submit" value="Create Event" className="btn btn-primary" />
           </div>
         </form>
       </div>

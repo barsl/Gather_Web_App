@@ -9,6 +9,7 @@ const Event = props => (
     <td>{props.event.description}</td>
     <td>{props.event.date.substring(0, 10)}</td>
     <td>
+    {/* eslint-disable-next-line */}
       <Link to={"/edit/" + props.event._id}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id) }}>delete</a>
     </td>
   </tr>
