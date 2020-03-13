@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { withRouter } from 'react-router-dom';
+import { Link, Redirect, withRouter } from 'react-router-dom';
 
-class Signup extends Component {
+class Login extends Component {
     constructor(props) {
         super(props);
 
@@ -11,17 +11,18 @@ class Signup extends Component {
 
         this.state = {
             username: '',
-            firstName: '',
-            lastName: '',
             password: '',
-            error: false
+            error: false,
+            isAuthenticated: false
         }
     }
 
     componentDidMount() {
         axios.get('/verify', { withCredentials: true })
             .then(res => {
-                if (res.data.isValid) this.props.history.push('/events');
+                if (res.data.isValid) this.setState({
+                    isAuthenticated: true
+                });
             })
             .catch(err => {
                 console.error(err);
@@ -39,28 +40,31 @@ class Signup extends Component {
 
         const user = {
             username: this.state.username,
-            name: this.state.firstName + ' ' + this.state.lastName,
             password: this.state.password
         }
 
-        axios.post('/signup', user, { withCredentials: true })
+        axios.post('/signin', user, { withCredentials: true })
             .then(res => {
-                this.props.history.push('/events');
+                console.log(res.data);
+                this.props.history.replace('/eventsList');
             })
             .catch(err => {
                 this.setState({
-                    error: true
+                    error: "Invalid Credentials"
                 });
                 console.error(err);
             });
     }
 
     render() {
+        if (this.state.isAuthenticated) {
+            return <Redirect to="/eventsList" />
+        }
         const showError = this.state.error ? "d-inline-block" : "d-none";
         return (
             <div>
-                <div className={`alert alert-danger ${showError}`} >Invalid Entries</div>
-                <h3>Sign up</h3>
+                <div className={`alert alert-danger ${showError}`} >Invalid Credentials</div>
+                <h3>Login</h3>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
                         <label>Username: </label>
@@ -69,22 +73,6 @@ class Signup extends Component {
                             required
                             className="form-control"
                             value={this.state.username}
-                            onChange={this.onChange}
-                        />
-                        <label>First Name: </label>
-                        <input type="text"
-                            name="firstName"
-                            required
-                            className="form-control"
-                            value={this.state.firstName}
-                            onChange={this.onChange}
-                        />
-                        <label>Last Name: </label>
-                        <input type="text"
-                            name="lastName"
-                            required
-                            className="form-control"
-                            value={this.state.lastName}
                             onChange={this.onChange}
                         />
                         <label>Password: </label>
@@ -97,12 +85,13 @@ class Signup extends Component {
                         />
                     </div>
                     <div className="form-group">
-                        <input type="submit" value="Sign up" className="btn btn-primary" />
+                        <input type="submit" value="Login" className="btn btn-primary" />
                     </div>
+                    <Link to={"/signup"}>New user? Sign up here!</Link>
                 </form>
             </div >
         )
     }
 }
 
-export default withRouter(Signup);
+export default withRouter(Login);

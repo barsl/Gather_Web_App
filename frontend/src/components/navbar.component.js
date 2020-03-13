@@ -23,11 +23,11 @@ class Navbar extends Component {
   render() {
     return (
       <nav className="navbar navbar-dark bg-dark navbar-expand-lg">
-        <Link to="/events" className="navbar-brand">Gather</Link>
+        <Link to="/eventsList" className="navbar-brand">Gather</Link>
         <div className="collpase navbar-collapse">
           <ul className="navbar-nav mr-auto">
             <li className="navbar-item">
-              <Link to="/events" className="nav-link">Events</Link>
+              <Link to="/eventsList" className="nav-link">Events</Link>
             </li>
             <li className="navbar-item">
               <Link to="/create" className="nav-link">Create Event Log</Link>

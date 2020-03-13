@@ -3,12 +3,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const path = require('path');
+const helmet = require('helmet');
 require('dotenv').config();
 
 const app = express();
+app.use(helmet());
 const port = process.env.PORT || 5000;
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3000', 'https://gather-app-c09.herokuapp.com'],
   credentials: true
 }
 app.use(express.urlencoded({ extended: true }));
@@ -16,26 +18,21 @@ app.use(cors(corsOptions));
 app.use(express.json());
 const MongoStore = require('connect-mongo')(session);
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('../frontend/build'));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
-  });
-}
+if (process.env.NODE_ENV === 'production') app.enable('trust proxy');
 
 app.use(session({
   name: process.env.SESS_NAME,
   secret: process.env.SESS_SECRET,
   saveUninitialized: false,
   resave: false,
+  proxy: true,
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
     ttl: parseInt(process.env.SESS_LIFETIME) / 1000
   }),
   cookie: {
     path: '/',
-    sameSite: false,
+    sameSite: true,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: parseInt(process.env.SESS_LIFETIME)
@@ -57,6 +54,13 @@ const authRouter = require('./routes/auth');
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 app.use('/', authRouter);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('frontend/build'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/frontend/build/index.html'));
+  });
+}
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

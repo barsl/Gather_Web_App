@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Link, Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
-class Login extends Component {
+class Signup extends Component {
     constructor(props) {
         super(props);
 
@@ -11,18 +11,17 @@ class Login extends Component {
 
         this.state = {
             username: '',
+            firstName: '',
+            lastName: '',
             password: '',
-            error: false,
-            isAuthenticated: false
+            error: false
         }
     }
 
     componentDidMount() {
         axios.get('/verify', { withCredentials: true })
             .then(res => {
-                if (res.data.isValid) this.setState({
-                    isAuthenticated: true
-                });
+                if (res.data.isValid) this.props.history.push('/events');
             })
             .catch(err => {
                 console.error(err);
@@ -40,31 +39,28 @@ class Login extends Component {
 
         const user = {
             username: this.state.username,
+            name: this.state.firstName + ' ' + this.state.lastName,
             password: this.state.password
         }
 
-        axios.post('/signin', user, { withCredentials: true })
+        axios.post('/signup', user, { withCredentials: true })
             .then(res => {
-                console.log(res.data);
-                this.props.history.replace('/events');
+                this.props.history.push('/eventsList');
             })
             .catch(err => {
                 this.setState({
-                    error: "Invalid Credentials"
+                    error: true
                 });
                 console.error(err);
             });
     }
 
     render() {
-        if (this.state.isAuthenticated) {
-            return <Redirect to="/events" />
-        }
         const showError = this.state.error ? "d-inline-block" : "d-none";
         return (
             <div>
-                <div className={`alert alert-danger ${showError}`} >Invalid Credentials</div>
-                <h3>Login</h3>
+                <div className={`alert alert-danger ${showError}`} >Invalid Entries</div>
+                <h3>Sign up</h3>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
                         <label>Username: </label>
@@ -73,6 +69,22 @@ class Login extends Component {
                             required
                             className="form-control"
                             value={this.state.username}
+                            onChange={this.onChange}
+                        />
+                        <label>First Name: </label>
+                        <input type="text"
+                            name="firstName"
+                            required
+                            className="form-control"
+                            value={this.state.firstName}
+                            onChange={this.onChange}
+                        />
+                        <label>Last Name: </label>
+                        <input type="text"
+                            name="lastName"
+                            required
+                            className="form-control"
+                            value={this.state.lastName}
                             onChange={this.onChange}
                         />
                         <label>Password: </label>
@@ -85,13 +97,12 @@ class Login extends Component {
                         />
                     </div>
                     <div className="form-group">
-                        <input type="submit" value="Login" className="btn btn-primary" />
+                        <input type="submit" value="Sign up" className="btn btn-primary" />
                     </div>
-                    <Link to={"/signup"}>New user? Sign up here!</Link>
                 </form>
             </div >
         )
     }
 }
 
-export default withRouter(Login);
+export default withRouter(Signup);
