@@ -18,14 +18,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 const MongoStore = require('connect-mongo')(session);
 
-if (process.env.NODE_ENV === 'production') {
-  app.enable('trust proxy');
-  app.use(express.static(path.join(__dirname, '/frontend/build')));
-  console.log("Testing if this shows up")
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/frontend/build/index.html'));
-  });
-}
+if (process.env.NODE_ENV === 'production') app.enable('trust proxy');
 
 app.use(session({
   name: process.env.SESS_NAME,
@@ -61,6 +54,13 @@ const authRouter = require('./routes/auth');
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 app.use('/', authRouter);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('frontend/build'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/frontend/build/index.html'));
+  });
+}
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
