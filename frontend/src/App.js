@@ -15,7 +15,7 @@ function App() {
         <br />
         <Route exact path="/" component={Login} />
         <Route path="/signup" component={Signup} />
-        <Route path="/events" component={EventsList} />
+        <Route path="/eventsList" component={EventsList} />
         <Route path="/edit/:id" component={EditEvent} />
         <Route path="/create" component={CreateEvent} />
         <Route path="/user" component={CreateUser} />

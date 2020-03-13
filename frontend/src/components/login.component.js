@@ -46,7 +46,7 @@ class Login extends Component {
         axios.post('/signin', user, { withCredentials: true })
             .then(res => {
                 console.log(res.data);
-                this.props.history.replace('/events');
+                this.props.history.replace('/eventsList');
             })
             .catch(err => {
                 this.setState({
@@ -58,7 +58,7 @@ class Login extends Component {
 
     render() {
         if (this.state.isAuthenticated) {
-            return <Redirect to="/events" />
+            return <Redirect to="/eventsList" />
         }
         const showError = this.state.error ? "d-inline-block" : "d-none";
         return (

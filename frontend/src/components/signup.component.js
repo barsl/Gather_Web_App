@@ -45,7 +45,7 @@ class Signup extends Component {
 
         axios.post('/signup', user, { withCredentials: true })
             .then(res => {
-                this.props.history.push('/events');
+                this.props.history.push('/eventsList');
             })
             .catch(err => {
                 this.setState({

@@ -87,7 +87,7 @@ router.route('/logout').get((req, res) => {
 
 router.route('/verify').get((req, res) => {
     if (!req.session.username) res.json({ isValid: false })
-    else res.json({ isValid: true, session: req.sessionID })
+    else res.json({ isValid: true, session: req.session.username })
 });
 
 module.exports = router;
