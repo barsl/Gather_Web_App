@@ -3,9 +3,11 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const path = require('path');
+const helmet = require('helmet');
 require('dotenv').config();
 
 const app = express();
+app.use(helmet());
 const port = process.env.PORT || 5000;
 const corsOptions = {
   origin: ['http://localhost:3000', 'https://gather-app-c09.herokuapp.com'],
@@ -27,9 +29,9 @@ app.use(session({
   }),
   cookie: {
     path: '/',
-    sameSite: false,
+    sameSite: true,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false,
     maxAge: parseInt(process.env.SESS_LIFETIME)
   }
 }));
