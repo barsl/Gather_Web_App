@@ -19,7 +19,7 @@ app.use(express.json());
 const MongoStore = require('connect-mongo')(session);
 
 if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', 1);
+  app.enable('trust proxy');
   app.use(express.static('./frontend/build'));
 
   app.get('*', (req, res) => {
@@ -32,6 +32,7 @@ app.use(session({
   secret: process.env.SESS_SECRET,
   saveUninitialized: false,
   resave: false,
+  proxy: true,
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
     ttl: parseInt(process.env.SESS_LIFETIME) / 1000
