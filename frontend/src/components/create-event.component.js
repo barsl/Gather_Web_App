@@ -160,17 +160,7 @@ class CreateEvent extends Component {
 
     console.log(event);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     axios.post("/events/add", event).then(res => console.log(res.data));
-=======
-=======
->>>>>>> began implementing chat functionality
-
-
-    axios.post('/events/add', event)
-      .then(res => console.log(res.data));
->>>>>>> began implementing chat functionality
 
     window.location = "/";
   }
