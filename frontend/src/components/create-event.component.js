@@ -160,9 +160,33 @@ class CreateEvent extends Component {
 
     console.log(event);
 
+    const chatManager = new Chatkit.ChatManager({
+      instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
+      userId: this.state.username,
+      tokenProvider: new Chatkit.TokenProvider({
+        url: '/chat/auth'
+      })
+    })
+
     axios.post("/events/add", event).then(res => console.log(res.data));
 
-    window.location = "/";
+    return chatManager
+      .connect()
+      .then(currentUser => {
+        currentUser.createRoom({
+          id: this.state.title,
+          name: this.state.title,
+          private: false,
+          addUserIds: this.state.attending,
+          customData: {}
+        })
+          .then(room => {
+            console.log(`Created room called ${room.name}`);
+            window.location = "/";
+          })
+          .catch(err => console.error(err))
+      })
+      .catch(err => console.error(err))
   }
 
   render() {

@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 
 class ChatScreen extends Component {
     constructor() {
+        super();
         this.state = {
             messages: []
         }
@@ -37,8 +38,12 @@ class ChatScreen extends Component {
     }
 
     render() {
-        <div>
-            <MessageList messages={this.state.messages} />
-        </div>
+        return (
+            <div>
+                <MessageList messages={this.state.messages} />
+            </div>
+        )
     }
 }
+
+export default ChatScreen;
