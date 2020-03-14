@@ -50,10 +50,12 @@ connection.once('open', () => {
 const eventsRouter = require('./routes/events');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
+const chatRouter = require('./routes/chat');
 
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 app.use('/', authRouter);
+app.use('/chat', chatRouter);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));

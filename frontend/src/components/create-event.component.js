@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "./navbar.component"
 import { withRouter } from 'react-router-dom';
+import Chatkit from '@pusher/chatkit-client';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -73,6 +74,8 @@ class CreateEvent extends Component {
     }
 
     console.log(event);
+
+
 
     axios.post('/events/add', event)
       .then(res => console.log(res.data));
