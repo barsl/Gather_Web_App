@@ -5,7 +5,9 @@ import Navbar from "./navbar.component"
 
 const Event = props => (
   <tr>
-    <td>{props.event.username}</td>
+    <td>
+      <Link to={"/eventChat/" + props.event._id}>{props.event.username}</Link>
+    </td>
     <td>{props.event.description}</td>
     <td>{props.event.date.substring(0, 10)}</td>
     <td>
