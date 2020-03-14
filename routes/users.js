@@ -2,6 +2,7 @@ const router = require('express').Router();
 const validator = require('validator');
 const crypto = require('crypto');
 const cookie = require('cookie');
+const auth = require('../middleware/auth');
 require('dotenv').config();
 
 let User = require('../models/user.model');
@@ -21,21 +22,20 @@ router.route('/').get((req, res) => {
 
 router.route('/currentuser').get((req, res) => {
   //get user from session
-  console.log("session username: " + req.session.username);
-
   if (req.session.username) {
-    User.findOne({username: req.session.username.username})
-    .populate('friends')
-    .then(user => {
-      if (!user) return res.status(404).json("User not found")
-      res.json(user)})
+    User.findOne({ username: req.session.username.username })
+      .populate('friends')
+      .then(user => {
+        if (!user) return res.status(404).json("User not found")
+        res.json(user)
+      })
       .catch(err => res.status(400).json('Error: ' + err));
   } else {
     res.status(400).send(':(');
   }
 });
 
-router.route('/:id').get(checkId, (req, res) => {
+router.route('/:id').get(auth, checkId, (req, res) => {
   User.findById(req.params.id)
     .then(user => {
       if (!user) return res.status(404).json("User not found")
@@ -44,7 +44,7 @@ router.route('/:id').get(checkId, (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/:username').get((req, res) => {
+router.route('/:username').get(auth, (req, res) => {
   User.find({ username: req.params.username })
     .then(user => {
       if (!user) return res.status(404).json("User not found")

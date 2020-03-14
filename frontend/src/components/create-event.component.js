@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Navbar from "./navbar.component";
-import { withRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./style/create-event.module.css";
+import Navbar from "./navbar.component"
+import { withRouter, Redirect } from 'react-router-dom';
+import Chatkit from '@pusher/chatkit-client';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -36,7 +37,8 @@ class CreateEvent extends Component {
       location: "",
       tags: [],
       users: [],
-      userFriends: []
+      userFriends: [],
+      isAuthenticated: true
     };
   }
 
@@ -51,6 +53,9 @@ class CreateEvent extends Component {
         });
       })
       .catch(error => {
+        this.setState({
+          isAuthenticated: false
+        });
         console.log("Unable to get current user. " + error);
       });
   }
@@ -159,12 +164,37 @@ class CreateEvent extends Component {
 
     console.log(event);
 
+    const chatManager = new Chatkit.ChatManager({
+      instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
+      userId: this.state.username,
+      tokenProvider: new Chatkit.TokenProvider({
+        url: '/chat/auth'
+      })
+    })
+
     axios.post("/events/add", event).then(res => console.log(res.data));
 
-    window.location = "/";
+    return chatManager
+      .connect()
+      .then(currentUser => {
+        currentUser.createRoom({
+          id: this.state.title,
+          name: this.state.title,
+          private: false,
+          addUserIds: this.state.attending,
+          customData: {}
+        })
+          .then(room => {
+            console.log(`Created room called ${room.name}`);
+            window.location = "/";
+          })
+          .catch(err => console.error(err))
+      })
+      .catch(err => console.error(err))
   }
 
   render() {
+    if (!this.state.isAuthenticated) return <Redirect to="/" />
     return (
       <div>
         <Navbar />
@@ -215,7 +245,7 @@ class CreateEvent extends Component {
               onChange={this.onChangeInvited}
             >
               <option value="">...</option>
-              {this.state.userFriends.map(function({ _id, username }) {
+              {this.state.userFriends.map(function ({ _id, username }) {
                 return (
                   <option key={username} value={_id}>
                     {username}

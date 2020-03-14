@@ -5,11 +5,13 @@ import Navbar from "./navbar.component"
 
 const Event = props => (
   <tr>
-    <td>{props.event.username}</td>
+    <td>
+      <Link to={"/eventChat/" + props.event.title}>{props.event.title}</Link>
+    </td>
     <td>{props.event.description}</td>
     <td>{props.event.date.substring(0, 10)}</td>
     <td>
-    {/* eslint-disable-next-line */}
+      {/* eslint-disable-next-line */}
       <Link to={"/edit/" + props.event._id}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id) }}>delete</a>
     </td>
   </tr>
@@ -27,13 +29,13 @@ class EventsList extends Component {
   }
 
   componentDidMount() {
-    this._isMounted = true;
-
     axios.get('/verify', { withCredentials: true })
       .then(res => {
-        if (!res.data.isValid && this._isMounted) this.setState({
-          isAuthenticated: false
-        });
+        if (!res.data.isValid) {
+          this.setState({
+            isAuthenticated: false
+          });
+        }
       })
       .catch(err => {
         console.error(err);
@@ -46,10 +48,6 @@ class EventsList extends Component {
       .catch((error) => {
         console.log(error);
       })
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
   }
 
   deleteEvent(id) {
@@ -76,7 +74,7 @@ class EventsList extends Component {
         <table className="table">
           <thead className="thead-light">
             <tr>
-              <th>Username</th>
+              <th>Title</th>
               <th>Description</th>
               <th>Date</th>
               <th>Actions</th>

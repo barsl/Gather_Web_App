@@ -36,7 +36,8 @@ router.route('/signin').post(checkUsername, (req, res) => {
         res.setHeader('Set-Cookie', cookie.serialize('username', user.username), {
             path: '/',
             maxAge: parseInt(process.env.SESS_LIFETIME)
-        })
+        });
+
         return res.json(req.session.username.username);
     });
 });
@@ -87,7 +88,7 @@ router.route('/logout').get((req, res) => {
 
 router.route('/verify').get((req, res) => {
     if (!req.session.username) res.json({ isValid: false })
-    else res.json({ isValid: true, session: req.session.username })
+    else res.json({ isValid: true })
 });
 
 module.exports = router;

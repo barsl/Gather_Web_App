@@ -43,6 +43,14 @@ class Signup extends Component {
             password: this.state.password
         }
 
+        axios.post('/chat/createUser', user)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.error(err);
+            })
+
         axios.post('/signup', user, { withCredentials: true })
             .then(res => {
                 this.props.history.push('/eventsList');
