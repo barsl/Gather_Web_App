@@ -33,7 +33,6 @@ router.route('/signin').post(checkUsername, (req, res) => {
         }
 
         req.session.username = user;
-        console.log(req.session.id);
         res.setHeader('Set-Cookie', cookie.serialize('username', user.username), {
             path: '/',
             maxAge: parseInt(process.env.SESS_LIFETIME)

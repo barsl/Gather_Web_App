@@ -32,7 +32,10 @@ router.route('/add').post((req, res) => {
 
   newEvent.save()
     .then(() => res.json('Event added!'))
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => {
+      console.log(err);
+      res.status(400).json('Error: ' + err)
+    });
 });
 
 router.route('/:id').get((req, res) => {

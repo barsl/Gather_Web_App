@@ -13,7 +13,7 @@ const userSchema = new Schema({
   salt: { type: String, required: true },
   name: { type: String, required: true, unique: true, trim: true },
   interests: { type: [String], required: true },
-  friends: { type: [String], required: true },
+  friends: { type: [Schema.Types.ObjectId], ref: 'User', required: true },
   friend_requests: { type: [String] },
   invitedEvents: { type: [String], required: true },
   attendingEvents: { type: [String], required: true },

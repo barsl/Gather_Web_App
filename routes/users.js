@@ -25,10 +25,13 @@ router.route('/currentuser').get((req, res) => {
 
   if (req.session.username) {
     User.findOne({username: req.session.username.username})
+    .populate('friends')
     .then(user => {
       if (!user) return res.status(404).json("User not found")
       res.json(user)})
       .catch(err => res.status(400).json('Error: ' + err));
+  } else {
+    res.status(400).send(':(');
   }
 });
 

@@ -32,7 +32,7 @@ app.use(session({
   }),
   cookie: {
     path: '/',
-    sameSite: true,
+    sameSite: process.env.NODE_ENV === 'production',
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: parseInt(process.env.SESS_LIFETIME)
