@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./style/create-event.module.css";
 import Navbar from "./navbar.component"
-import { withRouter } from 'react-router-dom';
+import { withRouter, Redirect } from 'react-router-dom';
 import Chatkit from '@pusher/chatkit-client';
 
 class CreateEvent extends Component {
@@ -37,7 +37,8 @@ class CreateEvent extends Component {
       location: "",
       tags: [],
       users: [],
-      userFriends: []
+      userFriends: [],
+      isAuthenticated: true
     };
   }
 
@@ -52,6 +53,9 @@ class CreateEvent extends Component {
         });
       })
       .catch(error => {
+        this.setState({
+          isAuthenticated: false
+        });
         console.log("Unable to get current user. " + error);
       });
   }
@@ -190,6 +194,7 @@ class CreateEvent extends Component {
   }
 
   render() {
+    if (!this.state.isAuthenticated) return <Redirect to="/" />
     return (
       <div>
         <Navbar />

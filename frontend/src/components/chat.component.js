@@ -19,20 +19,22 @@ class ChatScreen extends Component {
             })
         })
 
-        chatManager
+        return chatManager
             .connect()
             .then(currentUser => {
                 currentUser.subscribeToRoom({
                     roomId: this.props.match.params.id,
                     messageLimit: 100,
                     hooks: {
-                        onNewMessage: message => {
+                        onMessage: message => {
                             this.setState({
-                                message: [...this.state.messages, message]
+                                messages: [...this.state.messages, message]
                             })
                         }
                     }
                 })
+                    .then(currentRoom => { })
+                    .catch(err => console.error(err))
             })
             .catch(err => console.error(err))
     }
@@ -40,6 +42,7 @@ class ChatScreen extends Component {
     render() {
         return (
             <div>
+                <h1>Chat</h1>
                 <MessageList messages={this.state.messages} />
             </div>
         )
