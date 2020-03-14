@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Navbar from "./navbar.component";
-import { withRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./style/create-event.module.css";
+import Navbar from "./navbar.component"
+import { withRouter } from 'react-router-dom';
+import Chatkit from '@pusher/chatkit-client';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -159,7 +160,14 @@ class CreateEvent extends Component {
 
     console.log(event);
 
+<<<<<<< HEAD
     axios.post("/events/add", event).then(res => console.log(res.data));
+=======
+
+
+    axios.post('/events/add', event)
+      .then(res => console.log(res.data));
+>>>>>>> began implementing chat functionality
 
     window.location = "/";
   }
@@ -215,7 +223,7 @@ class CreateEvent extends Component {
               onChange={this.onChangeInvited}
             >
               <option value="">...</option>
-              {this.state.userFriends.map(function({ _id, username }) {
+              {this.state.userFriends.map(function ({ _id, username }) {
                 return (
                   <option key={username} value={_id}>
                     {username}
