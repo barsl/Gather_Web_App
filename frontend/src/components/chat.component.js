@@ -2,13 +2,18 @@ import React, { Component } from 'react';
 import Chatkit from '@pusher/chatkit-client';
 import MessageList from './messageList.component';
 import Cookies from 'js-cookie';
+import SendMessageForm from './sendMessage.component';
 
 class ChatScreen extends Component {
     constructor() {
         super();
         this.state = {
-            messages: []
+            messages: [],
+            currentUser: {},
+            currentRoom: {}
         }
+
+        this.sendMessage = this.sendMessage.bind(this);
     }
     componentDidMount() {
         const chatManager = new Chatkit.ChatManager({
@@ -22,6 +27,9 @@ class ChatScreen extends Component {
         return chatManager
             .connect()
             .then(currentUser => {
+                this.setState({
+                    currentUser
+                });
                 currentUser.subscribeToRoom({
                     roomId: this.props.match.params.id,
                     messageLimit: 100,
@@ -33,10 +41,21 @@ class ChatScreen extends Component {
                         }
                     }
                 })
-                    .then(currentRoom => { })
-                    .catch(err => console.error(err))
+                    .then(currentRoom => {
+                        this.setState({
+                            currentRoom
+                        })
+                    })
+                    .catch(err => this.props.history.push('/eventsList'))
             })
-            .catch(err => console.error(err))
+            .catch(err => this.props.history.push('/'))
+    }
+
+    sendMessage(text) {
+        this.state.currentUser.sendMessage({
+            roomId: this.state.currentRoom.id,
+            text
+        });
     }
 
     render() {
@@ -44,6 +63,7 @@ class ChatScreen extends Component {
             <div>
                 <h1>Chat</h1>
                 <MessageList messages={this.state.messages} />
+                <SendMessageForm onSubmit={this.sendMessage} />
             </div>
         )
     }
