@@ -44,7 +44,7 @@ class CreateEvent extends Component {
 
   componentDidMount() {
     axios
-      .get("/users/currentuser", { withCredentials: true })
+      .get("/users/currentUser", { withCredentials: true })
       .then(({ data }) => {
         console.log(data);
         this.setState({
@@ -162,7 +162,7 @@ class CreateEvent extends Component {
       tags: this.state.tags
     };
 
-    console.log(event);
+    //console.log(event);
 
     const chatManager = new Chatkit.ChatManager({
       instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
@@ -172,7 +172,7 @@ class CreateEvent extends Component {
       })
     })
 
-    axios.post("/events/add", event).then(res => console.log(res.data));
+    axios.post("/events/add", event);
 
     return chatManager
       .connect()

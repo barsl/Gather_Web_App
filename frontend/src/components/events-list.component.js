@@ -41,8 +41,9 @@ class EventsList extends Component {
         console.error(err);
       })
 
-    axios.get('/events/')
+    axios.get('/users/currentUser/InvitedTo')
       .then(response => {
+        console.log(response.data);
         this.setState({ events: response.data })
       })
       .catch((error) => {
@@ -53,13 +54,14 @@ class EventsList extends Component {
   deleteEvent(id) {
     axios.delete('/events/' + id)
       .then(response => { console.log(response.data) });
-
     this.setState({
       events: this.state.events.filter(el => el._id !== id)
     })
   }
 
   eventList() {
+    //console.log("events: " + this.state.events);
+
     return this.state.events.map(currentevent => {
       return <Event event={currentevent} deleteEvent={this.deleteEvent} key={currentevent._id} />;
     })
@@ -70,7 +72,8 @@ class EventsList extends Component {
     return (
       <div>
         <Navbar />
-        <h3>Logged Events</h3>
+        <h3> My Events </h3>
+        {/* Events that the user is invited to */}
         <table className="table">
           <thead className="thead-light">
             <tr>

@@ -20,7 +20,7 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/currentuser').get((req, res) => {
+router.route('/currentUser').get(auth, (req, res) => {
   //get user from session
   if (req.session.username) {
     User.findOne({ username: req.session.username.username })
@@ -33,6 +33,17 @@ router.route('/currentuser').get((req, res) => {
   } else {
     res.status(400).send(':(');
   }
+});
+
+// get the events the current user is invited to
+router.route('/currentUser/invitedTo').get(auth, (req, res) => {
+  User.findOne({username: req.session.username.username})
+    .populate('invitedEvents')
+    .then(user => {
+      if (!user) return res.status(404).json("User not found")
+      res.json(user.invitedEvents);
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/:id').get(auth, checkId, (req, res) => {

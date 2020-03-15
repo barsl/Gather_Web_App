@@ -1,13 +1,14 @@
-const router = require('express').Router();
-let Event = require('../models/event.model');
+const router = require("express").Router();
+let Event = require("../models/event.model");
+let User = require("../models/user.model");
 
-router.route('/').get((req, res) => {
+router.route("/").get((req, res) => {
   Event.find()
     .then(events => res.json(events))
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
-router.route('/add').post((req, res) => {
+router.route("/add").post((req, res) => {
   const public = req.body.public;
   const title = req.body.title;
   const username = req.body.username;
@@ -30,42 +31,49 @@ router.route('/add').post((req, res) => {
     tags
   });
 
-  newEvent.save()
-    .then(() => res.json('Event added!'))
+  newEvent
+    .save()
+    .then(() => {
+      //console.log("invited users:" + newEvent.invited);
+      newEvent.invited.forEach(userId =>
+        User.findByIdAndUpdate(userId, { $push: { invitedEvents: newEvent.id } }).exec()
+      );
+      res.json(newEvent.id);
+    })
     .catch(err => {
       console.log(err);
-      res.status(400).json('Error: ' + err)
+      res.status(400).json("Error: " + err);
     });
 });
 
-router.route('/:id').get((req, res) => {
+router.route("/:id").get((req, res) => {
   Event.findById(req.params.id)
-    .populate('invited')
-    .populate('attending')
+    .populate("invited")
+    .populate("attending")
     .then(event => {
-      console.log(event);
       res.json(event);
     })
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
-router.route('/:id').delete((req, res) => {
+router.route("/:id").delete((req, res) => {
   Event.findByIdAndDelete(req.params.id)
     .then(() => res.json(req.params.id))
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
-router.route('/:id').put((req, res) => {
+router.route("/:id").put((req, res) => {
   Event.findById(req.params.id)
     .then(event => {
       Object.entries(req.body).forEach(([prop, updatedValue]) => {
         event[prop] = updatedValue;
       });
-      event.save()
-        .then(() => res.json('Event updated!'))
-        .catch(err => res.status(400).json('Error: ' + err));
+      event
+        .save()
+        .then(() => res.json("Event updated!"))
+        .catch(err => res.status(400).json("Error: " + err));
     })
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
 module.exports = router;
