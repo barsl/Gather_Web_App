@@ -8,6 +8,7 @@ import EditEvent from "./components/edit-event.component";
 import CreateEvent from "./components/create-event.component";
 import CreateUser from "./components/create-user.component";
 import ChatScreen from "./components/chat.component";
+import GoogleMap from './components/map.component';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <br />
         <Route exact path="/" component={Login} />
         <Route path="/signup" component={Signup} />
+        <Route exact path="/map" component={GoogleMap} />
         <Route path="/eventChat/:id" component={ChatScreen} />
         <Route path="/eventsList" component={EventsList} />
         <Route path="/edit/:id" component={EditEvent} />
