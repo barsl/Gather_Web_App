@@ -61,22 +61,15 @@ class EventsList extends Component {
         console.log(error);
       })
 
-     axios.get('/events/public')
+    axios.get('/events/public')
       .then(response => {
         this.setState({ publicEvents: response.data })
-        })
+      })
       .catch((error) => {
         console.log(error);
       })
   }
 
-<<<<<<< HEAD
-  deleteEvent(id) {
-    axios.delete('/events/' + id)
-      .then(response => { console.log(response.data) });
-    this.setState({
-      events: this.state.events.filter(el => el._id !== id)
-=======
   deleteEvent(id, title) {
     const chatManager = new Chatkit.ChatManager({
       instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
@@ -84,7 +77,6 @@ class EventsList extends Component {
       tokenProvider: new Chatkit.TokenProvider({
         url: '/chat/auth'
       })
->>>>>>> implemented adding markers functionality to the map
     })
     return chatManager
       .connect()
