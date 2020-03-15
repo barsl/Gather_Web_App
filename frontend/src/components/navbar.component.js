@@ -35,6 +35,9 @@ class Navbar extends Component {
             <li className="navbar-item">
               <Link to="/user" className="nav-link">Create User</Link>
             </li>
+            <li className="navbar-item">
+              <Link to="/friends" className="nav-link">Friends</Link>
+            </li>            
             <li>
               <a href="/" onClick={this.logOut} className="nav-link">Logout</a>
             </li>

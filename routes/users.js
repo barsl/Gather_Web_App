@@ -64,4 +64,29 @@ router.route('/:username').get(auth, (req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/name/:name').get((req, res) => {
+  User.findOne({username: req.params.name})    
+  .then(user => res.json(user))
+  .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/currentUser/requests').get(auth, (req, res) => {
+  User.findOne({username: req.session.username.username})
+    .populate('friend_requests')
+    .then(user => {
+      if (!user) return res.status(404).json("User not found")
+      res.json(user.invitedEvents);
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/currentUser/friends').get(auth, (req, res) => {
+  User.findOne({username: req.session.username.username})
+    .populate('friends')
+    .then(user => {
+      if (!user) return res.status(404).json("User not found")
+      res.json(user.invitedEvents);
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
 module.exports = router;

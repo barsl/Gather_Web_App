@@ -1,0 +1,28 @@
+import React, { Component } from 'react';
+import axios from 'axios';
+import FriendsList from "./friends-list.component";
+import AddFriends from "./add-friends.component";
+import FriendRequests from './friend-requests.component';
+
+export default class Friends extends Component {
+  constructor(props) {
+    super(props);
+
+  }
+
+  // componentDidMount() {
+
+
+  // }
+
+
+  render() {
+    return (
+    <div>
+      <AddFriends />
+      <FriendsList />
+      <FriendRequests />
+    </div>
+    )
+  }
+}
