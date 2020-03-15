@@ -11,8 +11,8 @@ const eventSchema = new Schema({
   date: { type: Date, required: true },
   // location: {type: String, required: true}, TODO: Uncomment when implemented
   location: {type: String, required: false},
-  invited: {type: [String], required: true },
-  attending: {type: [String], required: false},
+  invited: [{type: Schema.Types.ObjectId, ref: 'User', required: true }],
+  attending: [{type: Schema.Types.ObjectId, ref: 'User', required: false}],
   tags: {type: [String], required: false}
   // TODO: add media
 }, {

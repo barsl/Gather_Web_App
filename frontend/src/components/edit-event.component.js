@@ -11,37 +11,32 @@ export default class EditEvent extends Component {
     this.onChangeDescription = this.onChangeDescription.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onChangeTitle = this.onChangeTitle.bind(this);
 
     this.state = {
       username: '',
+      title: '',
       description: '',
       date: new Date(),
-      users: []
+      invited: [],
+      attending: []
     }
   }
 
   componentDidMount() {
     axios.get('/events/' + this.props.match.params.id)
       .then(response => {
+        //console.log(response.data);
         this.setState({
           username: response.data.username,
+          title: response.data.title,
           description: response.data.description,
-          date: new Date(response.data.date)
+          date: new Date(response.data.date),
+          invited: response.data.invited,
+          attending: response.data.attending
         })
       })
       .catch(function (error) {
-        console.log(error);
-      })
-
-    axios.get('/users/')
-      .then(response => {
-        if (response.data.length > 0) {
-          this.setState({
-            users: response.data.map(user => user.username),
-          })
-        }
-      })
-      .catch((error) => {
         console.log(error);
       })
 
@@ -71,18 +66,23 @@ export default class EditEvent extends Component {
     })
   }
 
+  onChangeTitle(e) {
+    this.setState({
+      title: e.target.value
+    })
+  }
+
   onSubmit(e) {
     e.preventDefault();
 
     const event = {
       username: this.state.username,
+      title: this.state.title,
       description: this.state.description,
       date: this.state.date
     }
 
-    console.log(event);
-
-    axios.post('/events/update/' + this.props.match.params.id, event)
+    axios.put('/events/' + this.props.match.params.id, event)
       .then(res => console.log(res.data));
 
     window.location = '/';
@@ -91,29 +91,23 @@ export default class EditEvent extends Component {
   render() {
     return (
       <div>
-        <h3>Edit Event Log</h3>
+        <h3>Edit Event</h3>
         <form onSubmit={this.onSubmit}>
-          <div className="form-group">
-            <label>Username: </label>
-            <select ref="userInput"
-              required
+         <div className="form-group">
+         <label>Event title: </label>
+          <input
+              type="text"
               className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}>
-              {
-                this.state.users.map(function (user) {
-                  return <option
-                    key={user}
-                    value={user}>{user}
-                  </option>;
-                })
-              }
-            </select>
+              value={this.state.title}
+              onChange={this.onChangeTitle}
+          />
+          </div>
+          <div className="form-group">
+            <label>Event owner: {this.state.username}</label>
           </div>
           <div className="form-group">
             <label>Description: </label>
             <input type="text"
-              required
               className="form-control"
               value={this.state.description}
               onChange={this.onChangeDescription}
@@ -128,9 +122,26 @@ export default class EditEvent extends Component {
               />
             </div>
           </div>
-
           <div className="form-group">
-            <input type="submit" value="Edit Event Log" className="btn btn-primary" />
+          <label>Invited: </label>
+          <ul>
+            {this.state.invited.map(user => 
+            <li key={user._id}>
+              {user.username}
+              </li>)}
+          </ul>
+          </div>
+          <div className="form-group">
+          <label>Attending: </label>
+          <ul>
+            {this.state.attending.map(user => 
+            <li key={user._id}>
+             {user.username}
+             </li>)}
+          </ul>
+          </div>
+          <div className="form-group">
+            <input type="submit" value="Save changes" className="btn btn-primary" />
           </div>
         </form>
       </div>

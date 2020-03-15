@@ -40,7 +40,12 @@ router.route('/add').post((req, res) => {
 
 router.route('/:id').get((req, res) => {
   Event.findById(req.params.id)
-    .then(event => res.json(req.session))
+    .populate('invited')
+    .populate('attending')
+    .then(event => {
+      console.log(event);
+      res.json(event);
+    })
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
@@ -50,19 +55,12 @@ router.route('/:id').delete((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/update/:id').post((req, res) => {
+router.route('/:id').put((req, res) => {
   Event.findById(req.params.id)
     .then(event => {
-      event.public = req.body.public;
-      event.title = req.body.title;
-      event.username = req.body.username;
-      event.description = req.body.description;
-      event.date = Date.parse(req.body.date);
-      event.location = req.body.location;
-      event.invited = req.body.invited;
-      event.attending = req.body.attending;
-      event.tags = req.body.tags;
-
+      Object.entries(req.body).forEach(([prop, updatedValue]) => {
+        event[prop] = updatedValue;
+      });
       event.save()
         .then(() => res.json('Event updated!'))
         .catch(err => res.status(400).json('Error: ' + err));
