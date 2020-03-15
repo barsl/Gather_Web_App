@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from "./navbar.component"
+import Chatkit from '@pusher/chatkit-client';
+import Cookies from 'js-cookie';
 
 const Event = props => (
   <tr>
@@ -12,7 +14,7 @@ const Event = props => (
     <td>{props.event.date.substring(0, 10)}</td>
     <td>
       {/* eslint-disable-next-line */}
-      <Link to={"/edit/" + props.event._id}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id) }}>delete</a>
+      <Link to={"/edit/" + props.event._id}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id, props.event.title) }}>delete</a>
     </td>
   </tr>
 )
@@ -50,13 +52,29 @@ class EventsList extends Component {
       })
   }
 
-  deleteEvent(id) {
-    axios.delete('/events/' + id)
-      .then(response => { console.log(response.data) });
-
-    this.setState({
-      events: this.state.events.filter(el => el._id !== id)
+  deleteEvent(id, title) {
+    const chatManager = new Chatkit.ChatManager({
+      instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
+      userId: Cookies.get('username'),
+      tokenProvider: new Chatkit.TokenProvider({
+        url: '/chat/auth'
+      })
     })
+    return chatManager
+      .connect()
+      .then(currentUser => {
+        currentUser.deleteRoom({ roomId: title })
+          .then(() => {
+            axios.delete('/events/' + id)
+              .then(response => { console.log(response.data) });
+
+            this.setState({
+              events: this.state.events.filter(el => el._id !== id)
+            })
+          })
+          .catch(err => console.error(err))
+      })
+      .catch(err => console.error(err))
   }
 
   eventList() {

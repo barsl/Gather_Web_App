@@ -9,6 +9,7 @@ class GoogleMap extends Component {
         this.onMapClicked = this.onMapClicked.bind(this);
         this.state = {
             showingInfoWindow: false,
+            markers: [],
             activeMarker: {},
             selectedPlace: {},
         };
@@ -21,11 +22,19 @@ class GoogleMap extends Component {
             showingInfoWindow: true
         });
 
-    onMapClicked = (props) => {
+    onMapClicked = (props, map, e) => {
         if (this.state.showingInfoWindow) {
             this.setState({
                 showingInfoWindow: false,
                 activeMarker: null
+            })
+        }
+        else {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+
+            this.setState({
+                markers: [...this.state.markers, { name: "", position: { lat, lng } }]
             })
         }
     };
@@ -45,16 +54,17 @@ class GoogleMap extends Component {
                         lat: 43.856098,
                         lng: -79.337021
                     }}
+                    onClick={this.onMapClicked}
                     style={style}
                 >
+                    {this.state.markers.map((marker, index) => (
+                        <Marker
+                            key={index}
+                            name={marker.name}
+                            onClick={this.onMarkerClick}
+                            position={marker.position} />
+                    ))}
 
-                    <Marker
-                        name={'CurrentLocation'}
-                        onClick={this.onMarkerClick}
-                        position={{
-                            lat: 43.856098,
-                            lng: -79.337021
-                        }} />
 
                     <InfoWindow
                         marker={this.state.activeMarker}
