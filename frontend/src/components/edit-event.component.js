@@ -14,6 +14,7 @@ export default class EditEvent extends Component {
     this.onChangeTitle = this.onChangeTitle.bind(this);
 
     this.state = {
+      public: false,
       username: '',
       title: '',
       description: '',
@@ -28,6 +29,7 @@ export default class EditEvent extends Component {
       .then(response => {
         //console.log(response.data);
         this.setState({
+          public: response.data.public,
           username: response.data.username,
           title: response.data.title,
           description: response.data.description,
@@ -122,6 +124,9 @@ export default class EditEvent extends Component {
               />
             </div>
           </div>
+
+          {!this.state.public && //if the event is public, do not show invited list
+          <>
           <div className="form-group">
           <label>Invited: </label>
           <ul>
@@ -131,6 +136,9 @@ export default class EditEvent extends Component {
               </li>)}
           </ul>
           </div>
+          </>
+          }
+
           <div className="form-group">
           <label>Attending: </label>
           <ul>
