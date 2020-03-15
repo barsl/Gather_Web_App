@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
+import Geocode from "react-geocode";
 
 class GoogleMap extends Component {
     constructor(props) {
         super(props);
+        Geocode.setApiKey("AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk");
 
         this.onMarkerClick = this.onMarkerClick.bind(this);
         this.onMapClicked = this.onMapClicked.bind(this);
         this.state = {
             showingInfoWindow: false,
-            markers: [],
             activeMarker: {},
             selectedPlace: {},
         };
@@ -32,9 +33,13 @@ class GoogleMap extends Component {
         else {
             const lat = e.latLng.lat();
             const lng = e.latLng.lng();
+            const position = { lat, lng };
 
             this.setState({
-                markers: [...this.state.markers, { name: "", position: { lat, lng } }]
+                activeMarker: {
+                    name: this.props.eventName,
+                    position
+                }
             })
         }
     };
@@ -57,14 +62,10 @@ class GoogleMap extends Component {
                     onClick={this.onMapClicked}
                     style={style}
                 >
-                    {this.state.markers.map((marker, index) => (
-                        <Marker
-                            key={index}
-                            name={marker.name}
-                            onClick={this.onMarkerClick}
-                            position={marker.position} />
-                    ))}
-
+                    <Marker
+                        name={this.state.activeMarker.name}
+                        onClick={this.onMarkerClick}
+                        position={this.state.activeMarker.position} />
 
                     <InfoWindow
                         marker={this.state.activeMarker}

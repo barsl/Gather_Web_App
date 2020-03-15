@@ -9,7 +9,7 @@ const eventSchema = new Schema({
   description: { type: String, required: true },
   date: { type: Date, required: true },
   // location: {type: String, required: true}, TODO: Uncomment when implemented
-  location: { type: String, required: false },
+  location: { type: [Number], required: false },
   invited: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
   attending: [{ type: Schema.Types.ObjectId, ref: 'User', required: false }],
   tags: { type: [String], required: false }
