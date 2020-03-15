@@ -9,7 +9,7 @@ router.route("/").get((req, res) => {
 });
 
 router.route("/add").post((req, res) => {
-  const public = req.body.public;
+  const public = req.body.publicStatus;
   const title = req.body.title;
   const username = req.body.username;
   const description = req.body.description;
@@ -44,6 +44,14 @@ router.route("/add").post((req, res) => {
       console.log(err);
       res.status(400).json("Error: " + err);
     });
+});
+
+router.route("/public").get((req, res) => {
+  Event.find({public:true})
+  .then(events => {
+    res.json(events);
+  })
+  .catch(err => res.status(400).json("Error: " + err));
 });
 
 router.route("/:id").get((req, res) => {

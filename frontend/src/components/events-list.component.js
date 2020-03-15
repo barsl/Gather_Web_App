@@ -17,6 +17,16 @@ const Event = props => (
   </tr>
 )
 
+const PublicEvent = props => (
+  <tr>
+    <td>
+      <Link to={"/eventChat/" + props.event.title}>{props.event.title}</Link>
+    </td>
+    <td>{props.event.description}</td>
+    <td>{props.event.date.substring(0, 10)}</td>
+  </tr>
+)
+
 class EventsList extends Component {
   _isMounted = false;
 
@@ -25,7 +35,7 @@ class EventsList extends Component {
 
     this.deleteEvent = this.deleteEvent.bind(this)
 
-    this.state = { events: [], isAuthenticated: true };
+    this.state = { events: [], publicEvents: [], isAuthenticated: true };
   }
 
   componentDidMount() {
@@ -43,9 +53,16 @@ class EventsList extends Component {
 
     axios.get('/users/currentUser/InvitedTo')
       .then(response => {
-        console.log(response.data);
         this.setState({ events: response.data })
       })
+      .catch((error) => {
+        console.log(error);
+      })
+
+     axios.get('/events/public')
+      .then(response => {
+        this.setState({ publicEvents: response.data })
+        })
       .catch((error) => {
         console.log(error);
       })
@@ -64,6 +81,12 @@ class EventsList extends Component {
 
     return this.state.events.map(currentevent => {
       return <Event event={currentevent} deleteEvent={this.deleteEvent} key={currentevent._id} />;
+    })
+  }
+
+  publicEventList() {
+    return this.state.publicEvents.map(currentevent => {
+      return <PublicEvent event={currentevent} key={currentevent._id} />;
     })
   }
 
@@ -87,6 +110,21 @@ class EventsList extends Component {
             {this.eventList()}
           </tbody>
         </table>
+
+        <h3> Public Events </h3>
+        <table className="table">
+          <thead className="thead-light">
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.publicEventList()}
+          </tbody>
+        </table>
+
       </div>
     )
   }

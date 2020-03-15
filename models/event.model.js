@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const eventSchema = new Schema({
-  // public: {type: Boolean, required: true}, TODO: implement?
-  public: {type: Boolean, required: false},
+  public: {type: Boolean, required: true},
   title: {type: String, required: true},
   username: { type: String, required: true },
   description: { type: String, required: true },

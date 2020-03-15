@@ -4,9 +4,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./style/create-event.module.css";
-import Navbar from "./navbar.component"
-import { withRouter, Redirect } from 'react-router-dom';
-import Chatkit from '@pusher/chatkit-client';
+import Navbar from "./navbar.component";
+import { withRouter, Redirect } from "react-router-dom";
+import Chatkit from "@pusher/chatkit-client";
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -61,7 +61,7 @@ class CreateEvent extends Component {
 
   onChangeStatus(e) {
     this.setState({
-      publicStatus: e.target.value
+      publicStatus: e.target.checked
     });
   }
 
@@ -162,6 +162,7 @@ class CreateEvent extends Component {
     };
 
     // Invite the original creator too so they can see the event
+    // For public events, they will be the only person "invited" so it will show up in their "My Events"
     axios
       .get("/users/currentUser", { withCredentials: true })
       .then(({ data }) => {
@@ -173,34 +174,35 @@ class CreateEvent extends Component {
       });
 
     const chatManager = new Chatkit.ChatManager({
-      instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
+      instanceLocator: "v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a",
       userId: this.state.username,
       tokenProvider: new Chatkit.TokenProvider({
-        url: '/chat/auth'
+        url: "/chat/auth"
       })
-    })
+    });
 
     return chatManager
       .connect()
       .then(currentUser => {
-        currentUser.createRoom({
-          id: this.state.title,
-          name: this.state.title,
-          private: false,
-          addUserIds: this.state.attending,
-          customData: {}
-        })
+        currentUser
+          .createRoom({
+            id: this.state.title,
+            name: this.state.title,
+            private: false,
+            addUserIds: this.state.attending,
+            customData: {}
+          })
           .then(room => {
             console.log(`Created room called ${room.name}`);
             window.location = "/";
           })
-          .catch(err => console.error(err))
+          .catch(err => console.error(err));
       })
-      .catch(err => console.error(err))
+      .catch(err => console.error(err));
   }
 
   render() {
-    if (!this.state.isAuthenticated) return <Redirect to="/" />
+    if (!this.state.isAuthenticated) return <Redirect to="/" />;
     return (
       <div>
         <Navbar />
@@ -220,6 +222,13 @@ class CreateEvent extends Component {
           <div className="form-group">
             <label>Username: </label>
             <p>{this.state.username}</p>
+          </div>
+
+          <div className="form-group">
+            <label>
+              <input type="checkbox" onChange={this.onChangeStatus} />
+              Make event public
+            </label>
           </div>
 
           <div className="form-group">
@@ -243,38 +252,42 @@ class CreateEvent extends Component {
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Select friends to invite</label>
-            <select
-              ref="userInput"
-              className="form-control"
-              onChange={this.onChangeInvited}
-            >
-              <option value="">...</option>
-              {this.state.userFriends.map(function ({ _id, username }) {
-                return (
-                  <option key={username} value={_id}>
-                    {username}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
+          {!this.state.publicStatus && (
+            <>
+              <div className="form-group">
+                <label>Select friends to invite</label>
+                <select
+                  ref="userInput"
+                  className="form-control"
+                  onChange={this.onChangeInvited}
+                >
+                  <option value="">...</option>
+                  {this.state.userFriends.map(function({ _id, username }) {
+                    return (
+                      <option key={username} value={_id}>
+                        {username}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
 
-          <div className="form-group">
-            <ul className={classes.InvitedList}>
-              {this.state.invited.map(user => {
-                return (
-                  <li
-                    key={user._id}
-                    onClick={() => this.onRemoveInvite(user._id)}
-                  >
-                    {user.username}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+              <div className="form-group">
+                <ul className={classes.InvitedList}>
+                  {this.state.invited.map(user => {
+                    return (
+                      <li
+                        key={user._id}
+                        onClick={() => this.onRemoveInvite(user._id)}
+                      >
+                        {user.username}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </>
+          )}
 
           <div className="form-group">
             <input
