@@ -46,7 +46,6 @@ class CreateEvent extends Component {
     axios
       .get("/users/currentUser", { withCredentials: true })
       .then(({ data }) => {
-        console.log(data);
         this.setState({
           username: data.username,
           userFriends: data.friends
@@ -162,7 +161,16 @@ class CreateEvent extends Component {
       tags: this.state.tags
     };
 
-    //console.log(event);
+    // Invite the original creator too so they can see the event
+    axios
+      .get("/users/currentUser", { withCredentials: true })
+      .then(({ data }) => {
+        event.invited.push(data);
+        axios.post("/events/add", event); // Event created here!
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
     const chatManager = new Chatkit.ChatManager({
       instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
@@ -171,8 +179,6 @@ class CreateEvent extends Component {
         url: '/chat/auth'
       })
     })
-
-    axios.post("/events/add", event);
 
     return chatManager
       .connect()
