@@ -29,37 +29,5 @@ router.route('/update/:id').post((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-// router.route('/update/:id').post((req, res) => {
-//   User.findById(req.params.id)
-//     .then(user => {
-//       // res.json("req.session.user._id");
-//       res.json(req.params.id);
-//       // user.update()
-//       //   .then(() => res.json('Event updated!'))
-//       //   .catch(err => res.status(400).json('Error: ' + err));
-//       // req.body.user.friend_requests
-//       // this.setState({
-//       //   users: this.state.users.concat(response.data)
-//       // });
-//       console.log(req.bar)
-//       //user.update({friend_requests: req.body.friend_requests.concat("shalom")}) 
-//     })
-// });
-
-// router.route('/update/:id').post((req, res) => {
-//   User.findById(req.params.id)
-//     .then(user => {
-//       // res.json("req.session.user._id");
-//       res.json(req.params.id);
-//       // user.update()
-//       //   .then(() => res.json('Event updated!'))
-//       //   .catch(err => res.status(400).json('Error: ' + err));
-//       // [...req.body.user.friend_requests, "req.session.user._id"]
-//       user.update({friend_requests: [...req.body.friend_requests, "shalom"]})    
-//       .then(user => res.json(user))
-//       .catch(err => res.status(400).json('Error: ' + err));
-//     })
-//     .catch(err => res.status(400).json('Error: ' + err));
-// });
 
 module.exports = router;

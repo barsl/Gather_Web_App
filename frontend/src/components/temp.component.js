@@ -22,7 +22,7 @@ class FriendsList extends Component {
   constructor(props) {
     super(props);
 
-    this.deleteFriend = this.deleteFriend.bind(this)
+    this.deleteEvent = this.deleteEvent.bind(this)
 
     this.state = {friends: [], users: [], isAuthenticated: true};
   }
@@ -59,7 +59,7 @@ class FriendsList extends Component {
   }
 
   friendsList() {
-    console.log("friends: " + this.state.friends);
+    //console.log("events: " + this.state.events);
 
     return this.state.friends.map(currentfriend => {
       return <Friend friend={currentfriend} deleteFriend={this.deleteFriend} key={currentfriend._id} />;
@@ -73,7 +73,8 @@ class FriendsList extends Component {
     if (!this.state.isAuthenticated) return <Redirect to="/" />
     return (
       <div>
-        <h3> Current Friends </h3>
+        <Navbar />
+        <h3> My Events </h3>
         {/* Events that the user is invited to */}
         <table className="table">
           <thead className="thead-light">

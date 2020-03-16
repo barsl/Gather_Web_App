@@ -18,7 +18,8 @@ export default class EditEvent extends Component {
       friends:[], 
       users: [],
       target_reqs: [],
-      target_friends: []
+      target_friends: [],
+      isAuthenticated: true
 
     }
 
@@ -26,7 +27,7 @@ export default class EditEvent extends Component {
 
 // set the list of freinds in the state
 componentDidMount() {
-    axios.get('/verify', { withCredentials: true })
+    axios.get('http://localhost:5000/verify', { withCredentials: true })
     .then(res => {
       if (!res.data.isValid) {
         this.setState({
