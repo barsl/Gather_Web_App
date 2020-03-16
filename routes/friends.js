@@ -21,13 +21,33 @@ router.route('/list').get((req, res) => {
 router.route('/update/:id').post((req, res) => {
   User.findById(req.params.id)
     .then(user => {
-      user.friend_requests = req.body.req.concat("barsl"); // req.session.user.username
+      console.log(req.session);
+      user.friend_requests = user.friend_requests.concat(req.session.username._id); // req.session.user.username
       user.save()
-        .then(user2 => res.json(user2.friend_requests))
+        .then(() => res.json("Request sent!"))
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+// router.route('/requests').get(auth, (req, res) => {
+//   User.findOne({username: req.session.username.username})
+//     .populate('friend_requests')
+//     .then(user => {
+//       if (!user) return res.status(404).json("User not found")
+//       res.json(user.invitedEvents);
+//     })
+//     .catch(err => res.status(400).json('Error: ' + err));
+// });
+
+// router.route('/friends').get(auth, (req, res) => {
+//   User.findOne({username: req.session.username.username})
+//     .populate('friends')
+//     .then(user => {
+//       if (!user) return res.status(404).json("User not found")
+//       res.json(user.friends);
+//     })
+//     .catch(err => res.status(400).json('Error: ' + err));
+// });
 
 module.exports = router;

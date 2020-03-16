@@ -1,60 +1,54 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React, { Component } from "react";
+import axios from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import classes from "./style/create-event.module.css";
+import Navbar from "./navbar.component";
+import { withRouter, Redirect } from "react-router-dom";
+import Chatkit from "@pusher/chatkit-client";
 
-export default class AddFriends extends Component {
+class AddFriends extends Component {
   constructor(props) {
     super(props);
 
-    this.onChangeUsername = this.onChangeUsername.bind(this);
+    this.onChangeUser = this.onChangeUser.bind(this);
+
     this.onSubmit = this.onSubmit.bind(this);
 
+
     this.state = {
-      users: []
-    }
+      users: [],
+      isAuthenticated: true
+    };
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/users/')
-      .then(response => {
-        if (response.data.length > 0) {
-          this.setState({
-            users: response.data.map(user => user.username),
-            username: response.data[0].username,
-            uid: response.data[0]._id,
-            friend_requests: response.data[0].friend_requests
-          })
-        }
+    axios
+      .get("/users/", { withCredentials: true })
+      .then(({ data }) => {
+        this.setState({
+          users: data,
+        });
       })
-      .catch((error) => {
-        console.log(error);
-      })
-
-  }
-
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value
-    });
-    this.getUidAndReqs(e.target.value);
-  }
-
-  getUidAndReqs(username){
-    axios.get('http://localhost:5000/users/name/'+username)// +'id' of current user)
-    .then(response => {
-      // set them in state
-      console.log(response);
-      this.setState({
-        uid: response.data._id,
-        friend_requests: response.data.friend_requests
+      .catch(error => {
+        this.setState({
+          isAuthenticated: false
+        });
+        console.log("Unable to get current user. " + error);
       });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
   }
 
-  // send a friend request to target
-  // i.e. add current userid to the list of friend_requests of target 
+
+
+  onChangeUser(e) {
+    this.setState({
+      user: e.target.value
+    });
+
+    // 
+  }
+
   onSubmit(e) {
     e.preventDefault();
     // get target = state.username
@@ -62,39 +56,48 @@ export default class AddFriends extends Component {
       req: this.state.friend_requests
     }
 
-    var target = this.state.uid;
+    var target = this.state.user;
     // add current user id to friend_requests[] of target
-    axios.post('http://localhost:5000/friends/update/' + target, bar)
+    axios.post('http://localhost:5000/friends/update/' + target)
     .then(res => console.log(res.data));
     // window.location = '/';
   }
 
   render() {
+    if (!this.state.isAuthenticated) return <Redirect to="/" />;
     return (
-    <div>
-      <h3>Add Friend</h3>
-      <form onSubmit={this.onSubmit}>
-        <div className="form-group"> 
-          <select ref="userInput"
-              required
-              className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}>
-              {
-                this.state.users.map(function(user) {
-                  return <option 
-                    key={user}
-                    value={user}>{user}
-                    </option>;
-                })
-              }
-          </select>
-        </div>
+      <div>
+        <h3>Send Request</h3>
+        <form onSubmit={this.onSubmit}>
         <div className="form-group">
-          <input type="submit" value="Send Request" className="btn btn-primary" />
-        </div>
-      </form>
-    </div>
-    )
+                <label>Username</label>
+                <select
+                  ref="userInput"
+                  className="form-control"
+                  onChange={this.onChangeUser}
+                >
+                  {this.state.users.map(function({ _id, username }) {
+                    return (
+                      <option key={username} value={_id}>
+                        {username}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+
+          <div className="form-group">
+            <input
+              type="submit"
+              value="Create Event"
+              className="btn btn-primary"
+            />
+          </div>
+        </form>
+      </div>
+    );
   }
 }
+
+export default withRouter(AddFriends);

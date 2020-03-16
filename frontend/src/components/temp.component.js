@@ -1,96 +1,96 @@
-import React, { Component } from 'react';
-import { Link, withRouter, Redirect } from 'react-router-dom';
-import axios from 'axios';
-import Navbar from "./navbar.component"
+import React, { Component } from "react";
+import axios from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import classes from "./style/create-event.module.css";
+import Navbar from "./navbar.component";
+import { withRouter, Redirect } from "react-router-dom";
+import Chatkit from "@pusher/chatkit-client";
 
-const Friend = props => (
-  <tr>
-    <td>
-      {props.friend.title}
-    </td>
-    <td>{props.friend.username}</td>
-    <td>
-      <a href="#" onClick={() => { props.deleteFriend(props.friend._id) }}>delete</a>
-    </td>
-  </tr>
-)
-
-
-class FriendsList extends Component {
-  _isMounted = false;
-
+class CreateEvent extends Component {
   constructor(props) {
     super(props);
 
-    this.deleteEvent = this.deleteEvent.bind(this)
+    this.onChangeUser = this.onChangeUser.bind(this);
 
-    this.state = {friends: [], users: [], isAuthenticated: true};
+    this.onSubmit = this.onSubmit.bind(this);
+
+
+    this.state = {
+      users: [],
+      isAuthenticated: true
+    };
   }
 
   componentDidMount() {
-    axios.get('/verify', { withCredentials: true })
-      .then(res => {
-        if (!res.data.isValid) {
-          this.setState({
-            isAuthenticated: false
-          });
-        }
+    axios
+      .get("/users/", { withCredentials: true })
+      .then(({ data }) => {
+        this.setState({
+          users: data,
+        });
       })
-      .catch(err => {
-        console.error(err);
-      })
-
-    axios.get('/users/currentUser/friends')
-      .then(response => {
-        this.setState({ friends: response.data })
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+      .catch(error => {
+        this.setState({
+          isAuthenticated: false
+        });
+        console.log("Unable to get current user. " + error);
+      });
   }
 
-  deleteFriend(id) {
-    // axios.delete('/events/' + id)
-    //   .then(response => { console.log(response.data) });
-    // this.setState({
-    //   events: this.state.events.filter(el => el._id !== id)
-    // })
-    console.log("deleted");
+
+
+  onChangeUser(e) {
+    this.setState({
+      user: e.target.value
+    });
   }
 
-  friendsList() {
-    //console.log("events: " + this.state.events);
+  onSubmit(e) {
+    e.preventDefault();
 
-    return this.state.friends.map(currentfriend => {
-      return <Friend friend={currentfriend} deleteFriend={this.deleteFriend} key={currentfriend._id} />;
-    })
-
+    const event = {
+      publicStatus: this.state.publicStatus,
+    };
   }
-
-  
 
   render() {
-    if (!this.state.isAuthenticated) return <Redirect to="/" />
+    if (!this.state.isAuthenticated) return <Redirect to="/" />;
     return (
       <div>
         <Navbar />
-        <h3> My Events </h3>
-        {/* Events that the user is invited to */}
-        <table className="table">
-          <thead className="thead-light">
-            {/* <tr>
-              <th>User Name</th>
-              <th>Actions</th>
-            </tr> */}
-          </thead>
-          <tbody>
-            {this.friendsList()}
-          </tbody>
-        </table>
+        <h3>Send Request</h3>
+        <form onSubmit={this.onSubmit}>
+        <div className="form-group">
+                <label>Select friends to invite</label>
+                <select
+                  ref="userInput"
+                  className="form-control"
+                  onChange={this.onChangeUser}
+                >
+                  {this.state.users.map(function({ _id, username }) {
+                    return (
+                      <option key={username} value={_id}>
+                        {username}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
 
+
+          <div className="form-group">
+            <input
+              type="submit"
+              value="Create Event"
+              className="btn btn-primary"
+            />
+          </div>
+        </form>
       </div>
-    )
+    );
   }
 }
 
-export default withRouter(FriendsList);
+export default withRouter(CreateEvent);

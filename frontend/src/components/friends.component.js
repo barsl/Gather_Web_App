@@ -24,7 +24,7 @@ export default class Friends extends Component {
       <Navbar />
       <AddFriends />
       <FriendsList />
-      <FriendRequests />
+      {/* <FriendRequests /> */}
     </div>
     )
   }

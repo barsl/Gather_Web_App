@@ -59,7 +59,6 @@ class FriendsList extends Component {
   }
 
   friendsList() {
-    console.log("friends: " + this.state.friends);
 
     return this.state.friends.map(currentfriend => {
       return <Friend friend={currentfriend} deleteFriend={this.deleteFriend} key={currentfriend._id} />;
