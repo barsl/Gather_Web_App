@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import Geocode from "react-geocode";
+import './style/map.css';
 
 class GoogleMap extends Component {
     constructor(props) {
@@ -9,19 +10,21 @@ class GoogleMap extends Component {
 
         this.onMarkerClick = this.onMarkerClick.bind(this);
         this.onMapClicked = this.onMapClicked.bind(this);
+
         this.state = {
             showingInfoWindow: false,
             activeMarker: {},
-            selectedPlace: {},
+            selectedPlace: {}
         };
     }
 
-    onMarkerClick = (props, marker, e) =>
+    onMarkerClick = (props, marker, e) => {
         this.setState({
             selectedPlace: props,
             activeMarker: marker,
             showingInfoWindow: true
         });
+    }
 
     onMapClicked = (props, map, e) => {
         if (this.state.showingInfoWindow) {
@@ -37,33 +40,28 @@ class GoogleMap extends Component {
 
             this.setState({
                 activeMarker: {
-                    name: this.props.eventName,
+                    name: '',
+                    address: '',
                     position
                 }
             })
         }
-    };
-    render() {
-        const style = {
-            width: `50vw`,
-            height: `50vh`
-        }
+    }
 
+    render() {
         return (
-            <div>
-                Google Maps
+            <div className='map_small'>
                 <Map
                     google={this.props.google}
                     zoom={15}
                     initialCenter={{
-                        lat: 43.856098,
-                        lng: -79.337021
+                        lat: 40,
+                        lng: -79
                     }}
                     onClick={this.onMapClicked}
-                    style={style}
                 >
                     <Marker
-                        name={this.state.activeMarker.name}
+                        name=''
                         onClick={this.onMarkerClick}
                         position={this.state.activeMarker.position} />
 
@@ -72,10 +70,10 @@ class GoogleMap extends Component {
                         visible={this.state.showingInfoWindow}>
                         <div>
                             <h1>{this.state.selectedPlace.name}</h1>
+                            {/* <h4>{`\n${this.state.activeMarker.address}`}</h4> */}
                         </div>
                     </InfoWindow>
                 </Map>
-                }}
             </div >
         )
     }

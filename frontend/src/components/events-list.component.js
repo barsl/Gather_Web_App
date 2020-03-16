@@ -7,14 +7,19 @@ import Cookies from 'js-cookie';
 
 const Event = props => (
   <tr>
-    <td>
-      <Link to={"/eventChat/" + props.event.title}>{props.event.title}</Link>
-    </td>
+    <td>{props.event.title}</td>
     <td>{props.event.description}</td>
     <td>{props.event.date.substring(0, 10)}</td>
     <td>
       {/* eslint-disable-next-line */}
-      <Link to={"/edit/" + props.event._id}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id, props.event.title) }}>delete</a>
+      <Link to={{
+        pathname: "/edit/" + props.event._id,
+        state: {
+          roomId: props.event.roomId,
+          eventName: props.event.title,
+          address: props.event.location
+        }
+      }}>edit</Link> | <a href="#" onClick={() => { props.deleteEvent(props.event._id, props.event.title) }}>delete</a>
     </td>
   </tr>
 )

@@ -17,6 +17,7 @@ router.route("/add").post((req, res) => {
   const invited = req.body.invited;
   const attending = req.body.attending;
   const location = req.body.location;
+  const roomId = req.body.title;
   const tags = req.body.tags;
 
   const newEvent = new Event({
@@ -26,6 +27,7 @@ router.route("/add").post((req, res) => {
     description,
     date,
     location,
+    roomId,
     invited,
     attending,
     tags
@@ -47,11 +49,11 @@ router.route("/add").post((req, res) => {
 });
 
 router.route("/public").get((req, res) => {
-  Event.find({public:true})
-  .then(events => {
-    res.json(events);
-  })
-  .catch(err => res.status(400).json("Error: " + err));
+  Event.find({ public: true })
+    .then(events => {
+      res.json(events);
+    })
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
 router.route("/:id").get((req, res) => {

@@ -5,14 +5,13 @@ import Cookies from 'js-cookie';
 import SendMessageForm from './sendMessage.component';
 
 class ChatScreen extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             messages: [],
             currentUser: {},
             currentRoom: {}
         }
-
         this.sendMessage = this.sendMessage.bind(this);
     }
     componentDidMount() {
@@ -31,7 +30,7 @@ class ChatScreen extends Component {
                     currentUser
                 });
                 currentUser.subscribeToRoom({
-                    roomId: this.props.match.params.id,
+                    roomId: this.props.roomId,
                     messageLimit: 100,
                     hooks: {
                         onMessage: message => {

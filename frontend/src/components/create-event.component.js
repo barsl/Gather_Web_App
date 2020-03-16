@@ -7,10 +7,12 @@ import classes from "./style/create-event.module.css";
 import Navbar from "./navbar.component";
 import { withRouter, Redirect } from "react-router-dom";
 import Chatkit from "@pusher/chatkit-client";
+import Geocode from "react-geocode";
 
 class CreateEvent extends Component {
   constructor(props) {
     super(props);
+    Geocode.setApiKey("AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk");
 
     this.onChangeStatus = this.onChangeStatus.bind(this);
     this.onChangeTitle = this.onChangeTitle.bind(this);
@@ -149,56 +151,68 @@ class CreateEvent extends Component {
   onSubmit(e) {
     e.preventDefault();
 
-    const event = {
-      publicStatus: this.state.publicStatus,
-      title: this.state.title,
-      username: this.state.username,
-      description: this.state.description,
-      date: this.state.date,
-      invited: this.state.invited,
-      attending: this.state.attending,
-      location: this.state.location,
-      tags: this.state.tags
-    };
+    Geocode.fromAddress(this.state.location)
+      .then(res => {
+        const lat = res.results[0].geometry.location.lat;
+        const lng = res.results[0].geometry.location.lng;
 
-    // Invite the original creator too so they can see the event
-    // For public events, they will be the only person "invited" so it will show up in their "My Events"
-    axios
-      .get("/users/currentUser", { withCredentials: true })
-      .then(({ data }) => {
-        event.invited.push(data);
-        axios.post("/events/add", event); // Event created here!
+        const event = {
+          publicStatus: this.state.publicStatus,
+          title: this.state.title,
+          username: this.state.username,
+          description: this.state.description,
+          date: this.state.date,
+          invited: this.state.invited,
+          attending: this.state.attending,
+          location: [lat, lng],
+          tags: this.state.tags
+        };
+
+        const chatManager = new Chatkit.ChatManager({
+          instanceLocator: "v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a",
+          userId: this.state.username,
+          tokenProvider: new Chatkit.TokenProvider({
+            url: "/chat/auth"
+          })
+        });
+
+        return chatManager
+          .connect()
+          .then(currentUser => {
+            currentUser
+              .createRoom({
+                id: this.state.title,
+                name: this.state.title,
+                private: false,
+                addUserIds: this.state.attending,
+                customData: {}
+              })
+              .then(room => {
+                // Invite the original creator too so they can see the event
+                // For public events, they will be the only person "invited" so it will show up in their "My Events"
+                axios
+                  .get("/users/currentUser", { withCredentials: true })
+                  .then(({ data }) => {
+                    event.invited.push(data);
+                    axios.post("/events/add", event); // Event created here!
+                  })
+                  .catch(error => {
+                    return console.log(error);
+                  });
+
+                window.location = "/";
+              })
+              .catch(err => {
+                return console.error(err)
+              });
+          })
+          .catch(err => {
+            return console.error(err)
+          });
       })
-      .catch(error => {
-        console.log(error);
+      .catch(err => {
+        return console.error(err)
       });
-
-    const chatManager = new Chatkit.ChatManager({
-      instanceLocator: "v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a",
-      userId: this.state.username,
-      tokenProvider: new Chatkit.TokenProvider({
-        url: "/chat/auth"
-      })
-    });
-
-    return chatManager
-      .connect()
-      .then(currentUser => {
-        currentUser
-          .createRoom({
-            id: this.state.title,
-            name: this.state.title,
-            private: false,
-            addUserIds: this.state.attending,
-            customData: {}
-          })
-          .then(room => {
-            console.log(`Created room called ${room.name}`);
-            window.location = "/";
-          })
-          .catch(err => console.error(err));
-      })
-      .catch(err => console.error(err));
   }
 
   render() {
@@ -216,6 +230,17 @@ class CreateEvent extends Component {
               className="form-control"
               value={this.state.title}
               onChange={this.onChangeTitle}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Event Address: </label>
+            <input
+              type="text"
+              required
+              className="form-control"
+              value={this.state.location}
+              onChange={this.onChangeLocation}
             />
           </div>
 
@@ -262,7 +287,7 @@ class CreateEvent extends Component {
                   onChange={this.onChangeInvited}
                 >
                   <option value="">...</option>
-                  {this.state.userFriends.map(function({ _id, username }) {
+                  {this.state.userFriends.map(function ({ _id, username }) {
                     return (
                       <option key={username} value={_id}>
                         {username}

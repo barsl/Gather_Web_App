@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import NavBar from './navbar.component';
+import ChatScreen from './chat.component';
+import GoogleMap from './map.component';
+import './style/map.css';
 
 export default class EditEvent extends Component {
   constructor(props) {
@@ -39,7 +43,6 @@ export default class EditEvent extends Component {
       .catch(function (error) {
         console.log(error);
       })
-
   }
 
   onChangeUsername(e) {
@@ -91,16 +94,19 @@ export default class EditEvent extends Component {
   render() {
     return (
       <div>
+        <NavBar />
         <h3>Edit Event</h3>
+        <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
+        <GoogleMap className='map_small' eventName={this.props.location.state.eventName} address={this.props.location.state.address} />
         <form onSubmit={this.onSubmit}>
-         <div className="form-group">
-         <label>Event title: </label>
-          <input
+          <div className="form-group">
+            <label>Event title: </label>
+            <input
               type="text"
               className="form-control"
               value={this.state.title}
               onChange={this.onChangeTitle}
-          />
+            />
           </div>
           <div className="form-group">
             <label>Event owner: {this.state.username}</label>
@@ -123,22 +129,22 @@ export default class EditEvent extends Component {
             </div>
           </div>
           <div className="form-group">
-          <label>Invited: </label>
-          <ul>
-            {this.state.invited.map(user => 
-            <li key={user._id}>
-              {user.username}
-              </li>)}
-          </ul>
+            <label>Invited: </label>
+            <ul>
+              {this.state.invited.map(user =>
+                <li key={user._id}>
+                  {user.username}
+                </li>)}
+            </ul>
           </div>
           <div className="form-group">
-          <label>Attending: </label>
-          <ul>
-            {this.state.attending.map(user => 
-            <li key={user._id}>
-             {user.username}
-             </li>)}
-          </ul>
+            <label>Attending: </label>
+            <ul>
+              {this.state.attending.map(user =>
+                <li key={user._id}>
+                  {user.username}
+                </li>)}
+            </ul>
           </div>
           <div className="form-group">
             <input type="submit" value="Save changes" className="btn btn-primary" />
