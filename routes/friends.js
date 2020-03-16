@@ -21,8 +21,8 @@ router.route('/list').get((req, res) => {
 router.route('/update/:id').post((req, res) => {
   User.findById(req.params.id)
     .then(user => {
-      console.log(req.session);
-      user.friend_requests = user.friend_requests.concat(req.session.username._id); // req.session.user.username
+      console.log(req.body.req);
+      user.friend_requests = user.friend_requests.concat(req.body.req); // req.session.user.username
       user.save()
         .then(() => res.json("Request sent!"))
         .catch(err => res.status(400).json('Error: ' + err));

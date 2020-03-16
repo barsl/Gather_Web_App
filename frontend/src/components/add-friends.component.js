@@ -1,12 +1,9 @@
 import React, { Component } from "react";
 import axios from "axios";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import classes from "./style/create-event.module.css";
-import Navbar from "./navbar.component";
 import { withRouter, Redirect } from "react-router-dom";
-import Chatkit from "@pusher/chatkit-client";
+
 
 class AddFriends extends Component {
   constructor(props) {
@@ -37,6 +34,21 @@ class AddFriends extends Component {
         });
         console.log("Unable to get current user. " + error);
       });
+
+      axios
+      .get("/users/currentUser", { withCredentials: true })
+      .then(({ data }) => {
+        this.setState({
+          current: data._id,
+          userFriends: data.friends
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isAuthenticated: false
+        });
+        console.log("Unable to get current user. " + error);
+      });
   }
 
 
@@ -53,12 +65,12 @@ class AddFriends extends Component {
     e.preventDefault();
     // get target = state.username
     const bar ={
-      req: this.state.friend_requests
+      req: this.state.current
     }
 
     var target = this.state.user;
     // add current user id to friend_requests[] of target
-    axios.post('http://localhost:5000/friends/update/' + target)
+    axios.post('http://localhost:5000/friends/update/' + target, bar)
     .then(res => console.log(res.data));
     // window.location = '/';
   }
