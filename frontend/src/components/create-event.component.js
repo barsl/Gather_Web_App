@@ -161,18 +161,10 @@ class CreateEvent extends Component {
       tags: this.state.tags
     };
 
-    // Invite the original creator too so they can see the event
-    // For public events, they will be the only person "invited" so it will show up in their "My Events"
-    axios
-      .get("/users/currentUser", { withCredentials: true })
-      .then(({ data }) => {
-        event.invited.push(data);
-        axios.post("/events/add", event); // Event created here!
-      })
-      .catch(error => {
-        console.log(error);
-      });
-
+    axios.post("/events/add", event)
+      .then() // Event created here!
+      .catch(console.log);
+      
     const chatManager = new Chatkit.ChatManager({
       instanceLocator: "v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a",
       userId: this.state.username,

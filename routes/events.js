@@ -35,8 +35,14 @@ router.route("/add").post((req, res) => {
     .save()
     .then(() => {
       //console.log("invited users:" + newEvent.invited);
+      User.findOneAndUpdate(
+        { username: newEvent.username },
+        { $push: { createdEvents: newEvent.id } }
+      ).exec();
       newEvent.invited.forEach(userId =>
-        User.findByIdAndUpdate(userId, { $push: { invitedEvents: newEvent.id } }).exec()
+        User.findByIdAndUpdate(userId, {
+          $push: { invitedEvents: newEvent.id }
+        }).exec()
       );
       res.json(newEvent.id);
     })
@@ -47,11 +53,11 @@ router.route("/add").post((req, res) => {
 });
 
 router.route("/public").get((req, res) => {
-  Event.find({public:true})
-  .then(events => {
-    res.json(events);
-  })
-  .catch(err => res.status(400).json("Error: " + err));
+  Event.find({ public: true })
+    .then(events => {
+      res.json(events);
+    })
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
 router.route("/:id").get((req, res) => {

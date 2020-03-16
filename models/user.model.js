@@ -17,6 +17,7 @@ const userSchema = new Schema({
   friend_requests: { type: [String] },
   invitedEvents: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],
   attendingEvents: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],
+  createdEvents: [{type: Schema.Types.ObjectId, ref: 'Event', required: true}],
   history: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],
 }, {
   timestamps: true,
