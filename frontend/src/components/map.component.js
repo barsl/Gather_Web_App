@@ -39,7 +39,7 @@ class GoogleMap extends Component {
                     eventAddress: res.results[0].formatted_address,
                 })
 
-                this.props.onAddressChange(this.state.eventAddress);
+                this.props.onLocationChange(this.state.eventAddress);
             })
             .catch(err => console.error(err));
     }

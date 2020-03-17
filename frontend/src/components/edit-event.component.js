@@ -19,12 +19,12 @@ export default class EditEvent extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onAddressChange = this.onAddressChange.bind(this);
+    this.onLocationChange = this.onLocationChange.bind(this);
 
     this.state = {
       username: '',
       title: '',
       description: '',
-      location: this.props.location.state.address,
       address: '',
       date: new Date(),
       invited: [],
@@ -80,9 +80,15 @@ export default class EditEvent extends Component {
     })
   }
 
-  onAddressChange(address) {
+  onLocationChange(address) {
     this.setState({
       address
+    })
+  }
+
+  onAddressChange(e) {
+    this.setState({
+      address: e.target.value
     })
   }
 
@@ -113,7 +119,7 @@ export default class EditEvent extends Component {
         <NavBar />
         <h3>Edit Event</h3>
         <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
-        <GoogleMap onAddressChange={this.onAddressChange} eventName={this.props.location.state.eventName} address={this.props.location.state.address} />
+        <GoogleMap onLocationChange={this.onLocationChange} eventName={this.props.location.state.eventName} address={this.props.location.state.address} />
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
             <label>Event title: </label>
@@ -142,7 +148,7 @@ export default class EditEvent extends Component {
               required
               className="form-control"
               value={this.state.address}
-              onChange={this.onChangeAddress}
+              onChange={this.onAddressChange}
             />
           </div>
           <div className="form-group">
