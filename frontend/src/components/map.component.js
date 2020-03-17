@@ -4,18 +4,44 @@ import Geocode from "react-geocode";
 import './style/map.css';
 
 class GoogleMap extends Component {
+
     constructor(props) {
         super(props);
         Geocode.setApiKey("AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk");
 
         this.onMarkerClick = this.onMarkerClick.bind(this);
         this.onMapClicked = this.onMapClicked.bind(this);
+        this.updateMarker = this.updateMarker.bind(this);
 
         this.state = {
             showingInfoWindow: false,
             activeMarker: {},
-            selectedPlace: {}
+            selectedPlace: {},
+            eventName: this.props.eventName,
+            eventAddress: '',
+            markerLat: 0,
+            marketLng: 0
         };
+    }
+
+    componentDidMount() {
+        let lat = this.props.address[0];
+        let lng = this.props.address[1];
+        this.updateMarker(lat, lng);
+    }
+
+    updateMarker(lat, lng) {
+        Geocode.fromLatLng(lat, lng)
+            .then(res => {
+                this.setState({
+                    markerLat: lat,
+                    markerLng: lng,
+                    eventAddress: res.results[0].formatted_address,
+                })
+
+                this.props.onAddressChange(this.state.eventAddress);
+            })
+            .catch(err => console.error(err));
     }
 
     onMarkerClick = (props, marker, e) => {
@@ -36,15 +62,8 @@ class GoogleMap extends Component {
         else {
             const lat = e.latLng.lat();
             const lng = e.latLng.lng();
-            const position = { lat, lng };
 
-            this.setState({
-                activeMarker: {
-                    name: '',
-                    address: '',
-                    position
-                }
-            })
+            this.updateMarker(lat, lng);
         }
     }
 
@@ -54,23 +73,20 @@ class GoogleMap extends Component {
                 <Map
                     google={this.props.google}
                     zoom={15}
-                    initialCenter={{
-                        lat: 40,
-                        lng: -79
-                    }}
+                    center={{ lat: this.state.markerLat, lng: this.state.markerLng }}
                     onClick={this.onMapClicked}
                 >
                     <Marker
-                        name=''
+                        name={this.state.eventName}
                         onClick={this.onMarkerClick}
-                        position={this.state.activeMarker.position} />
+                        position={{ lat: this.state.markerLat, lng: this.state.markerLng }} />
 
                     <InfoWindow
                         marker={this.state.activeMarker}
                         visible={this.state.showingInfoWindow}>
                         <div>
-                            <h1>{this.state.selectedPlace.name}</h1>
-                            {/* <h4>{`\n${this.state.activeMarker.address}`}</h4> */}
+                            <h4>{this.state.selectedPlace.name}</h4>
+                            <h6>{this.state.eventAddress}</h6>
                         </div>
                     </InfoWindow>
                 </Map>

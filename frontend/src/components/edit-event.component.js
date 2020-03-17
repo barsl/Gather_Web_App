@@ -5,22 +5,27 @@ import "react-datepicker/dist/react-datepicker.css";
 import NavBar from './navbar.component';
 import ChatScreen from './chat.component';
 import GoogleMap from './map.component';
+import Geocode from 'react-geocode';
 import './style/map.css';
 
 export default class EditEvent extends Component {
   constructor(props) {
     super(props);
+    Geocode.setApiKey("AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk");
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangeDescription = this.onChangeDescription.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onChangeTitle = this.onChangeTitle.bind(this);
+    this.onAddressChange = this.onAddressChange.bind(this);
 
     this.state = {
       username: '',
       title: '',
       description: '',
+      location: this.props.location.state.address,
+      address: '',
       date: new Date(),
       invited: [],
       attending: []
@@ -75,20 +80,31 @@ export default class EditEvent extends Component {
     })
   }
 
+  onAddressChange(address) {
+    this.setState({
+      address
+    })
+  }
+
   onSubmit(e) {
     e.preventDefault();
+    Geocode.fromAddress(this.state.address)
+      .then(res => {
+        const { lat, lng } = res.results[0].geometry.location;
+        const event = {
+          username: this.state.username,
+          title: this.state.title,
+          description: this.state.description,
+          date: this.state.date,
+          location: [lat, lng]
+        }
 
-    const event = {
-      username: this.state.username,
-      title: this.state.title,
-      description: this.state.description,
-      date: this.state.date
-    }
+        axios.put('/events/' + this.props.match.params.id, event)
+          .then(res => console.log(res.data));
 
-    axios.put('/events/' + this.props.match.params.id, event)
-      .then(res => console.log(res.data));
-
-    window.location = '/';
+        window.location = '/';
+      })
+      .catch(err => console.error(err));
   }
 
   render() {
@@ -97,7 +113,7 @@ export default class EditEvent extends Component {
         <NavBar />
         <h3>Edit Event</h3>
         <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
-        <GoogleMap className='map_small' eventName={this.props.location.state.eventName} address={this.props.location.state.address} />
+        <GoogleMap onAddressChange={this.onAddressChange} eventName={this.props.location.state.eventName} address={this.props.location.state.address} />
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
             <label>Event title: </label>
@@ -117,6 +133,16 @@ export default class EditEvent extends Component {
               className="form-control"
               value={this.state.description}
               onChange={this.onChangeDescription}
+            />
+          </div>
+          <div className="form-group">
+            <label>Event Address: </label>
+            <input
+              type="text"
+              required
+              className="form-control"
+              value={this.state.address}
+              onChange={this.onChangeAddress}
             />
           </div>
           <div className="form-group">
