@@ -11,11 +11,6 @@ export default class Friends extends Component {
 
   }
 
-  // componentDidMount() {
-
-
-  // }
-
 
   render() {
     
@@ -24,7 +19,7 @@ export default class Friends extends Component {
       <Navbar />
       <AddFriends />
       <FriendsList />
-      {/* <FriendRequests /> */}
+      <FriendRequests />
     </div>
     )
   }

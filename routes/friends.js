@@ -2,27 +2,15 @@ const router = require('express').Router();
 let User = require('../models/user.model');
 require('dotenv').config();
 
-const barsl = "5e63e0a7a20ecb641223533b";
+var mongoose = require('mongoose');
 
-router.route('/reqs/:id').get((req, res) => {
-  User.findById(barsl) // req.session.user._id
-    .then(user => res.json(user["friend_requests"]))
-    .catch(err => res.status(400).json('Error: ' + err));
-});
-
-// get a list of friends of user with id 'id'
-router.route('/list').get((req, res) => {
-  console.log(req.session.username.username);
-  User.findById(barsl) // req.session.user._id
-    .then(user => res.json(user["friends"]))
-    .catch(err => res.status(400).json('Error: ' + err));
-});
-
-router.route('/update/:id').post((req, res) => {
+// add request from current user to user with 'id'
+router.route('/requests/add/:id').post((req, res) => {
   User.findById(req.params.id)
     .then(user => {
       console.log(req.body.req);
-      user.friend_requests = user.friend_requests.concat(req.body.req); // req.session.user.username
+      user.friend_requests = user.friend_requests.concat(
+        mongoose.Types.ObjectId(req.body.req)); // req.session.user.username
       user.save()
         .then(() => res.json("Request sent!"))
         .catch(err => res.status(400).json('Error: ' + err));
@@ -30,24 +18,20 @@ router.route('/update/:id').post((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-// router.route('/requests').get(auth, (req, res) => {
-//   User.findOne({username: req.session.username.username})
-//     .populate('friend_requests')
-//     .then(user => {
-//       if (!user) return res.status(404).json("User not found")
-//       res.json(user.invitedEvents);
-//     })
-//     .catch(err => res.status(400).json('Error: ' + err));
-// });
+// add body.req._id to params.id._id
+router.route('/friends/add/:id').post((req, res) => {
+  User.findById(req.params.id)
+    .then(user => {
+      console.log(req.body.target);
+      user.friends = user.friends.concat(
+        mongoose.Types.ObjectId(req.body.target)); // req.session.user.username
+      user.save()
+        .then(() => res.json("Request sent!"))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
 
-// router.route('/friends').get(auth, (req, res) => {
-//   User.findOne({username: req.session.username.username})
-//     .populate('friends')
-//     .then(user => {
-//       if (!user) return res.status(404).json("User not found")
-//       res.json(user.friends);
-//     })
-//     .catch(err => res.status(400).json('Error: ' + err));
-// });
+
 
 module.exports = router;

@@ -75,7 +75,7 @@ router.route('/currentUser/requests').get(auth, (req, res) => {
     .populate('friend_requests')
     .then(user => {
       if (!user) return res.status(404).json("User not found")
-      res.json(user.invitedEvents);
+      res.json(user.friend_requests);
     })
     .catch(err => res.status(400).json('Error: ' + err));
 });

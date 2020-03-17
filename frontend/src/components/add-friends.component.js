@@ -39,7 +39,7 @@ class AddFriends extends Component {
       .get("/users/currentUser", { withCredentials: true })
       .then(({ data }) => {
         this.setState({
-          current: data._id,
+          current_id: data._id,
           userFriends: data.friends
         });
       })
@@ -64,13 +64,13 @@ class AddFriends extends Component {
   onSubmit(e) {
     e.preventDefault();
     // get target = state.username
-    const bar ={
-      req: this.state.current
+    const curr ={
+      req: this.state.current_id
     }
 
     var target = this.state.user;
     // add current user id to friend_requests[] of target
-    axios.post('http://localhost:5000/friends/update/' + target, bar)
+    axios.post('http://localhost:5000/friends/requests/add/' + target, curr)
     .then(res => console.log(res.data));
     // window.location = '/';
   }
@@ -88,6 +88,7 @@ class AddFriends extends Component {
                   className="form-control"
                   onChange={this.onChangeUser}
                 >
+                  <option value=""></option>
                   {this.state.users.map(function({ _id, username }) {
                     return (
                       <option key={username} value={_id}>
@@ -102,7 +103,7 @@ class AddFriends extends Component {
           <div className="form-group">
             <input
               type="submit"
-              value="Create Event"
+              value="Submit"
               className="btn btn-primary"
             />
           </div>

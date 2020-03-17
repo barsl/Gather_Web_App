@@ -1,148 +1,129 @@
 import React, { Component } from 'react';
+import { Link, withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import Navbar from "./navbar.component"
 
-export default class EditEvent extends Component {
+const Friend = props => (
+  <tr>
+    <td>
+      {props.friend.title}
+    </td>
+    <td>{props.friend.username}</td>
+    <td>
+      <a href="#" onClick={() => { props.acceptFriend(props.friend._id) }}>Accept </a>   |
+      <a href="#" onClick={() => { props.deleteFriend(props.friend._id) }}> Delete</a>
+    </td>
+  </tr>
+)
+
+
+class FriendRequests extends Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
-    this.onChangeUsername = this.onChangeUsername.bind(this);
+    this.deleteFriend = this.deleteFriend.bind(this)
+    this.deleteFriend = this.acceptFriend.bind(this)
 
-
-    this.onAccept = this.onAccept.bind(this)
-    this.onDelete = this.onDelete.bind(this)
-
-    this.state = {
-      requests: [],
-      friends:[], 
-      users: [],
-      target_reqs: [],
-      target_friends: [],
-      isAuthenticated: true
-
-    }
-
+    this.state = {friends: [], users: [], isAuthenticated: true};
   }
 
-// set the list of freinds in the state
-componentDidMount() {
-    axios.get('http://localhost:5000/verify', { withCredentials: true })
-    .then(res => {
-      if (!res.data.isValid) {
-        this.setState({
-          isAuthenticated: false
-        });
-      }
-    })
-    .catch(err => {
-      console.error(err);
-    })
-  axios.get('http://localhost:5000/users/currentUser/requests')
-  .then(response => {
-    this.setState({ requests: response.data })
-  })
-  .catch((error) => {
-    console.log(error);
-  })
-    
-    axios.get('http://localhost:5000/users/currentUser/friends')
+  componentDidMount() {
+    axios.get('/verify', { withCredentials: true })
+      .then(res => {
+        if (!res.data.isValid) {
+          this.setState({
+            isAuthenticated: false
+          });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      })
+
+    axios.get('/users/currentUser/requests')
       .then(response => {
         this.setState({ friends: response.data })
       })
       .catch((error) => {
         console.log(error);
       })
-}
 
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value
-    })
+    axios.get("/users/currentUser", { withCredentials: true })
+      .then(({ data }) => {
+        this.setState({
+          current_id: data._id,
+          userFriends: data.friends
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isAuthenticated: false
+        });
+        console.log("Unable to get current user. " + error);
+      });
   }
 
-  onChangeDescription(e) {
-    this.setState({
-      description: e.target.value
-    })
+  deleteFriend(id) {
+    
+    // axios.delete('/events/' + id)
+    //   .then(response => { console.log(response.data) });
+    // this.setState({
+    //   events: this.state.events.filter(el => el._id !== id)
+    // })
+    console.log("deleted");
   }
 
-  onChangeDuration(e) {
-    this.setState({
-      duration: e.target.value
-    })
-  }
-
-  onChangeDate(date) {
-    this.setState({
-      date: date
-    })
-  }
-
-  onAccept(e) {
-    e.preventDefault();
-
-    const event = {
-      username: this.state.username,
-      description: this.state.description,
-      date: this.state.date
-    }
-
-    console.log(event);
-
-    axios.post('http://localhost:5000/events/update/' + this.props.match.params.id, event)
+  acceptFriend(friend) {
+    
+    axios.get("/users/currentUser", { withCredentials: true })
+    .then(({ data }) => {
+      // add curr_id to tar_id.friends[]
+      axios.post('http://localhost:5000/friends/friends/add/' + data._id, {target: friend})
       .then(res => console.log(res.data));
-  }
+    });
 
-  onDelete(e) {
-    e.preventDefault();
-
-    const event = {
-      username: this.state.username,
-      description: this.state.description,
-      date: this.state.date
-    }
-
-    console.log(event);
-
-    axios.post('http://localhost:5000/events/update/' + this.props.match.params.id, event)
+    axios.get("/users/currentUser", { withCredentials: true })
+    .then(({ data }) => {
+      // add curr_id to tar_id.friends[]
+      axios.post('http://localhost:5000/friends/friends/add/' + friend, {target: data._id})
       .then(res => console.log(res.data));
+    });
+
+    console.log("accepted");
   }
 
+  friendsList() {
+    console.log(this.state);
+    return this.state.friends.map(currentfriend => {
+      return <Friend friend={currentfriend} acceptFriend={this.acceptFriend} deleteFriend={this.deleteFriend} key={currentfriend._id} />;
+    })
 
+  }
 
-
-
+  
 
   render() {
+    if (!this.state.isAuthenticated) return <Redirect to="/" />
     return (
-    <div>
-      <h3>Friend Requests</h3>
-        <div> 
-          <label>Username: </label>
-          <select ref="userInput"
-              required
-              className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}>
-              {
-                this.state.requests.map(function(req) {
-                  return <option 
-                    key={req}
-                    value={req}>{req}
-                    </option>;
-                })
-              }
-          </select>
-        </div>
-        
+      <div>
+        <h3> Friend Requests </h3>
+        <table className="table">
+          <thead className="thead-light">
+            {/* <tr>
+              <th>User Name</th>
+              <th>Actions</th>
+            </tr> */}
+          </thead>
+          <tbody>
+            {this.friendsList()}
+          </tbody>
+        </table>
 
-        <div>
-          {/* buttons */}
-        </div>
-    </div>
+      </div>
     )
   }
 }
 
-
+export default withRouter(FriendRequests);
