@@ -49,13 +49,24 @@ class FriendsList extends Component {
       })
   }
 
-  deleteFriend(id) {
-    // axios.delete('/events/' + id)
-    //   .then(response => { console.log(response.data) });
-    // this.setState({
-    //   events: this.state.events.filter(el => el._id !== id)
-    // })
-    console.log("deleted");
+  deleteFriend(friend) {
+    axios.get("/users/currentUser", { withCredentials: true })
+    .then(({ data }) => {
+      axios.post('/friends/friends/delete/' + data._id, {target: friend})
+      .then(response => { console.log(response.data) });
+    this.setState({
+      friends: this.state.friends.filter(el => el !== friend)
+    })
+    console.log("friend deleted");
+    });
+
+    axios.get("/users/currentUser", { withCredentials: true })
+    .then(({ data }) => {
+      axios.post('/friends/friends/delete/' + friend, {target: data._id})
+      .then(response => { console.log(response.data) });
+    })
+    console.log("self deleted from friend");
+
   }
 
   friendsList() {

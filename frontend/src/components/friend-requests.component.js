@@ -24,7 +24,7 @@ class FriendRequests extends Component {
     super(props);
 
     this.deleteFriend = this.deleteFriend.bind(this)
-    this.deleteFriend = this.acceptFriend.bind(this)
+    this.acceptFriend = this.acceptFriend.bind(this)
 
     this.state = {friends: [], users: [], isAuthenticated: true};
   }
@@ -65,14 +65,17 @@ class FriendRequests extends Component {
       });
   }
 
-  deleteFriend(id) {
-    
-    // axios.delete('/events/' + id)
-    //   .then(response => { console.log(response.data) });
-    // this.setState({
-    //   events: this.state.events.filter(el => el._id !== id)
-    // })
-    console.log("deleted");
+  deleteFriend(friend) {
+    axios.get("/users/currentUser", { withCredentials: true })
+    .then(({ data }) => {
+      axios.post('/friends/requests/delete/' + data._id, {target: friend})
+      .then(response => { console.log(response.data) });
+    this.setState({
+      requests: this.state.friends.filter(el => el !== friend)
+    })
+    console.log("request deleted");
+    });
+
   }
 
   acceptFriend(friend) {
@@ -80,22 +83,23 @@ class FriendRequests extends Component {
     axios.get("/users/currentUser", { withCredentials: true })
     .then(({ data }) => {
       // add curr_id to tar_id.friends[]
-      axios.post('http://localhost:5000/friends/friends/add/' + data._id, {target: friend})
+      axios.post("/friends/friends/add/" + data._id, {target: friend})
       .then(res => console.log(res.data));
     });
 
     axios.get("/users/currentUser", { withCredentials: true })
     .then(({ data }) => {
       // add curr_id to tar_id.friends[]
-      axios.post('http://localhost:5000/friends/friends/add/' + friend, {target: data._id})
+      axios.post("/friends/friends/add/" + friend, {target: data._id})
       .then(res => console.log(res.data));
     });
+
+  this.deleteFriend(friend);
 
     console.log("accepted");
   }
 
   friendsList() {
-    console.log(this.state);
     return this.state.friends.map(currentfriend => {
       return <Friend friend={currentfriend} acceptFriend={this.acceptFriend} deleteFriend={this.deleteFriend} key={currentfriend._id} />;
     })

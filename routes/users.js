@@ -89,4 +89,5 @@ router.route('/currentUser/friends').get(auth, (req, res) => {
     })
     .catch(err => res.status(400).json('Error: ' + err));
 });
+
 module.exports = router;
