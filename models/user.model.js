@@ -14,7 +14,7 @@ const userSchema = new Schema({
   name: { type: String, required: true, unique: true, trim: true },
   interests: { type: [String], required: true },
   friends: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
-  friend_requests: { type: [String] },
+  friend_requests: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
   invitedEvents: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],
   attendingEvents: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],
   history: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],

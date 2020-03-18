@@ -23,6 +23,7 @@ export default class EditEvent extends Component {
     this.onLocationChange = this.onLocationChange.bind(this);
 
     this.state = {
+      public: false,
       username: '',
       title: '',
       description: '',
@@ -38,6 +39,7 @@ export default class EditEvent extends Component {
       .then(response => {
         //console.log(response.data);
         this.setState({
+          public: response.data.public,
           username: response.data.username,
           title: response.data.title,
           description: response.data.description,
@@ -162,15 +164,21 @@ export default class EditEvent extends Component {
                 />
               </div>
             </div>
-            <div className="form-group">
-              <label>Invited: </label>
-              <ul>
-                {this.state.invited.map(user =>
-                  <li key={user._id}>
-                    {user.username}
-                  </li>)}
-              </ul>
-            </div>
+
+            {!this.state.public && //if the event is public, do not show invited list
+              <>
+                <div className="form-group">
+                  <label>Invited: </label>
+                  <ul>
+                    {this.state.invited.map(user =>
+                      <li key={user._id}>
+                        {user.username}
+                      </li>)}
+                  </ul>
+                </div>
+              </>
+            }
+
             <div className="form-group">
               <label>Attending: </label>
               <ul>
@@ -180,13 +188,15 @@ export default class EditEvent extends Component {
                   </li>)}
               </ul>
             </div>
+
+            <div className='chat_screen'>
+              <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
+            </div>
+
             <div className="form-group">
               <input type="submit" value="Save changes" className="btn btn-primary" />
             </div>
           </form>
-        </div>
-        <div className='chat_screen'>
-          <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
         </div>
       </div>
     )
