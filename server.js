@@ -51,11 +51,13 @@ const eventsRouter = require('./routes/events');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const chatRouter = require('./routes/chat');
+const friendsRouter = require('./routes/friends');
 
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 app.use('/', authRouter);
 app.use('/chat', chatRouter);
+app.use('/friends', friendsRouter);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));
