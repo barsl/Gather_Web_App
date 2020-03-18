@@ -1,0 +1,5 @@
+.chat_screen {
+    display: flex;
+    align-content: flex-end;
+    justify-content: flex-end;
+}

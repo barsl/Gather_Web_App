@@ -7,6 +7,7 @@ import ChatScreen from './chat.component';
 import GoogleMap from './map.component';
 import Geocode from 'react-geocode';
 import './style/map.css';
+import './style/edit-event.css'
 
 export default class EditEvent extends Component {
   constructor(props) {
@@ -115,73 +116,78 @@ export default class EditEvent extends Component {
 
   render() {
     return (
-      <div>
-        <NavBar />
-        <h3>Edit Event</h3>
-        <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
-        <GoogleMap onLocationChange={this.onLocationChange} eventName={this.props.location.state.eventName} address={this.props.location.state.address} />
-        <form onSubmit={this.onSubmit}>
-          <div className="form-group">
-            <label>Event title: </label>
-            <input
-              type="text"
-              className="form-control"
-              value={this.state.title}
-              onChange={this.onChangeTitle}
-            />
-          </div>
-          <div className="form-group">
-            <label>Event owner: {this.state.username}</label>
-          </div>
-          <div className="form-group">
-            <label>Description: </label>
-            <input type="text"
-              className="form-control"
-              value={this.state.description}
-              onChange={this.onChangeDescription}
-            />
-          </div>
-          <div className="form-group">
-            <label>Event Address: </label>
-            <input
-              type="text"
-              required
-              className="form-control"
-              value={this.state.address}
-              onChange={this.onAddressChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Date: </label>
-            <div>
-              <DatePicker
-                selected={this.state.date}
-                onChange={this.onChangeDate}
+      <div className='edit_page'>
+        <div className='main_edit_screen'>
+          <NavBar />
+          <h3>Edit Event</h3>
+
+          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.props.location.state.eventName} address={this.props.location.state.address} />
+          <form onSubmit={this.onSubmit}>
+            <div className="form-group">
+              <label>Event title: </label>
+              <input
+                type="text"
+                className="form-control"
+                value={this.state.title}
+                onChange={this.onChangeTitle}
               />
             </div>
-          </div>
-          <div className="form-group">
-            <label>Invited: </label>
-            <ul>
-              {this.state.invited.map(user =>
-                <li key={user._id}>
-                  {user.username}
-                </li>)}
-            </ul>
-          </div>
-          <div className="form-group">
-            <label>Attending: </label>
-            <ul>
-              {this.state.attending.map(user =>
-                <li key={user._id}>
-                  {user.username}
-                </li>)}
-            </ul>
-          </div>
-          <div className="form-group">
-            <input type="submit" value="Save changes" className="btn btn-primary" />
-          </div>
-        </form>
+            <div className="form-group">
+              <label>Event owner: {this.state.username}</label>
+            </div>
+            <div className="form-group">
+              <label>Description: </label>
+              <input type="text"
+                className="form-control"
+                value={this.state.description}
+                onChange={this.onChangeDescription}
+              />
+            </div>
+            <div className="form-group">
+              <label>Event Address: </label>
+              <input
+                type="text"
+                required
+                className="form-control"
+                value={this.state.address}
+                onChange={this.onAddressChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date: </label>
+              <div>
+                <DatePicker
+                  selected={this.state.date}
+                  onChange={this.onChangeDate}
+                />
+              </div>
+            </div>
+            <div className="form-group">
+              <label>Invited: </label>
+              <ul>
+                {this.state.invited.map(user =>
+                  <li key={user._id}>
+                    {user.username}
+                  </li>)}
+              </ul>
+            </div>
+            <div className="form-group">
+              <label>Attending: </label>
+              <ul>
+                {this.state.attending.map(user =>
+                  <li key={user._id}>
+                    {user.username}
+                  </li>)}
+              </ul>
+            </div>
+            <div className="form-group">
+              <input type="submit" value="Save changes" className="btn btn-primary" />
+            </div>
+          </form>
+        </div>
+        <div className='chat_screen'>
+          <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
+        </div>
       </div>
     )
   }
