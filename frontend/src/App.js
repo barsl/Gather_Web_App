@@ -7,7 +7,6 @@ import EventsList from "./components/events-list.component";
 import EditEvent from "./components/edit-event.component";
 import CreateEvent from "./components/create-event.component";
 import CreateUser from "./components/create-user.component";
-import ChatScreen from "./components/chat.component";
 import Friends from "./components/friends.component";
 
 function App() {

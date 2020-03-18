@@ -189,14 +189,13 @@ export default class EditEvent extends Component {
               </ul>
             </div>
 
-            <div className='chat_screen'>
-              <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
-            </div>
-
             <div className="form-group">
               <input type="submit" value="Save changes" className="btn btn-primary" />
             </div>
           </form>
+        </div>
+        <div className='chat_screen'>
+          <ChatScreen roomId={this.props.location.state.roomId} key={this.props.location.state.roomId} />
         </div>
       </div>
     )
