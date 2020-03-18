@@ -3,59 +3,74 @@ import { Link, withRouter, Redirect } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./navbar.component";
 
-const eventFactory = eventType => {
-  return props => (
+const Event = props => {
+  const editLink = <Link key={"editLink"} to={"/edit/" + props.event._id}>edit</Link>;
+  const deleteLink = (
+    <a
+      key={"deleteLink"}
+      href="#"
+      onClick={() => {
+        props.deleteEvent(props.event);
+      }}
+    >
+      delete
+    </a>
+  );
+  const attendLink = (
+    <a
+      key={"attendLink"}
+      href="#"
+      onClick={() => {
+        props.setAttending(props.event, true);
+      }}
+    >
+      attend
+    </a>
+  );
+
+  const unattendLink = (
+    <a
+      key={"unattendLink"}
+      href="#"
+      onClick={() => {
+        props.setAttending(props.event, false);
+      }}
+    >
+      unattend
+    </a>
+  );
+
+  const actions = [];
+
+  if (!props.event.public || props.eventType === "created") {
+    actions.push(editLink);
+  }
+
+  if (props.eventType === "attending") {
+    actions.push(unattendLink);
+  }
+
+  if (props.eventType === "invited" || props.eventType ==="public") {
+    actions.push(attendLink);
+  }
+  if (props.eventType === "created") {
+    actions.push(deleteLink);
+  }
+
+
+  const actionsComponent = actions.reduce(
+    (prev, curr, i) => [...prev, i > 0 ? " | " : null, curr],
+    []
+  );
+
+  return (
     <tr>
       <td>
         <Link to={"/eventChat/" + props.event.title}>{props.event.title}</Link>
       </td>
       <td>{props.event.description}</td>
       <td>{props.event.date.substring(0, 10)}</td>
-      <td>
-        {/* eslint-disable-next-line */}
-        {eventType !== "public" && (
-          <Link to={"/edit/" + props.event._id}>edit</Link>
-        )}{" "}
-        {eventType === "created" && (
-          <>
-            |{" "}
-            <a
-              href="#"
-              onClick={() => {
-                props.deleteEvent(props.event);
-              }}
-            >
-              delete
-            </a>
-          </>
-        )}
-        {(eventType === "invited" || eventType === "public") && (
-          <>
-            |{" "}
-            <a
-              href="#"
-              onClick={() => {
-                props.setAttending(props.event, true);
-              }}
-            >
-              attend
-            </a>
-          </>
-        )}
-        {eventType === "attending" && (
-          <>
-            |{" "}
-            <a
-              href="#"
-              onClick={() => {
-                props.setAttending(props.event, false);
-              }}
-            >
-              unattend
-            </a>
-          </>
-        )}
-      </td>
+      <td>{actionsComponent}</td>
     </tr>
   );
 };
@@ -129,7 +144,7 @@ class EventsList extends Component {
   setAttending(event, isAttending) {
     axios
       .patch("/users/currentUser/", {
-        attendingEvents: event._id,
+        attendingEvent: event._id,
         action: isAttending ? "add" : "remove"
       })
       .then(res => {
@@ -140,52 +155,52 @@ class EventsList extends Component {
   }
 
   createdEventList() {
-    const Event = eventFactory("created");
     return this.state.createdEvents.map(currentevent => {
       return (
         <Event
           event={currentevent}
           deleteEvent={this.deleteEvent}
           key={currentevent._id}
+          eventType="created"
         />
       );
     });
   }
 
   attendingEventList() {
-    const Event = eventFactory("attending");
     return this.state.attendingEvents.map(currentevent => {
       return (
         <Event
           event={currentevent}
           key={currentevent._id}
           setAttending={event => this.setAttending(event, false)}
+          eventType="attending"
         />
       );
     });
   }
 
   invitedEventList() {
-    const Event = eventFactory("invited");
     return this.state.invitedEvents.map(currentevent => {
       return (
         <Event
           event={currentevent}
           key={currentevent._id}
           setAttending={event => this.setAttending(event, true)}
+          eventType="invited"
         />
       );
     });
   }
 
   publicEventList() {
-    const Event = eventFactory("public");
     return this.state.publicEvents.map(currentevent => {
       return (
         <Event
           event={currentevent}
           key={currentevent._id}
           setAttending={event => this.setAttending(event, true)}
+          eventType="public"
         />
       );
     });

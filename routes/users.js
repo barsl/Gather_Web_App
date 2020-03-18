@@ -39,51 +39,82 @@ router.route("/currentUser").get(auth, (req, res) => {
 
 router.route("/currentUser").patch(auth, (req, res) => {
   if (req.session.username) {
-    const { attendingEvents, action } = req.body;
-    console.log(attendingEvents, action);
-    let userUpdateQuery =
-      action === "add"
-        ? {
-            $push: { attendingEvents }
-          }
-        : { $pull: { attendingEvents } };
-    User.findOneAndUpdate(
-      { username: req.session.username.username },
-      userUpdateQuery,
-      { new: true }
-    )
+    const { attendingEvent, action } = req.body;
+    console.log(attendingEvent, action);
+    User.findOne({ username: req.session.username.username })
       .populate("attendingEvents")
       .populate("invitedEvents")
       .then(user => {
-        Event.findById(attendingEvents, (err, event) => {
-          if (err) return res.status(500).send("Error retrieving event");
-          let eventUpdateQuery;
-          if (action === "add") {
-            eventUpdateQuery = { $push: { attending: user._id } };
-            if (!event.public) {
-              eventUpdateQuery.$pull = { invited: user._id };
-            }
-          } else {
-            eventUpdateQuery = { $pull: { attending: user._id } };
-            if (!event.public) {
-              eventUpdateQuery.$push = { invited: user._id };
-            }
-          }
-          event.updateOne(eventUpdateQuery).exec();
-          if (event.public) {
-            return res.json(user);
-          }
-          const userUpdateQuery =
-            action === "add"
-              ? { $pull: { invitedEvents: attendingEvents } }
-              : { $push: { invitedEvents: attendingEvents } };
-          User.findByIdAndUpdate(user._id, userUpdateQuery, { new: true })
-            .populate("invitedEvents")
-            .populate("attendingEvents")
-            .then(updatedUser => {
-              res.json(updatedUser);
+        if (
+          action === "add" &&
+          user.attendingEvents.findIndex(
+            event => event._id == attendingEvent
+          ) !== -1
+        ) {
+          throw { msg: "Error: Already attending event", status: 400 };
+        } else if (
+          action === "remove" &&
+          user.attendingEvents.findIndex(event => {
+            return event._id == attendingEvent;
+          }) === -1
+        ) {
+          throw {
+            msg: "Error: Already not attending that event.",
+            status: 400
+          };
+        }
+
+        let userUpdateQuery =
+          action === "add"
+            ? {
+                $push: { attendingEvents: attendingEvent }
+              }
+            : { $pull: { attendingEvents: attendingEvent } };
+        User.findOneAndUpdate(
+          { username: req.session.username.username },
+          userUpdateQuery,
+          { new: true }
+        )
+          .populate("attendingEvents")
+          .populate("invitedEvents")
+          .then(user => {
+            Event.findById(attendingEvent, (err, event) => {
+              if (err) return res.status(500).send("Error retrieving event");
+              let eventUpdateQuery;
+              if (action === "add") {
+                eventUpdateQuery = { $push: { attending: user._id } };
+                if (!event.public) {
+                  eventUpdateQuery.$pull = { invited: user._id };
+                }
+              } else {
+                eventUpdateQuery = { $pull: { attending: user._id } };
+                if (!event.public) {
+                  eventUpdateQuery.$push = { invited: user._id };
+                }
+              }
+              event.updateOne(eventUpdateQuery).exec();
+              if (event.public) {
+                return res.json(user);
+              }
+              const userUpdateQuery =
+                action === "add"
+                  ? { $pull: { invitedEvents: attendingEvent } }
+                  : { $push: { invitedEvents: attendingEvent } };
+              User.findByIdAndUpdate(user._id, userUpdateQuery, { new: true })
+                .populate("invitedEvents")
+                .populate("attendingEvents")
+                .then(updatedUser => {
+                  res.json(updatedUser);
+                });
             });
-        });
+          });
+      })
+      .catch(err => {
+        if (err.msg) {
+          res.status(err.status).send(err.msg);
+        } else {
+          res.status(500).send("Server error");
+        }
       });
   } else {
     res.status(400).send(":(");
@@ -131,30 +162,30 @@ router.route("/:username").get(auth, (req, res) => {
     .catch(err => res.status(400).json("Error: " + err));
 });
 
-router.route('/name/:name').get((req, res) => {
-  User.findOne({username: req.params.name})    
-  .then(user => res.json(user))
-  .catch(err => res.status(400).json('Error: ' + err));
+router.route("/name/:name").get((req, res) => {
+  User.findOne({ username: req.params.name })
+    .then(user => res.json(user))
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
-router.route('/currentUser/requests').get(auth, (req, res) => {
-  User.findOne({username: req.session.username.username})
-    .populate('friend_requests')
+router.route("/currentUser/requests").get(auth, (req, res) => {
+  User.findOne({ username: req.session.username.username })
+    .populate("friend_requests")
     .then(user => {
-      if (!user) return res.status(404).json("User not found")
+      if (!user) return res.status(404).json("User not found");
       res.json(user.friend_requests);
     })
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
-router.route('/currentUser/friends').get(auth, (req, res) => {
-  User.findOne({username: req.session.username.username})
-    .populate('friends')
+router.route("/currentUser/friends").get(auth, (req, res) => {
+  User.findOne({ username: req.session.username.username })
+    .populate("friends")
     .then(user => {
-      if (!user) return res.status(404).json("User not found")
+      if (!user) return res.status(404).json("User not found");
       res.json(user.friends);
     })
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json("Error: " + err));
 });
 
 module.exports = router;
