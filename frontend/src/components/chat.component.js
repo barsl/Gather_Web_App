@@ -19,7 +19,7 @@ class ChatScreen extends Component {
             instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
             userId: Cookies.get('username'),
             tokenProvider: new Chatkit.TokenProvider({
-                url: 'http://localhost:5000/chat/auth'
+                url: '/chat/auth'
             })
         })
 
