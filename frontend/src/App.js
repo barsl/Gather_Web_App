@@ -7,7 +7,6 @@ import EventsList from "./components/events-list.component";
 import EditEvent from "./components/edit-event.component";
 import CreateEvent from "./components/create-event.component";
 import CreateUser from "./components/create-user.component";
-import ChatScreen from "./components/chat.component";
 import Friends from "./components/friends.component";
 
 function App() {
@@ -17,7 +16,6 @@ function App() {
         <br />
         <Route exact path="/" component={Login} />
         <Route path="/signup" component={Signup} />
-        <Route path="/eventChat/:id" component={ChatScreen} />
         <Route path="/eventsList" component={EventsList} />
         <Route path="/edit/:id" component={EditEvent} />
         <Route path="/create" component={CreateEvent} />

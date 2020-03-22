@@ -17,6 +17,7 @@ router.route("/add").post((req, res) => {
   const invited = req.body.invited;
   const attending = req.body.attending;
   const location = req.body.location;
+  const roomId = req.body.title;
   const tags = req.body.tags;
 
   const newEvent = new Event({
@@ -26,6 +27,7 @@ router.route("/add").post((req, res) => {
     description,
     date,
     location,
+    roomId,
     invited,
     attending,
     tags

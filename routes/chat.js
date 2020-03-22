@@ -20,7 +20,6 @@ router.route('/createUser').post((req, res) => {
 })
 
 router.route('/auth').post((req, res) => {
-    console.log(req.session.username);
     const authData = chatkit.authenticate({
         userId: req.query.user_id
     });
