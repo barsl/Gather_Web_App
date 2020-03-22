@@ -2,11 +2,25 @@ import React, { Component } from "react";
 import { Link, withRouter, Redirect } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./navbar.component";
-import Chatkit from '@pusher/chatkit-client';
-import Cookies from 'js-cookie';
+import Chatkit from "@pusher/chatkit-client";
+import Cookies from "js-cookie";
 
 const Event = props => {
-  const editLink = <Link key={"editLink"} to={"/edit/" + props.event._id}>edit</Link>;
+  const editLink = (
+    <Link
+      key={"editLink"}
+      to={{
+        pathname: "/edit/" + props.event._id,
+        state: {
+          roomId: props.event.roomId,
+          eventName: props.event.title,
+          address: props.event.location
+        }
+      }}
+    >
+      edit
+    </Link>
+  );
   const deleteLink = (
     <a
       key={"deleteLink"}
@@ -52,13 +66,12 @@ const Event = props => {
     actions.push(unattendLink);
   }
 
-  if (props.eventType === "invited" || props.eventType ==="public") {
+  if (props.eventType === "invited" || props.eventType === "public") {
     actions.push(attendLink);
   }
   if (props.eventType === "created") {
     actions.push(deleteLink);
   }
-
 
   const actionsComponent = actions.reduce(
     (prev, curr, i) => [...prev, i > 0 ? " | " : null, curr],
@@ -119,9 +132,10 @@ class EventsList extends Component {
         console.log(error);
       });
 
-    axios.get('/events/public')
+    axios
+      .get("/events/public")
       .then(response => {
-        this.setState({ publicEvents: response.data })
+        this.setState({ publicEvents: response.data });
       })
       .catch(error => {
         console.log(error);
@@ -130,27 +144,29 @@ class EventsList extends Component {
 
   deleteEvent(id, title) {
     const chatManager = new Chatkit.ChatManager({
-      instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
-      userId: Cookies.get('username'),
+      instanceLocator: "v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a",
+      userId: Cookies.get("username"),
       tokenProvider: new Chatkit.TokenProvider({
-        url: '/chat/auth'
+        url: "/chat/auth"
       })
-    })
+    });
     return chatManager
       .connect()
       .then(currentUser => {
-        currentUser.deleteRoom({ roomId: title })
+        currentUser
+          .deleteRoom({ roomId: title })
           .then(() => {
-            axios.delete('/events/' + id)
-              .then(response => { console.log(response.data) });
+            axios.delete("/events/" + id).then(response => {
+              console.log(response.data);
+            });
 
             this.setState({
               events: this.state.events.filter(el => el._id !== id)
-            })
+            });
           })
-          .catch(err => console.error(err))
+          .catch(err => console.error(err));
       })
-      .catch(err => console.error(err))
+      .catch(err => console.error(err));
   }
 
   setAttending(event, isAttending) {

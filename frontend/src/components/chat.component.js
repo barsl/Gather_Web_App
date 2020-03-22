@@ -45,7 +45,10 @@ class ChatScreen extends Component {
                             currentRoom
                         })
                     })
-                    .catch(err => this.props.history.push('/eventsList'))
+                    .catch(err => {
+                        console.log(err);
+                        this.props.history.push('/eventsList')
+                    })
             })
             .catch(err => this.props.history.push('/'))
     }
