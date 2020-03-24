@@ -33,13 +33,13 @@ class Navbar extends Component {
               <Link to="/create" className="nav-link">Create Event Log</Link>
             </li>
             <li className="navbar-item">
-              <Link to="/user" className="nav-link">Create User</Link>
-            </li>
-            <li className="navbar-item">
               <Link to="/friends" className="nav-link">Friends</Link>
             </li>            
             <li>
               <a href="/" onClick={this.logOut} className="nav-link">Logout</a>
+            </li>
+            <li className="navbar-item">
+              <div className="nav-link">{document.cookie.split('=')[1]}</div>
             </li>
           </ul>
         </div>

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Link, Redirect, withRouter } from 'react-router-dom';
+import classes from "../components/style/login.module.css";
+import image from '../components/assets/friendship.svg';
 
 class Login extends Component {
     constructor(props) {
@@ -62,34 +64,49 @@ class Login extends Component {
         }
         const showError = this.state.error ? "d-inline-block" : "d-none";
         return (
-            <div>
-                <div className={`alert alert-danger ${showError}`} >Invalid Credentials</div>
-                <h3>Login</h3>
-                <form onSubmit={this.onSubmit}>
-                    <div className="form-group">
-                        <label>Username: </label>
-                        <input type="text"
-                            name="username"
-                            required
-                            className="form-control"
-                            value={this.state.username}
-                            onChange={this.onChange}
-                        />
-                        <label>Password: </label>
-                        <input type="password"
-                            name="password"
-                            required
-                            className="form-control"
-                            value={this.state.password}
-                            onChange={this.onChange}
-                        />
+
+            <div className={classes.Centered}>
+                <div className={classes.HorizontalFlex}>
+                <div className={classes.LeftSide}>
+                    <h1 className={classes.Logo}>gather</h1>
+                    <img src={image} className={classes.Image}></img>
+                </div>
+                    <div className={classes.RightSide}>
+                        <h2>Making meetups easier.</h2>
+
+                        <form onSubmit={this.onSubmit}>
+                            <div className={classes.Form}>
+                                <label>Username: </label>
+                                <input type="text"
+                                    name="username"
+                                    required
+                                    className="form-control"
+                                    value={this.state.username}
+                                    onChange={this.onChange}
+                                />
+                                <label>Password: </label>
+                                <input type="password"
+                                    name="password"
+                                    required
+                                    className="form-control"
+                                    value={this.state.password}
+                                    onChange={this.onChange}
+                                />
+                            </div>
+
+                            <div className={[classes.ErrorMessage, showError].join(' ')} >Invalid Credentials</div>
+
+                            <div className={classes.HorizontalFlex}>
+                                <input type="submit" value="Login" className="btn btn-primary" />
+                                <Link className={classes.Link} to={"/signup"}>New user? Sign up here!</Link>
+                            </div>
+
+                        </form>
+
                     </div>
-                    <div className="form-group">
-                        <input type="submit" value="Login" className="btn btn-primary" />
-                    </div>
-                    <Link to={"/signup"}>New user? Sign up here!</Link>
-                </form>
-            </div >
+                </div>
+            </div>
+
         )
     }
 }
