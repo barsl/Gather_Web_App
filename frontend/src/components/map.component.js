@@ -25,9 +25,11 @@ class GoogleMap extends Component {
     }
 
     componentDidMount() {
-        let lat = this.props.location[0];
-        let lng = this.props.location[1];
-        this.updateMarker(lat, lng);
+        if (this.props.location) {
+            let lat = this.props.location[0];
+            let lng = this.props.location[1];
+            this.updateMarker(lat, lng);
+        }
 
         this.interval = setInterval(() => {
             Geocode.fromAddress(this.props.addressName)
@@ -38,6 +40,7 @@ class GoogleMap extends Component {
                         eventAddress: this.props.addressName
                     })
                 })
+                .catch(err => { })
         }, 5000);
     }
 
