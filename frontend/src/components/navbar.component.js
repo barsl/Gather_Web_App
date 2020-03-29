@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from './auth/context/AuthContext';
 
 class Navbar extends Component {
   constructor(props) {
     super(props);
     this.logOut = this.logOut.bind(this);
   }
-
+  static contextType = AuthContext;
   logOut(e) {
     e.preventDefault();
     axios.get('/logout', { withCredentials: true })
       .then(res => {
         console.log("Logged out successfully");
+        this.context.logout();
         this.props.history.replace('/');
       })
       .catch(err => {
@@ -39,7 +41,7 @@ class Navbar extends Component {
               <a href="/" onClick={this.logOut} className="nav-link">Logout</a>
             </li>
             <li className="navbar-item">
-              <div className="nav-link">{document.cookie.split('=')[1]}</div>
+                <Link to="/profile" className="nav-link">{this.context.user.username}</Link>
             </li>
           </ul>
         </div>
