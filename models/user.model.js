@@ -19,6 +19,7 @@ const userSchema = new Schema({
   attendingEvents: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],
   createdEvents: [{type: Schema.Types.ObjectId, ref: 'Event', required: true}],
   history: [{ type: Schema.Types.ObjectId, ref: 'Event', required: true }],
+  gcAuthToken: { type: String },
 }, {
   timestamps: true,
 });
