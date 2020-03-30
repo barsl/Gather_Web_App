@@ -1,14 +1,14 @@
-const router = require("express").Router();
-let Event = require("../models/event.model");
-let User = require("../models/user.model");
+const router = require('express').Router();
+let Event = require('../models/event.model');
+let User = require('../models/user.model');
 
-router.route("/").get((req, res) => {
+router.route('/').get((req, res) => {
   Event.find()
     .then(events => res.json(events))
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/").post((req, res) => {
+router.route('/').post((req, res) => {
   const public = req.body.publicStatus;
   const title = req.body.title;
   const username = req.body.username;
@@ -30,55 +30,77 @@ router.route("/").post((req, res) => {
     roomId,
     invited,
     attending,
-    tags
+    tags,
   });
 
   newEvent
     .save()
     .then(() => {
       //console.log("invited users:" + newEvent.invited);
-      User.findOneAndUpdate(
-        { username: newEvent.username },
-        { $push: { createdEvents: newEvent.id } }
+      return User.findOneAndUpdate(
+        {username: newEvent.username},
+        {$push: {createdEvents: newEvent.id}},
       ).exec();
+    })
+    .then(() => {
+      res.json(newEvent.id);
       newEvent.invited.forEach(userId =>
         User.findByIdAndUpdate(userId, {
-          $push: { invitedEvents: newEvent.id }
-        }).exec()
+          $push: {invitedEvents: newEvent.id},
+        }).exec(),
       );
-      res.json(newEvent.id);
     })
     .catch(err => {
       console.log(err);
-      res.status(400).json("Error: " + err);
+      res.status(400).json('Error: ' + err);
     });
 });
 
-router.route("/public").get((req, res) => {
-  Event.find({ public: true })
+router.route('/public').get((req, res) => {
+  Event.find({public: true})
     .then(events => {
       res.json(events);
     })
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/:id").get((req, res) => {
+router.route('/:id').get((req, res) => {
   Event.findById(req.params.id)
-    .populate("invited")
-    .populate("attending")
+    .populate('invited')
+    .populate('attending')
     .then(event => {
       res.json(event);
     })
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/:id").delete((req, res) => {
+router.route('/:id').delete((req, res) => {
   Event.findByIdAndDelete(req.params.id)
+    .then(event => {
+      const cleanupPromises = [];
+      if (!event.public) {
+        event.invited.forEach(uid =>
+          cleanupPromises.push(
+            User.findByIdAndUpdate(uid, {
+              $pull: {invitedEvents: event._id},
+            }).exec(),
+          ),
+        );
+      }
+      event.attending.forEach(uid =>
+        cleanupPromises.push(
+          User.findByIdAndUpdate(uid, {
+            $pull: {attendingEvents: event._id},
+          }).exec(),
+        ),
+      );
+      return Promise.all(cleanupPromises);
+    })
     .then(() => res.json(req.params.id))
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/:id").put((req, res) => {
+router.route('/:id').put((req, res) => {
   Event.findById(req.params.id)
     .then(event => {
       Object.entries(req.body).forEach(([prop, updatedValue]) => {
@@ -86,10 +108,10 @@ router.route("/:id").put((req, res) => {
       });
       event
         .save()
-        .then(() => res.json("Event updated!"))
-        .catch(err => res.status(400).json("Error: " + err));
+        .then(() => res.json('Event updated!'))
+        .catch(err => res.status(400).json('Error: ' + err));
     })
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
 module.exports = router;

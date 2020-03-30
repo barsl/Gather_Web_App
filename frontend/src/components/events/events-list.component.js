@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import axios from "axios";
-import Navbar from "../navbar.component";
-import Chatkit from "@pusher/chatkit-client";
-import Cookies from "js-cookie";
-import withUser from "../auth/hoc/withUser";
-import Event from "./event/Event";
+import React, {Component} from 'react';
+import axios from 'axios';
+import Navbar from '../navbar.component';
+import Chatkit from '@pusher/chatkit-client';
+import Cookies from 'js-cookie';
+import withUser from '../auth/hoc/withUser';
+import Event from './event/Event';
 
 class EventsList extends Component {
   _isMounted = false;
@@ -16,15 +16,15 @@ class EventsList extends Component {
     this.setAttending = this.setAttending.bind(this);
 
     this.state = {
-      publicEvents: []
+      publicEvents: [],
     };
   }
 
   componentDidMount() {
     axios
-      .get("/events/public")
+      .get('/events/public')
       .then(response => {
-        this.setState({ publicEvents: response.data });
+        this.setState({publicEvents: response.data});
       })
       .catch(error => {
         console.log(error);
@@ -33,31 +33,31 @@ class EventsList extends Component {
 
   deleteEvent(event) {
     const chatManager = new Chatkit.ChatManager({
-      instanceLocator: "v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a",
-      userId: Cookies.get("username"),
+      instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
+      userId: Cookies.get('username'),
       tokenProvider: new Chatkit.TokenProvider({
-        url: "/chat/auth"
-      })
+        url: '/chat/auth',
+      }),
     });
     return chatManager
       .connect()
       .then(currentUser => {
-        return currentUser.deleteRoom({ roomId: event.roomId });
+        return currentUser.deleteRoom({roomId: event.roomId});
       })
       .then(() => {
-        axios.delete("/events/" + event._id).then(response => {
+        axios.delete('/events/' + event._id).then(response => {
           console.log(response.data);
         });
         this.props.updateUser({
           createdEvents: this.props.user.createdEvents.filter(
-            el => el._id.toString() !== event._id.toString()
-          )
+            el => el._id.toString() !== event._id.toString(),
+          ),
         });
         if (event.public) {
           this.setState({
             publicEvents: this.state.publicEvents.filter(
-              el => el._id.toString() !== event._id.toString()
-            )
+              el => el._id.toString() !== event._id.toString(),
+            ),
           });
         }
       })
@@ -66,13 +66,13 @@ class EventsList extends Component {
 
   setAttending(event, isAttending) {
     axios
-      .patch(`/users/${this.props.user.id}`, {
-        attendingEvent: event._id,
-        action: isAttending ? "add" : "remove"
+      .patch(`/users/${this.props.user.id}/attendingEvents`, {
+        value: event._id,
+        op: isAttending ? 'add' : 'remove',
       })
       .then(res => {
-        const { attendingEvents, invitedEvents } = res.data;
-        this.props.updateUser({ attendingEvents, invitedEvents });
+        const {attendingEvents, invitedEvents} = res.data;
+        this.props.updateUser({attendingEvents, invitedEvents});
       })
       .catch(console.log);
   }

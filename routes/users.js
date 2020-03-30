@@ -1,144 +1,145 @@
-const router = require("express").Router();
-const validator = require("validator");
-const crypto = require("crypto");
-const cookie = require("cookie");
-const auth = require("../middleware/auth");
-const { google } = require("googleapis");
-const withGoogleOAuth2 = require("../middleware/withGoogleOAuth2");
-require("dotenv").config();
+const router = require('express').Router();
+const validator = require('validator');
+const auth = require('../middleware/auth');
+const {google} = require('googleapis');
+const withGoogleOAuth2 = require('../middleware/withGoogleOAuth2');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
-let User = require("../models/user.model");
-let Event = require("../models/event.model");
+let User = require('../models/user.model');
+let Event = require('../models/event.model');
 
 function checkId(req, res, next) {
   if (!validator.isAlphanumeric(req.params.id))
-    return res.status(400).json("Invalid user id");
+    return res.status(400).json('Invalid user id');
   req.params.id = validator.trim(req.params.id);
   req.params.id = validator.escape(req.params.id);
   next();
 }
 
-router.route("/").get((req, res) => {
+router.route('/').get((req, res) => {
   User.find()
     .then(users => res.json(users))
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/currentUser").get(auth, (req, res) => {
+router.route('/currentUser').get(auth, (req, res) => {
   //get user from session
   if (req.session.user) {
-    User.findOne({ username: req.session.user.username })
-      .populate("friends")
-      .populate("createdEvents")
-      .populate("invitedEvents")
-      .populate("attendingEvents")
+    User.findOne({username: req.session.user.username})
+      .populate('friends')
+      .populate('createdEvents')
+      .populate('invitedEvents')
+      .populate('attendingEvents')
       .then(user => {
-        if (!user) return res.status(404).json("User not found");
+        if (!user) return res.status(404).json('User not found');
         res.json(user);
       })
-      .catch(err => res.status(400).json("Error: " + err));
+      .catch(err => res.status(400).json('Error: ' + err));
   } else {
-    res.status(400).send(":(");
+    res.status(403).end();
   }
 });
 
-// TODO: https://tools.ietf.org/html/rfc6902#appendix-A.2
-router.route("/:id").patch(auth, (req, res) => {
+router.route('/:id/attendingEvents').patch(auth, (req, res) => {
   if (!req.session.user || req.session.user.id !== req.params.id) {
     return res.status(403).end();
   }
-  const { attendingEvent, action } = req.body;
-  console.log(attendingEvent, action);
-  User.findOne({ username: req.session.user.username })
-    .populate("attendingEvents")
-    .populate("invitedEvents")
-    .then(user => {
-      if (
-        action === "add" &&
-        user.attendingEvents.findIndex(event => event._id == attendingEvent) !==
-          -1
-      ) {
-        throw { msg: "Error: Already attending event", status: 400 };
-      } else if (
-        action === "remove" &&
-        user.attendingEvents.findIndex(event => {
-          return event._id == attendingEvent;
-        }) === -1
-      ) {
-        throw {
-          msg: "Error: Already not attending that event.",
-          status: 400
-        };
-      }
+  const {value, op} = req.body;
+  console.log(value, op);
+  if (op !== 'add' && op !== 'remove') {
+    return res.status(400).send('Invalid op.');
+  }
 
-      let userUpdateQuery =
-        action === "add"
-          ? {
-              $push: { attendingEvents: attendingEvent }
-            }
-          : { $pull: { attendingEvents: attendingEvent } };
-      User.findOneAndUpdate(
-        { username: req.session.user.username },
-        userUpdateQuery,
-        { new: true }
-      )
-        .populate("attendingEvents")
-        .populate("invitedEvents")
-        .then(user => {
-          Event.findById(attendingEvent, (err, event) => {
-            if (err) return res.status(500).send("Error retrieving event");
-            let eventUpdateQuery;
-            if (action === "add") {
-              eventUpdateQuery = { $push: { attending: user._id } };
-              if (!event.public) {
-                eventUpdateQuery.$pull = { invited: user._id };
-              }
-            } else {
-              eventUpdateQuery = { $pull: { attending: user._id } };
-              if (!event.public) {
-                eventUpdateQuery.$push = { invited: user._id };
-              }
-            }
-            event.updateOne(eventUpdateQuery).exec();
-            if (event.public) {
-              return res.json(user);
-            }
-            const userUpdateQuery =
-              action === "add"
-                ? { $pull: { invitedEvents: attendingEvent } }
-                : { $push: { invitedEvents: attendingEvent } };
-            User.findByIdAndUpdate(user._id, userUpdateQuery, { new: true })
-              .populate("invitedEvents")
-              .populate("attendingEvents")
-              .then(updatedUser => {
-                res.json(updatedUser);
-              });
-          });
-        });
+  const getUserPromise = User.findOne({username: req.session.user.username})
+    .populate('attendingEvents')
+    .populate('invitedEvents')
+    .exec();
+
+  const getEventPromise = Event.findById(value).exec();
+
+  Promise.all([getUserPromise, getEventPromise])
+    .then(([user, event]) => {
+      const eventIdStr = event._id.toString();
+      const userIdStr = user._id.toString();
+
+      if (op === 'add') {
+        if (
+          user.attendingEvents.findIndex(
+            e => e._id.toString() === eventIdStr,
+          ) !== -1
+        ) {
+          throw {msg: 'Error: Already attending event', status: 400};
+        }
+        user.attendingEvents.push(event._id);
+        event.attending.push(user._id);
+        if (!event.public) {
+          user.invitedEvents.splice(
+            user.invitedEvents.findIndex(e => e._id.toString() === eventIdStr),
+            1,
+          );
+          event.invited.splice(
+            event.invited.findIndex(u => u._id.toString() === userIdStr),
+            1,
+          );
+        }
+      } else if (op === 'remove') {
+        if (
+          user.attendingEvents.findIndex(
+            e => e._id.toString() === eventIdStr,
+          ) === -1
+        ) {
+          throw {
+            msg: 'Error: Already not attending that event.',
+            status: 400,
+          };
+        }
+        user.attendingEvents.splice(
+          user.attendingEvents.findIndex(e => e._id.toString() === eventIdStr),
+          1,
+        );
+        event.attending.splice(
+          event.attending.findIndex(u => u._id.toString() === userIdStr),
+          1,
+        );
+        if (!event.public) {
+          user.invitedEvents.push(event._id);
+          event.invited.push(user._id);
+        }
+      }
+      return Promise.all([user.save(), event.save()]);
+    })
+    .then(([user]) => {
+      return user
+        .populate('invitedEvents')
+        .populate('attendingEvents')
+        .execPopulate();
+    })
+    .then(user => {
+      res.json(user);
     })
     .catch(err => {
-      if (err.msg) {
-        res.status(err.status).send(err.msg);
-      } else {
-        res.status(500).send("Server error");
-      }
+      console.error(err);
+      err.msg
+        ? res.status(err.status).send(err.msg)
+        : res.status(500).send('Server error');
     });
 });
 
 router
-  .route("/:id/googleCalendarAuth")
+  .route('/:id/googleCalendarAuth')
   .post(auth, withGoogleOAuth2, (req, res) => {
     if (req.params.id !== req.session.user.id) {
       return res.status(401).end();
     }
-    const { authCode } = req.body;
+    const {authCode} = req.body;
     req.oAuth2Client
       .getToken(authCode)
-      .then(({ tokens }) => {
+      .then(({tokens}) => {
         return User.findOneAndUpdate(
-          { username: req.session.user.username },
-          { $set: { gcAuthToken: tokens.refresh_token } },
-          { new: true }
+          {username: req.session.user.username},
+          {$set: {gcAuthToken: tokens.refresh_token}},
+          {new: true},
         );
       })
       .then(() => {
@@ -147,62 +148,62 @@ router
       .catch(err => res.status(500).end(err));
   });
 
-router.route("/:id/gcevents").get(auth, withGoogleOAuth2, (req, res) => {
-  const calendar = google.calendar({ version: "v3", auth: req.oAuth2Client });
+router.route('/:id/gcevents').get(auth, withGoogleOAuth2, (req, res) => {
+  const calendar = google.calendar({version: 'v3', auth: req.oAuth2Client});
   calendar.events
     .list({
-      calendarId: "primary",
+      calendarId: 'primary',
       timeMin: new Date().toISOString(),
       maxResults: 10,
       singleEvents: true,
-      orderBy: "startTime"
+      orderBy: 'startTime',
     })
-    .then(calendarData => res.json({ events: calendarData.data.items }))
+    .then(calendarData => res.json({events: calendarData.data.items}))
     .catch(err => res.status(500).send(err));
 });
 
-router.route("/:id").get(auth, checkId, (req, res) => {
+router.route('/:id').get(auth, checkId, (req, res) => {
   User.findById(req.params.id)
     .then(user => {
-      if (!user) return res.status(404).json("User not found");
+      if (!user) return res.status(404).json('User not found');
       res.json(user);
     })
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/:username").get(auth, (req, res) => {
-  User.find({ username: req.params.username })
+router.route('/:username').get(auth, (req, res) => {
+  User.find({username: req.params.username})
     .then(user => {
-      if (!user) return res.status(404).json("User not found");
+      if (!user) return res.status(404).json('User not found');
       res.json(user);
     })
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/name/:name").get((req, res) => {
-  User.findOne({ username: req.params.name })
+router.route('/name/:name').get((req, res) => {
+  User.findOne({username: req.params.name})
     .then(user => res.json(user))
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/currentUser/requests").get(auth, (req, res) => {
-  User.findOne({ username: req.session.user.username })
-    .populate("friend_requests")
+router.route('/currentUser/requests').get(auth, (req, res) => {
+  User.findOne({username: req.session.user.username})
+    .populate('friend_requests')
     .then(user => {
-      if (!user) return res.status(404).json("User not found");
+      if (!user) return res.status(404).json('User not found');
       res.json(user.friend_requests);
     })
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route("/currentUser/friends").get(auth, (req, res) => {
-  User.findOne({ username: req.session.user.username })
-    .populate("friends")
+router.route('/currentUser/friends').get(auth, (req, res) => {
+  User.findOne({username: req.session.user.username})
+    .populate('friends')
     .then(user => {
-      if (!user) return res.status(404).json("User not found");
+      if (!user) return res.status(404).json('User not found');
       res.json(user.friends);
     })
-    .catch(err => res.status(400).json("Error: " + err));
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
 module.exports = router;
