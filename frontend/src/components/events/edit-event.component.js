@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import axios from "axios";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import NavBar from "../navbar.component";
-import ChatScreen from "../chat.component";
-import GoogleMap from "../map.component";
-import Geocode from "react-geocode";
-import "../style/map.css";
-import "./style/edit-event.css";
-import withAuth from "../auth/hoc/withAuth";
+import React, {Component} from 'react';
+import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import NavBar from '../navbar.component';
+import ChatScreen from '../chat.component';
+import GoogleMap from '../map.component';
+import Geocode from 'react-geocode';
+import '../style/map.css';
+import './style/edit-event.css';
+import withAuth from '../auth/hoc/withAuth';
 
 const MemoGoogleMap = React.memo(GoogleMap);
 
@@ -16,7 +16,7 @@ export default withAuth(
   class EditEvent extends Component {
     constructor(props) {
       super(props);
-      Geocode.setApiKey("AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk");
+      Geocode.setApiKey('AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk');
 
       this.onChangeUsername = this.onChangeUsername.bind(this);
       this.onChangeDescription = this.onChangeDescription.bind(this);
@@ -30,13 +30,13 @@ export default withAuth(
         loading: true,
         public: false,
         roomId: null,
-        username: "",
-        title: "",
-        description: "",
-        address: "",
+        username: '',
+        title: '',
+        description: '',
+        address: '',
         date: new Date(),
         invited: [],
-        attending: []
+        attending: [],
       };
     }
 
@@ -48,8 +48,8 @@ export default withAuth(
         this.props.authenticated
       ) {
         axios
-          .get("/events/" + this.props.match.params.id)
-          .then(({ data }) => {
+          .get('/events/' + this.props.match.params.id)
+          .then(({data}) => {
             this.setState({
               public: data.public,
               address: data.location,
@@ -60,10 +60,10 @@ export default withAuth(
               invited: data.invited,
               attending: data.attending,
               roomId: data.roomId,
-              loading: false
+              loading: false,
             });
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.log(error);
           });
       }
@@ -73,43 +73,43 @@ export default withAuth(
 
     onChangeUsername(e) {
       this.setState({
-        username: e.target.value
+        username: e.target.value,
       });
     }
 
     onChangeDescription(e) {
       this.setState({
-        description: e.target.value
+        description: e.target.value,
       });
     }
 
     onChangeDuration(e) {
       this.setState({
-        duration: e.target.value
+        duration: e.target.value,
       });
     }
 
     onChangeDate(date) {
       this.setState({
-        date: date
+        date: date,
       });
     }
 
     onChangeTitle(e) {
       this.setState({
-        title: e.target.value
+        title: e.target.value,
       });
     }
 
     onLocationChange(address) {
       this.setState({
-        address
+        address,
       });
     }
 
     onAddressChange(e) {
       this.setState({
-        address: e.target.value
+        address: e.target.value,
       });
     }
 
@@ -117,20 +117,20 @@ export default withAuth(
       e.preventDefault();
       Geocode.fromAddress(this.state.address)
         .then(res => {
-          const { lat, lng } = res.results[0].geometry.location;
+          const {lat, lng} = res.results[0].geometry.location;
           const event = {
             username: this.state.username,
             title: this.state.title,
             description: this.state.description,
             date: this.state.date,
-            location: [lat, lng]
+            location: [lat, lng],
           };
 
-          axios
-            .put("/events/" + this.props.match.params.id, event)
-            .then(res => console.log(res.data));
-
-          window.location = "/";
+          return axios.put('/events/' + this.props.match.params.id, event);
+        })
+        .then(res => {
+          console.log(res.data);
+          this.props.history.push('/eventsList');
         })
         .catch(err => console.error(err));
     }
@@ -241,5 +241,5 @@ export default withAuth(
         </div>
       );
     }
-  }
+  },
 );

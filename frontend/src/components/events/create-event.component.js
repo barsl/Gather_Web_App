@@ -157,10 +157,8 @@ class CreateEvent extends Component {
       });
     });
 
-    const getGeocodePromise = Geocode.fromAddress(this.state.location);
-
-    Promise.all([getGeocodePromise, createRoomPromise])
-      .then(([res]) => {
+    const createEventPromise = Geocode.fromAddress(this.state.location).then(
+      res => {
         const lat = res.results[0].geometry.location.lat;
         const lng = res.results[0].geometry.location.lng;
 
@@ -175,8 +173,13 @@ class CreateEvent extends Component {
           location: [lat, lng],
           tags: this.state.tags,
         };
-        axios.post('/events', event); // Event created here!
-        window.location = '/eventsList';
+        return axios.post('/events', event); // Event created here!
+      },
+    );
+
+    Promise.all([createEventPromise, createRoomPromise])
+      .then(() => {
+        this.props.history.push('/eventsList');
       })
       .catch(console.error);
   }
@@ -253,7 +256,7 @@ class CreateEvent extends Component {
                   onChange={this.onChangeInvited}
                 >
                   <option value="">...</option>
-                  {this.state.userFriends.map(function ({_id, username}) {
+                  {this.state.userFriends.map(function({_id, username}) {
                     return (
                       <option key={username} value={_id}>
                         {username}
