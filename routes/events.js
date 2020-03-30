@@ -77,7 +77,18 @@ router.route('/:id').get((req, res) => {
 router.route('/:id').delete((req, res) => {
   Event.findByIdAndDelete(req.params.id)
     .then(event => {
-      const cleanupPromises = [];
+      // Clean creator's createdEvents
+      const cleanupPromises = [
+        User.findOneAndUpdate(
+          {
+            username: event.username,
+          },
+          {
+            $pull: {createdEvents: event._id},
+          },
+        ).exec(),
+      ];
+      // Clean invited users invitedEvents
       if (!event.public) {
         event.invited.forEach(uid =>
           cleanupPromises.push(
@@ -87,6 +98,7 @@ router.route('/:id').delete((req, res) => {
           ),
         );
       }
+      // Clean attending users attendingEvents
       event.attending.forEach(uid =>
         cleanupPromises.push(
           User.findByIdAndUpdate(uid, {
