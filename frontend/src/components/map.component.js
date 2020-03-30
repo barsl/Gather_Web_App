@@ -25,9 +25,23 @@ class GoogleMap extends Component {
     }
 
     componentDidMount() {
-        let lat = this.props.address[0];
-        let lng = this.props.address[1];
-        this.updateMarker(lat, lng);
+        if (this.props.location) {
+            let lat = this.props.location[0];
+            let lng = this.props.location[1];
+            this.updateMarker(lat, lng);
+        }
+
+        this.interval = setInterval(() => {
+            Geocode.fromAddress(this.props.addressName)
+                .then(res => {
+                    this.setState({
+                        markerLat: res.results[0].geometry.location.lat,
+                        markerLng: res.results[0].geometry.location.lng,
+                        eventAddress: this.props.addressName
+                    })
+                })
+                .catch(err => { })
+        }, 5000);
     }
 
     updateMarker(lat, lng) {

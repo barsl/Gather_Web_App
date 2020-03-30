@@ -8,6 +8,7 @@ import Navbar from "./navbar.component";
 import { withRouter, Redirect } from "react-router-dom";
 import Chatkit from "@pusher/chatkit-client";
 import Geocode from "react-geocode";
+import GoogleMap from './map.component';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -26,6 +27,7 @@ class CreateEvent extends Component {
     this.onChangeTags = this.onChangeTags.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onRemoveInvite = this.onRemoveInvite.bind(this);
+    this.onLocationChange = this.onLocationChange.bind(this);
 
     this.state = {
       publicStatus: false,
@@ -148,6 +150,12 @@ class CreateEvent extends Component {
     });
   }
 
+  onLocationChange(address) {
+    this.setState({
+      location: address
+    })
+  }
+
   onSubmit(e) {
     e.preventDefault();
 
@@ -234,7 +242,7 @@ class CreateEvent extends Component {
               onChange={this.onChangeTitle}
             />
           </div>
-
+          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.state.title} addressName={this.state.location} />;
           <div className="form-group">
             <label>Event Address: </label>
             <input

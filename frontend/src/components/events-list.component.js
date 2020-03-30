@@ -10,12 +10,7 @@ const Event = props => {
     <Link
       key={"editLink"}
       to={{
-        pathname: "/edit/" + props.event._id,
-        state: {
-          roomId: props.event.roomId,
-          eventName: props.event.title,
-          address: props.event.location
-        }
+        pathname: "/edit/" + props.event._id
       }}
     >
       edit
