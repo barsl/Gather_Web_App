@@ -39,15 +39,14 @@ class EventsList extends Component {
         url: '/chat/auth',
       }),
     });
-    return chatManager
-      .connect()
-      .then(currentUser => {
-        return currentUser.deleteRoom({roomId: event.roomId});
-      })
+    const deleteChatManager = chatManager.connect().then(currentUser => {
+      return currentUser.deleteRoom({roomId: event.roomId});
+    });
+    const deleteEvent = axios.delete('/events/' + event._id).then(response => {
+      console.log(response.data);
+    });
+    Promise.all([deleteEvent, deleteChatManager])
       .then(() => {
-        axios.delete('/events/' + event._id).then(response => {
-          console.log(response.data);
-        });
         this.props.updateUser({
           createdEvents: this.props.user.createdEvents.filter(
             el => el._id.toString() !== event._id.toString(),
