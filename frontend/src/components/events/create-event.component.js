@@ -149,7 +149,6 @@ class CreateEvent extends Component {
     const createRoomPromise = chatManager.connect().then(currentUser => {
       console.log('creating room');
       return currentUser.createRoom({
-        id: this.state.title,
         name: this.state.title,
         private: false,
         addUserIds: this.state.attending,
@@ -157,8 +156,10 @@ class CreateEvent extends Component {
       });
     });
 
-    const createEventPromise = Geocode.fromAddress(this.state.location).then(
-      res => {
+    const getGeocodePromise = Geocode.fromAddress(this.state.location);
+
+    Promise.all([createRoomPromise, getGeocodePromise])
+      .then(([room, res]) => {
         const lat = res.results[0].geometry.location.lat;
         const lng = res.results[0].geometry.location.lng;
 
@@ -172,14 +173,12 @@ class CreateEvent extends Component {
           attending: this.state.attending,
           location: [lat, lng],
           tags: this.state.tags,
+          roomId: room.id,
         };
         return axios.post('/events', event); // Event created here!
-      },
-    );
-
-    Promise.allSettled([createEventPromise, createRoomPromise])
-      .then(([{status}]) => {
-        if (status === 'fulfilled') this.props.history.push('/eventsList');
+      })
+      .then(() => {
+        this.props.history.push('/eventsList');
       })
       .catch(console.error);
   }
