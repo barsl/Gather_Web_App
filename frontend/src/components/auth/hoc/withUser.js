@@ -6,6 +6,7 @@ import axios from "axios";
  * @param WrappedComponent The component to receive user props
  */
 const withUser = (WrappedComponent) => {
+  const MemoizedComponent = React.memo(WrappedComponent);
   return props => {
     const {
       user,
@@ -36,7 +37,7 @@ const withUser = (WrappedComponent) => {
     // Performance Debug
     // console.log('Rendering: ', {user, loading}); 
     return user ? (
-      <WrappedComponent
+      <MemoizedComponent
         {...props}
         user={user}
         updateUser={updateUser}
