@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import Navbar from '../navbar.component';
 import Chatkit from '@pusher/chatkit-client';
-import Cookies from 'js-cookie';
 import withUser from '../auth/hoc/withUser';
 import Event from './event/Event';
 
@@ -42,9 +41,7 @@ class EventsList extends Component {
     const deleteChatManager = chatManager.connect().then(currentUser => {
       return currentUser.deleteRoom({roomId: event.roomId});
     });
-    const deleteEvent = axios.delete('/events/' + event._id).then(response => {
-      console.log(response.data);
-    });
+    const deleteEvent = axios.delete('/events/' + event._id);
     Promise.allSettled([deleteEvent, deleteChatManager])
       .then(([{status}]) => {
         if (status === 'fulfilled') {
