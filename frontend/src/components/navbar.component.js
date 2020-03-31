@@ -14,8 +14,8 @@ class Navbar extends Component {
     axios.get('/logout', { withCredentials: true })
       .then(res => {
         console.log("Logged out successfully");
-        this.context.logout();
         this.props.history.replace('/');
+        this.context.logout();
       })
       .catch(err => {
         console.error(err);
