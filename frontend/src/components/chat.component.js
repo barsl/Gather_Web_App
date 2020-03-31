@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Chatkit from '@pusher/chatkit-client';
 import MessageList from './messageList.component';
+import { withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import SendMessageForm from './sendMessage.component';
 
@@ -71,4 +72,4 @@ class ChatScreen extends Component {
     }
 }
 
-export default ChatScreen;
+export default withRouter(ChatScreen);
