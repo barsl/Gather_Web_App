@@ -197,4 +197,4 @@ class EventsList extends Component {
   }
 }
 
-export default withUser(EventsList, true);
+export default withUser(EventsList);
