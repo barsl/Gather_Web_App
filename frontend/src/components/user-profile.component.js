@@ -83,4 +83,4 @@ class UserProfile extends Component {
   }
 }
 
-export default withUser(UserProfile, true);
+export default withUser(UserProfile);

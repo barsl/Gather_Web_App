@@ -303,4 +303,4 @@ class CreateEvent extends Component {
   }
 }
 
-export default withUser(CreateEvent, true);
+export default withUser(CreateEvent);
