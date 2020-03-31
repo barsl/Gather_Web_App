@@ -9,7 +9,7 @@ import {Redirect} from 'react-router-dom';
 import Chatkit from '@pusher/chatkit-client';
 import Geocode from 'react-geocode';
 import withUser from '../auth/hoc/withUser';
-import GoogleMap from './map.component';
+import GoogleMap from '../map.component';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -208,7 +208,7 @@ class CreateEvent extends Component {
               onChange={this.onChangeTitle}
             />
           </div>
-          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.state.title} addressName={this.state.location} />;
+          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.state.title} addressName={this.state.location} />
           <div className="form-group">
             <label>Event Address: </label>
             <input
