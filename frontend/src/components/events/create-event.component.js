@@ -5,7 +5,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import classes from './style/create-event.module.css';
 import Navbar from '../navbar.component';
-import {Redirect} from 'react-router-dom';
 import Chatkit from '@pusher/chatkit-client';
 import Geocode from 'react-geocode';
 import withUser from '../auth/hoc/withUser';
@@ -42,7 +41,6 @@ class CreateEvent extends Component {
       tags: [],
       users: [],
       userFriends: [],
-      isAuthenticated: true,
     };
   }
 
@@ -192,7 +190,6 @@ class CreateEvent extends Component {
   }
 
   render() {
-    if (!this.state.isAuthenticated) return <Redirect to="/" />;
     return (
       <div>
         <Navbar />
