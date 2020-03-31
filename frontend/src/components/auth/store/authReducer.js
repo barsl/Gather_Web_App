@@ -1,9 +1,9 @@
-import { authActionTypes } from "./authActions";
+import {authActionTypes} from './authActions';
 
-const startAuth = state => ({ ...state, loading: true });
+const startAuth = state => ({...state, loading: true});
 
-const authSuccess = (state, { user }) => {
-  const newState = { ...state, authenticated: true, loading: false };
+const authSuccess = (state, {user}) => {
+  const newState = {...state, authenticated: true, loading: false};
   if (user) {
     newState.user = user;
   }
@@ -13,12 +13,18 @@ const authSuccess = (state, { user }) => {
 const authFailed = () => ({
   user: null,
   authenticated: false,
-  loading: false
+  loading: false,
 });
 
-const setUser = (state, { user }) => ({
+const setUser = (state, {user}) => ({
   ...state,
-  user
+  user,
+});
+
+const logout = () => ({
+  user: null,
+  authenticated: false,
+  loading: false,
 });
 
 const authReducer = (state, action) => {
@@ -31,6 +37,8 @@ const authReducer = (state, action) => {
       return authFailed();
     case authActionTypes.SET_USER:
       return setUser(state, action);
+    case authActionTypes.LOGOUT:
+      return logout();
     default:
       return state;
   }
