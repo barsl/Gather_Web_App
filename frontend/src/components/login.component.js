@@ -106,5 +106,5 @@ class Login extends Component {
 export default withAuthRedirect(Login, {
   path: "/eventsList",
   redirectIfAuth: true,
-  blockRender: true
+  mountWhileLoading: false
 });
