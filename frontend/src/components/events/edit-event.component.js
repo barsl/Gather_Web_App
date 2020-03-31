@@ -36,6 +36,7 @@ export default withAuth(
         date: new Date(),
         invited: [],
         attending: [],
+        location: [],
       };
     }
 
@@ -60,9 +61,14 @@ export default withAuth(
       axios
         .get('/events/' + this.props.match.params.id)
         .then(({data}) => {
+          const [lat, lng] = data.location;
+          return Promise.all([Geocode.fromLatLng(lat, lng), data]);
+        })
+        .then(([{results}, data]) => {
           this.setState({
             public: data.public,
-            address: data.location,
+            location: data.location,
+            address: results[0].formatted_address,
             username: data.username,
             title: data.title,
             description: data.description,
@@ -151,6 +157,7 @@ export default withAuth(
             onLocationChange={this.onLocationChange}
             eventName={this.state.title}
             address={this.state.address}
+            location={this.state.location}
           />
           <form onSubmit={this.onSubmit}>
             <div className="form-group">
