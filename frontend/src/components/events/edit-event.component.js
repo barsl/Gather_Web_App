@@ -52,7 +52,6 @@ export default withAuth(
         !this.props.loadingAuth &&
         this.props.authenticated
       ) {
-        console.log('Fetching event!');
         this.fetchEvents();
       }
     }
