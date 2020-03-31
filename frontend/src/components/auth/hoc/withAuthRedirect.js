@@ -37,6 +37,7 @@ const withAuthRedirect = (
     mountWhileLoading: true,
   },
 ) => {
+  const MemoizedComponent = React.memo(WrappedComponent);
   return props => {
     const {
       user,
@@ -76,11 +77,11 @@ const withAuthRedirect = (
         });
       /* We don't want to add the user as a dependency for this useEffect()
          to avoid unnecessary re-render cycles, so disable linter */
-         
+
       /* eslint-disable-next-line */
     }, [props.history, onAuthStart, onAuthSuccess, onAuthFail]);
     return !renderState.blocking ? (
-      <WrappedComponent
+      <MemoizedComponent
         {...props}
         loadingAuth={renderState.loading}
         authenticated={authenticated}
