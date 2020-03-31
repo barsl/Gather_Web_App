@@ -10,8 +10,6 @@ import '../style/map.css';
 import './style/edit-event.css';
 import withAuth from '../auth/hoc/withAuth';
 
-const MemoGoogleMap = React.memo(GoogleMap);
-
 export default withAuth(
   class EditEvent extends Component {
     constructor(props) {
@@ -25,6 +23,7 @@ export default withAuth(
       this.onChangeTitle = this.onChangeTitle.bind(this);
       this.onAddressChange = this.onAddressChange.bind(this);
       this.onLocationChange = this.onLocationChange.bind(this);
+      this.fetchEvents = this.fetchEvents.bind(this);
 
       this.state = {
         loading: true,
@@ -40,6 +39,12 @@ export default withAuth(
       };
     }
 
+    componentDidMount() {
+      if (!this.props.loadingAuth && this.props.authenticated) {
+        this.fetchEvents();
+      }
+    }
+
     componentDidUpdate(prevProps) {
       // if authentication complete (ie. no longer loading) && authenticated
       if (
@@ -47,29 +52,32 @@ export default withAuth(
         !this.props.loadingAuth &&
         this.props.authenticated
       ) {
-        axios
-          .get('/events/' + this.props.match.params.id)
-          .then(({data}) => {
-            this.setState({
-              public: data.public,
-              address: data.location,
-              username: data.username,
-              title: data.title,
-              description: data.description,
-              date: new Date(data.date),
-              invited: data.invited,
-              attending: data.attending,
-              roomId: data.roomId,
-              loading: false,
-            });
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        console.log('Fetching event!');
+        this.fetchEvents();
       }
     }
 
-    componentWillUnmount() {}
+    fetchEvents() {
+      axios
+        .get('/events/' + this.props.match.params.id)
+        .then(({data}) => {
+          this.setState({
+            public: data.public,
+            address: data.location,
+            username: data.username,
+            title: data.title,
+            description: data.description,
+            date: new Date(data.date),
+            invited: data.invited,
+            attending: data.attending,
+            roomId: data.roomId,
+            loading: false,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
 
     onChangeUsername(e) {
       this.setState({
@@ -136,108 +144,102 @@ export default withAuth(
     }
 
     render() {
-      let editPage = null;
-      let chatScreen = null;
+      const editPage = (
+        <>
+          <h3>Edit Event</h3>
 
-      if (!this.state.loading) {
-        editPage = (
-          <>
-            <h3>Edit Event</h3>
+          <GoogleMap
+            onLocationChange={this.onLocationChange}
+            eventName={this.state.title}
+            address={this.state.address}
+          />
+          <form onSubmit={this.onSubmit}>
+            <div className="form-group">
+              <label>Event title: </label>
+              <input
+                type="text"
+                className="form-control"
+                value={this.state.title}
+                onChange={this.onChangeTitle}
+              />
+            </div>
+            <div className="form-group">
+              <label>Event owner: {this.state.username}</label>
+            </div>
+            <div className="form-group">
+              <label>Description: </label>
+              <input
+                type="text"
+                className="form-control"
+                value={this.state.description}
+                onChange={this.onChangeDescription}
+              />
+            </div>
+            <div className="form-group">
+              <label>Event Address: </label>
+              <input
+                type="text"
+                required
+                className="form-control"
+                value={this.state.address}
+                onChange={this.onAddressChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date: </label>
+              <div>
+                <DatePicker
+                  selected={this.state.date}
+                  onChange={this.onChangeDate}
+                />
+              </div>
+            </div>
 
-            <MemoGoogleMap
-              onLocationChange={this.onLocationChange}
-              eventName={this.state.title}
-              address={this.state.address}
-            />
-            <form onSubmit={this.onSubmit}>
-              <div className="form-group">
-                <label>Event title: </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={this.state.title}
-                  onChange={this.onChangeTitle}
-                />
-              </div>
-              <div className="form-group">
-                <label>Event owner: {this.state.username}</label>
-              </div>
-              <div className="form-group">
-                <label>Description: </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={this.state.description}
-                  onChange={this.onChangeDescription}
-                />
-              </div>
-              <div className="form-group">
-                <label>Event Address: </label>
-                <input
-                  type="text"
-                  required
-                  className="form-control"
-                  value={this.state.address}
-                  onChange={this.onAddressChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Date: </label>
-                <div>
-                  <DatePicker
-                    selected={this.state.date}
-                    onChange={this.onChangeDate}
-                  />
+            {!this.state.public && ( //if the event is public, do not show invited list
+              <>
+                <div className="form-group">
+                  <label>Invited: </label>
+                  <ul>
+                    {this.state.invited.map(user => (
+                      <li key={user._id}>{user.username}</li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
+              </>
+            )}
 
-              {!this.state.public && ( //if the event is public, do not show invited list
-                <>
-                  <div className="form-group">
-                    <label>Invited: </label>
-                    <ul>
-                      {this.state.invited.map(user => (
-                        <li key={user._id}>{user.username}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              )}
+            <div className="form-group">
+              <label>Attending: </label>
+              <ul>
+                {this.state.attending.map(user => (
+                  <li key={user._id}>{user.username}</li>
+                ))}
+              </ul>
+            </div>
 
-              <div className="form-group">
-                <label>Attending: </label>
-                <ul>
-                  {this.state.attending.map(user => (
-                    <li key={user._id}>{user.username}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="form-group">
-                <input
-                  type="submit"
-                  value="Save changes"
-                  className="btn btn-primary"
-                />
-              </div>
-            </form>
-          </>
-        );
-        chatScreen = (
-          <div className="chat_screen">
-            <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />
-          </div>
-        );
-      } else {
-        // Can set edit page = Spinner
-      }
+            <div className="form-group">
+              <input
+                type="submit"
+                value="Save changes"
+                className="btn btn-primary"
+              />
+            </div>
+          </form>
+        </>
+      );
+      const chatScreen = (
+        <div className="chat_screen">
+          <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />
+        </div>
+      );
       return (
         <div className="edit_page">
           <div className="main_edit_screen">
             <NavBar />
-            {editPage}
+            {this.props.loadingAuth && 'Loading!'}
+            {!this.state.loading ? editPage : null}
           </div>
-          {chatScreen}
+          {!this.state.loading && chatScreen}
         </div>
       );
     }
