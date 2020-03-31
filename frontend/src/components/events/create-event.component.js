@@ -177,9 +177,9 @@ class CreateEvent extends Component {
       },
     );
 
-    Promise.all([createEventPromise, createRoomPromise])
-      .then(() => {
-        this.props.history.push('/eventsList');
+    Promise.allSettled([createEventPromise, createRoomPromise])
+      .then(([{status}]) => {
+        if (status === 'fulfilled') this.props.history.push('/eventsList');
       })
       .catch(console.error);
   }

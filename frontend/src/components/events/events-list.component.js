@@ -34,7 +34,7 @@ class EventsList extends Component {
   deleteEvent(event) {
     const chatManager = new Chatkit.ChatManager({
       instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
-      userId: Cookies.get('username'),
+      userId: this.props.user.username,
       tokenProvider: new Chatkit.TokenProvider({
         url: '/chat/auth',
       }),
@@ -45,19 +45,21 @@ class EventsList extends Component {
     const deleteEvent = axios.delete('/events/' + event._id).then(response => {
       console.log(response.data);
     });
-    Promise.all([deleteEvent, deleteChatManager])
-      .then(() => {
-        this.props.updateUser({
-          createdEvents: this.props.user.createdEvents.filter(
-            el => el._id.toString() !== event._id.toString(),
-          ),
-        });
-        if (event.public) {
-          this.setState({
-            publicEvents: this.state.publicEvents.filter(
+    Promise.allSettled([deleteEvent, deleteChatManager])
+      .then(([{status}]) => {
+        if (status === 'fulfilled') {
+          this.props.updateUser({
+            createdEvents: this.props.user.createdEvents.filter(
               el => el._id.toString() !== event._id.toString(),
             ),
           });
+          if (event.public) {
+            this.setState({
+              publicEvents: this.state.publicEvents.filter(
+                el => el._id.toString() !== event._id.toString(),
+              ),
+            });
+          }
         }
       })
       .catch(console.error);
