@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -45,7 +45,7 @@ class CreateEvent extends Component {
   }
 
   componentDidMount() {
-    this.setState({userFriends: this.props.user.friends});
+    this.setState({ userFriends: this.props.user.friends });
   }
 
   onChangeStatus(e) {
@@ -84,7 +84,7 @@ class CreateEvent extends Component {
     });
   }
 
-  onChangeInvited({target}) {
+  onChangeInvited({ target }) {
     const friendId = target.value;
     this.setState(prevState => {
       const updatedUserFriends = [...prevState.userFriends];
@@ -205,7 +205,7 @@ class CreateEvent extends Component {
               onChange={this.onChangeTitle}
             />
           </div>
-          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.state.title} addressName={this.state.location} />
+          <GoogleMap onLocationChange={this.onLocationChange} location={[0, 0]} eventName={this.state.title} addressName={this.state.location} />
           <div className="form-group">
             <label>Event Address: </label>
             <input
@@ -260,7 +260,7 @@ class CreateEvent extends Component {
                   onChange={this.onChangeInvited}
                 >
                   <option value="">...</option>
-                  {this.state.userFriends.map(function({_id, username}) {
+                  {this.state.userFriends.map(function ({ _id, username }) {
                     return (
                       <option key={username} value={_id}>
                         {username}

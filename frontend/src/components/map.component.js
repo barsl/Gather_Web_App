@@ -32,15 +32,17 @@ class GoogleMap extends Component {
         }
 
         this.interval = setInterval(() => {
-            Geocode.fromAddress(this.props.addressName)
-                .then(res => {
-                    this.setState({
-                        markerLat: res.results[0].geometry.location.lat,
-                        markerLng: res.results[0].geometry.location.lng,
-                        eventAddress: this.props.addressName
+            if (this.props.addressName !== this.state.eventAddress) {
+                Geocode.fromAddress(this.props.addressName)
+                    .then(res => {
+                        this.setState({
+                            markerLat: res.results[0].geometry.location.lat,
+                            markerLng: res.results[0].geometry.location.lng,
+                            eventAddress: this.props.addressName
+                        })
                     })
-                })
-                .catch(err => { })
+                    .catch(err => { })
+            }
         }, 5000);
     }
 

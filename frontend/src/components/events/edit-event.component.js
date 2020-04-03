@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -60,11 +60,11 @@ export default withAuth(
     fetchEvents() {
       axios
         .get('/events/' + this.props.match.params.id)
-        .then(({data}) => {
+        .then(({ data }) => {
           const [lat, lng] = data.location;
           return Promise.all([Geocode.fromLatLng(lat, lng), data]);
         })
-        .then(([{results}, data]) => {
+        .then(([{ results }, data]) => {
           this.setState({
             public: data.public,
             location: data.location,
@@ -130,7 +130,7 @@ export default withAuth(
       e.preventDefault();
       Geocode.fromAddress(this.state.address)
         .then(res => {
-          const {lat, lng} = res.results[0].geometry.location;
+          const { lat, lng } = res.results[0].geometry.location;
           const event = {
             username: this.state.username,
             title: this.state.title,
@@ -156,7 +156,7 @@ export default withAuth(
           <GoogleMap
             onLocationChange={this.onLocationChange}
             eventName={this.state.title}
-            address={this.state.address}
+            addressName={this.state.address}
             location={this.state.location}
           />
           <form onSubmit={this.onSubmit}>
