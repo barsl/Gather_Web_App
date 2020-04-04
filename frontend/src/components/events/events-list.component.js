@@ -33,7 +33,6 @@ class EventsList extends Component {
       axios
         .get('/users/currentUser')
         .then(response => {
-          console.log(response.data.invitedEvents);
           this.props.updateUser({ invitedEvents: response.data.invitedEvents });
         })
         .catch(error => {
