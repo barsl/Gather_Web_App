@@ -1,12 +1,12 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classes from './Event.module.css';
 
 const Event = props => {
   const editLink = (
     <Link
       key={"editLink"}
-      to={"/edit/" + props.event._id}
+      to={{ pathname: "/edit/" + props.event._id, event_id: props.event._id }}
     >
       edit
     </Link>

@@ -29,6 +29,9 @@ class GoogleMap extends Component {
             let lat = this.props.location[0];
             let lng = this.props.location[1];
             this.updateMarker(lat, lng);
+        } else {
+            // coordinates of Toronto
+            this.updateMarker(43.651070, -79.347015);
         }
 
         this.interval = setInterval(() => {

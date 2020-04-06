@@ -9,12 +9,15 @@ import Geocode from 'react-geocode';
 import '../style/map.css';
 import './style/edit-event.css';
 import withAuth from '../auth/hoc/withAuth';
+import io from 'socket.io-client';
 
 export default withAuth(
   class EditEvent extends Component {
     constructor(props) {
       super(props);
       Geocode.setApiKey('AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk');
+      this.socket = io('http://localhost:5000');
+      // this.socket = io('https://gatherup.social');
 
       this.onChangeUsername = this.onChangeUsername.bind(this);
       this.onChangeDescription = this.onChangeDescription.bind(this);
@@ -38,12 +41,29 @@ export default withAuth(
         attending: [],
         location: [],
       };
+
+      this.socket.on('RECEIVE_TITLE', title => {
+        this.setState({ title });
+      });
+
+      this.socket.on('RECEIVE_DESCRIPTION', description => {
+        this.setState({ description });
+      });
+
+      this.socket.on('RECEIVE_ADDRESS', address => {
+        this.setState({ address });
+      });
+
+      this.socket.on('RECEIVE_DATE', date => {
+        this.setState({ date: new Date(date) });
+      });
     }
 
     componentDidMount() {
       if (!this.props.loadingAuth && this.props.authenticated) {
         this.fetchEvents();
       }
+      this.socket.emit('JOIN_EVENT', this.props.location.event_id);
     }
 
     componentDidUpdate(prevProps) {
@@ -91,6 +111,8 @@ export default withAuth(
     }
 
     onChangeDescription(e) {
+      this.socket.emit('CHANGE_DESCRIPTION', e.target.value);
+
       this.setState({
         description: e.target.value,
       });
@@ -103,12 +125,16 @@ export default withAuth(
     }
 
     onChangeDate(date) {
+      this.socket.emit('CHANGE_DATE', new Date(date));
+
       this.setState({
         date: date,
       });
     }
 
     onChangeTitle(e) {
+      this.socket.emit('CHANGE_TITLE', e.target.value);
+
       this.setState({
         title: e.target.value,
       });
@@ -121,6 +147,8 @@ export default withAuth(
     }
 
     onAddressChange(e) {
+      this.socket.emit('CHANGE_ADDRESS', e.target.value);
+
       this.setState({
         address: e.target.value,
       });

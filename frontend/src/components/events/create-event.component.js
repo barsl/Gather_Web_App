@@ -205,7 +205,7 @@ class CreateEvent extends Component {
               onChange={this.onChangeTitle}
             />
           </div>
-          <GoogleMap onLocationChange={this.onLocationChange} location={[0, 0]} eventName={this.state.title} addressName={this.state.location} />
+          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.state.title} addressName={this.state.location} />
           <div className="form-group">
             <label>Event Address: </label>
             <input

@@ -23,6 +23,7 @@
     "googleapis": "^48.0.0",
     "helmet": "^3.21.3",
     "mongoose": "^5.9.3",
+    "socket.io": "^2.3.0",
     "validator": "^12.2.0"
   },
   "devDependencies": {
