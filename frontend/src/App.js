@@ -8,7 +8,7 @@ import EditEvent from "./components/events/edit-event.component";
 import CreateEvent from "./components/events/create-event.component";
 import CreateUser from "./components/create-user.component";
 import Friends from "./components/friends.component";
-import UserProfile from "./components/user-profile.component";
+import UserProfile from "./components/user/user-profile.component";
 import OAuthCallback from "./components/auth/oauth/OAuthCallback";
 import { AuthProvider } from "./components/auth/context/AuthContext";
 
