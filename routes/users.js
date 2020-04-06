@@ -2,8 +2,8 @@ const router = require('express').Router();
 const validator = require('validator');
 const auth = require('../middleware/auth');
 const {google} = require('googleapis');
+const userInterests = require('../util/constants/userInterests.js');
 const withGoogleOAuth2 = require('../middleware/withGoogleOAuth2');
-const mongoose = require('mongoose');
 require('dotenv').config();
 
 let User = require('../models/user.model');
@@ -169,6 +169,54 @@ router.route('/:id').get(auth, checkId, (req, res) => {
       res.json(user);
     })
     .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/:id').patch(auth, (req, res) => {
+  if (req.session.user.id !== req.params.id) return res.status(403).end();
+  let {firstName, lastName} = req.body;
+  firstName = validator.escape(firstName.trim());
+  lastName = validator.escape(lastName.trim());
+  if (!validator.isAlpha(firstName) || !validator.isAlpha(lastName)) {
+    return res.status(400).end();
+  }
+  User.findById(req.params.id)
+    .then(user => {
+      user.name = `${firstName} ${lastName}`;
+      return user.save();
+    })
+    .then(user => {
+      res.json({name: user.name});
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).end();
+    });
+});
+
+const userInterestsSet = new Set(Object.values(userInterests));
+router.route('/:id/interests').put(auth, (req, res) => {
+  if (req.session.user.id !== req.params.id) return res.status(403).end();
+  const interests = req.body.value;
+  if (interests) {
+    // Validate interests
+    for (let i = 0; i < interests.length; i++) {
+      if (!userInterestsSet.has(interests[i])) {
+        return res.status(400).send(`Invalid interest "${interests[i]}" specified`);
+      }
+    }
+  }
+  User.findById(req.params.id)
+    .then(user => {
+      user.interests = interests;
+      return user.save();
+    })
+    .then(user => {
+      res.json({interests: user.interests});
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).end();
+    })
 });
 
 router.route('/:username').get(auth, (req, res) => {
