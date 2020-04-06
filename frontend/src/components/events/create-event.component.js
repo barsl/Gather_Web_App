@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,6 +9,8 @@ import Chatkit from '@pusher/chatkit-client';
 import Geocode from 'react-geocode';
 import withUser from '../auth/hoc/withUser';
 import GoogleMap from '../map.component';
+import Search from '../core/Search/Search';
+import TagList from '../core/Tag/TagList/TagList';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -19,33 +21,43 @@ class CreateEvent extends Component {
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangeDescription = this.onChangeDescription.bind(this);
-    this.onChangeDate = this.onChangeDate.bind(this);
-    this.onChangeDuration = this.onChangeDuration.bind(this);
+    this.onChangeStartDate = this.onChangeStartDate.bind(this);
+    this.onChangeEndDate = this.onChangeEndDate.bind(this);
     this.onChangeInvited = this.onChangeInvited.bind(this);
     this.onChangeAttending = this.onChangeAttending.bind(this);
     this.onChangeLocation = this.onChangeLocation.bind(this);
-    this.onChangeTags = this.onChangeTags.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onRemoveInvite = this.onRemoveInvite.bind(this);
     this.onLocationChange = this.onLocationChange.bind(this);
+    this.cancelHandler = this.cancelHandler.bind(this);
+    this.selectTagHandler = this.selectTagHandler.bind(this);
+    this.removeTagHandler = this.removeTagHandler.bind(this);
 
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() + 1);
+    const endDate = new Date(startDate);
+    endDate.setHours(endDate.getHours() + 1);
     this.state = {
       publicStatus: false,
+      tagsList: [],
       title: '',
       description: '',
-      duration: 0,
-      date: new Date(),
+      startDate,
+      endDate,
       invited: [],
       attending: [],
       location: '',
       tags: [],
       users: [],
-      userFriends: [],
+      userFriends: this.props.user.friends,
     };
   }
 
   componentDidMount() {
-    this.setState({ userFriends: this.props.user.friends });
+    axios
+      .get('/consts/interests')
+      .then(({data}) => this.setState({tagsList: data}))
+      .catch(console.error);
   }
 
   onChangeStatus(e) {
@@ -78,13 +90,15 @@ class CreateEvent extends Component {
     });
   }
 
-  onChangeDate(date) {
-    this.setState({
-      date: date,
-    });
+  onChangeStartDate(startDate) {
+    this.setState({startDate});
   }
 
-  onChangeInvited({ target }) {
+  onChangeEndDate(endDate) {
+    this.setState({endDate});
+  }
+
+  onChangeInvited({target}) {
     const friendId = target.value;
     this.setState(prevState => {
       const updatedUserFriends = [...prevState.userFriends];
@@ -129,16 +143,20 @@ class CreateEvent extends Component {
     });
   }
 
-  onChangeTags(e) {
+  onLocationChange(address) {
     this.setState({
-      tags: e.target.value,
+      location: address,
     });
   }
 
-  onLocationChange(address) {
-    this.setState({
-      location: address
-    })
+  selectTagHandler(value) {
+    this.setState(prevState => ({tags: [...prevState.tags, value]}));
+  }
+
+  removeTagHandler(value) {
+    this.setState(prevState => ({
+      tags: prevState.tags.filter(tag => value !== tag),
+    }));
   }
 
   onSubmit(e) {
@@ -174,7 +192,8 @@ class CreateEvent extends Component {
           title: this.state.title,
           username: this.props.user.username,
           description: this.state.description,
-          date: this.state.date,
+          startDate: this.state.startDate,
+          endDate: this.state.endDate,
           invited: this.state.invited,
           attending: this.state.attending,
           location: [lat, lng],
@@ -189,112 +208,158 @@ class CreateEvent extends Component {
       .catch(console.error);
   }
 
+  cancelHandler() {
+    this.props.history.push('/eventsList');
+  }
+
   render() {
+    const tagsSet = new Set(this.state.tags);
     return (
       <div>
         <Navbar />
-        <h3>Create New Event</h3>
-        <form onSubmit={this.onSubmit}>
-          <div className="form-group">
-            <label>Event Title: </label>
-            <input
-              type="text"
-              required
-              className="form-control"
-              value={this.state.title}
-              onChange={this.onChangeTitle}
-            />
-          </div>
-          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.state.title} addressName={this.state.location} />
-          <div className="form-group">
-            <label>Event Address: </label>
-            <input
-              type="text"
-              required
-              className="form-control"
-              value={this.state.location}
-              onChange={this.onChangeLocation}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Username: </label>
-            <p>{this.props.user.username}</p>
-          </div>
-
-          <div className="form-group">
-            <label>
-              <input type="checkbox" onChange={this.onChangeStatus} />
-              Make event public
-            </label>
-          </div>
-
-          <div className="form-group">
-            <label>Description: </label>
-            <input
-              type="text"
-              required
-              className="form-control"
-              value={this.state.description}
-              onChange={this.onChangeDescription}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Date: </label>
-            <div>
-              <DatePicker
-                selected={this.state.date}
-                onChange={this.onChangeDate}
+        <div className="container-fluid px-4 py-3">
+          <h3>Create New Event</h3>
+          <hr />
+          <form onSubmit={this.onSubmit}>
+            <div className="form-group">
+              <label>Event Title: </label>
+              <input
+                type="text"
+                required
+                className="form-control"
+                value={this.state.title}
+                onChange={this.onChangeTitle}
               />
             </div>
-          </div>
-
-          {!this.state.publicStatus && (
-            <>
-              <div className="form-group">
-                <label>Select friends to invite</label>
-                <select
-                  ref="userInput"
-                  className="form-control"
-                  onChange={this.onChangeInvited}
-                >
-                  <option value="">...</option>
-                  {this.state.userFriends.map(function ({ _id, username }) {
-                    return (
-                      <option key={username} value={_id}>
-                        {username}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <ul className={classes.InvitedList}>
-                  {this.state.invited.map(user => {
-                    return (
-                      <li
-                        key={user._id}
-                        onClick={() => this.onRemoveInvite(user._id)}
-                      >
-                        {user.username}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </>
-          )}
-
-          <div className="form-group">
-            <input
-              type="submit"
-              value="Create Event"
-              className="btn btn-primary"
+            <GoogleMap
+              onLocationChange={this.onLocationChange}
+              eventName={this.state.title}
+              addressName={this.state.location}
             />
-          </div>
-        </form>
+            <div className="form-group">
+              <label>Event Address: </label>
+              <input
+                type="text"
+                required
+                className="form-control"
+                value={this.state.location}
+                onChange={this.onChangeLocation}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                <input
+                  type="checkbox"
+                  className="form-check-inline"
+                  onChange={this.onChangeStatus}
+                />
+                Make event public
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label>Description: </label>
+              <input
+                type="text"
+                required
+                className="form-control"
+                value={this.state.description}
+                onChange={this.onChangeDescription}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Tags: </label>
+              <TagList
+                tags={this.state.tags}
+                onTagRemove={this.removeTagHandler}
+              />
+              <Search
+                data={this.state.tagsList.filter(tag => !tagsSet.has(tag))}
+                onSelect={this.selectTagHandler}
+                placeholder="Search tags..."
+                emptyMessage="No matching tags..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Start date: </label>
+              <div>
+                <DatePicker
+                  selected={this.state.startDate}
+                  onChange={this.onChangeStartDate}
+                  showTimeSelect
+                  dateFormat="MM/dd/yy h:mm aa"
+                />
+              </div>
+            </div>
+            <div className="form-group">
+              <label>End date: </label>
+              <div>
+                <DatePicker
+                  selected={this.state.endDate}
+                  onChange={this.onChangeEndDate}
+                  showTimeSelect
+                  dateFormat="MM/dd/yy h:mm aa"
+                />
+              </div>
+            </div>
+
+            {!this.state.publicStatus && (
+              <>
+                <div className="form-group">
+                  <label>Select friends to invite</label>
+                  <select
+                    ref="userInput"
+                    className="form-control"
+                    onChange={this.onChangeInvited}
+                  >
+                    <option value="">...</option>
+                    {this.state.userFriends.map(function ({_id, username}) {
+                      return (
+                        <option key={username} value={_id}>
+                          {username}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <ul className={classes.InvitedList}>
+                    {this.state.invited.map(user => {
+                      return (
+                        <li
+                          key={user._id}
+                          onClick={() => this.onRemoveInvite(user._id)}
+                        >
+                          {user.username}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </>
+            )}
+
+            <div className="form-group">
+              <div className={classes['button-ctrls']}>
+                <input
+                  type="submit"
+                  value="Create Event"
+                  className="btn btn-primary"
+                />
+                <input
+                  type="button"
+                  value="Cancel"
+                  className="btn btn-secondary"
+                  onClick={this.cancelHandler}
+                />
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     );
   }

@@ -54,7 +54,7 @@ class Login extends Component {
         <div className={classes.HorizontalFlex}>
           <div className={classes.LeftSide}>
             <h1 className={classes.Logo}>gather</h1>
-            <img src={image} className={classes.Image}></img>
+            <img src={image} className={classes.Image} alt="Gather Logo - Large"></img>
           </div>
           <div className={classes.RightSide}>
             <h2>Making meetups easier.</h2>

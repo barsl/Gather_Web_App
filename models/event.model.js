@@ -8,14 +8,13 @@ const eventSchema = new Schema(
     title: {type: String, required: true},
     username: {type: String, required: true},
     description: {type: String, required: true},
-    date: {type: Date, required: true},
-    // location: {type: String, required: true}, TODO: Uncomment when implemented
-    location: {type: [Number]},
-    // roomId: { type: String , required: true}, TODO: Uncomment when implemented
-    roomId: {type: String},
+    startDate: {type: Date, required: true},
+    endDate: {type: Date, required: true},
+    location: [{type: Number, required: true}],
+    roomId: { type: String , required: true},
     invited: [{type: Schema.Types.ObjectId, ref: 'User', required: true}],
-    attending: [{type: Schema.Types.ObjectId, ref: 'User', required: false}],
-    tags: {type: [String], required: false},
+    attending: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    tags: {type: [String]},
     // TODO: add media
   },
   {

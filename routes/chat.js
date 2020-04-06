@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Chatkit = require('@pusher/chatkit-server');
+const auth = require('../middleware/auth');
 require('dotenv').config();
 
 const chatkit = new Chatkit.default({
@@ -19,7 +20,7 @@ router.route('/createUser').post((req, res) => {
         });
 })
 
-router.route('/auth').post((req, res) => {
+router.route('/auth').post(auth, (req, res) => {
     const authData = chatkit.authenticate({
         userId: req.query.user_id
     });

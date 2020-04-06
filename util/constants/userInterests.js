@@ -1,0 +1,25 @@
+const userInterests = {
+  FOOD: 'Food',
+  RESTAURANTS: 'Restaurants',
+  CLUBBING: 'Clubbing',
+  BARS_PUBS: 'Bars/Pubs',
+  MUSIC: 'Music',
+  MOVIES: 'Movies',
+  MUSEUMS: 'Museums',
+  TOURISM: 'Tourism',
+  SHOPPING: 'Shopping',
+  MARKETS: 'Markets',
+  PARKS: 'Parks',
+  HIKING: 'Hiking',
+  SPORTS: 'Sports',
+  CAMPING: 'Camping',
+  FAMILY_ACTIVITY: 'Family Activity',
+  ART: 'Art',
+  BEACHES: 'Beaches',
+  THEATRE: 'Theatre',
+  LITERATURE: 'Literature',
+  CASINO: 'Casino',
+  VIDEO_GAMES: 'Video Games',
+};
+
+module.exports = userInterests;

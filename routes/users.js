@@ -2,8 +2,12 @@ const router = require('express').Router();
 const validator = require('validator');
 const auth = require('../middleware/auth');
 const {google} = require('googleapis');
+const userInterests = require('../util/constants/userInterests.js');
 const withGoogleOAuth2 = require('../middleware/withGoogleOAuth2');
-const mongoose = require('mongoose');
+const {
+  checkEventPermissions,
+  stripCredentials,
+} = require('../util/functions/UserUtil');
 require('dotenv').config();
 
 let User = require('../models/user.model');
@@ -17,8 +21,8 @@ function checkId(req, res, next) {
   next();
 }
 
-router.route('/').get((req, res) => {
-  User.find()
+router.route('/').get(auth, (req, res) => {
+  User.find({}, {password: 0, salt: 0})
     .then(users => res.json(users))
     .catch(err => res.status(400).json('Error: ' + err));
 });
@@ -26,7 +30,7 @@ router.route('/').get((req, res) => {
 router.route('/currentUser').get(auth, (req, res) => {
   //get user from session
   if (req.session.user) {
-    User.findOne({username: req.session.user.username})
+    User.findOne({username: req.session.user.username}, {password: 0, salt: 0})
       .populate('friends')
       .populate('createdEvents')
       .populate('invitedEvents')
@@ -42,7 +46,7 @@ router.route('/currentUser').get(auth, (req, res) => {
 });
 
 router.route('/:id/attendingEvents').patch(auth, (req, res) => {
-  if (!req.session.user || req.session.user.id !== req.params.id) {
+  if (req.session.user.id !== req.params.id) {
     return res.status(403).end();
   }
   const {value, op} = req.body;
@@ -60,6 +64,9 @@ router.route('/:id/attendingEvents').patch(auth, (req, res) => {
 
   Promise.all([getUserPromise, getEventPromise])
     .then(([user, event]) => {
+      if (!checkEventPermissions(event, req.session.user)) {
+        throw {msg: 'Unauthorized', status: 403};
+      }
       const eventIdStr = event._id.toString();
       const userIdStr = user._id.toString();
 
@@ -116,7 +123,7 @@ router.route('/:id/attendingEvents').patch(auth, (req, res) => {
         .execPopulate();
     })
     .then(user => {
-      res.json(user);
+      res.json(stripCredentials(user.toObject()));
     })
     .catch(err => {
       console.error(err);
@@ -148,6 +155,7 @@ router
       .catch(err => res.status(500).end(err));
   });
 
+// TODO: remove this test endpoint
 router.route('/:id/gcevents').get(auth, withGoogleOAuth2, (req, res) => {
   const calendar = google.calendar({version: 'v3', auth: req.oAuth2Client});
   calendar.events
@@ -163,26 +171,76 @@ router.route('/:id/gcevents').get(auth, withGoogleOAuth2, (req, res) => {
 });
 
 router.route('/:id').get(auth, checkId, (req, res) => {
+  if (req.params.id !== req.session.user.id) {
+    return res.status(403).end();
+  }
   User.findById(req.params.id)
     .then(user => {
       if (!user) return res.status(404).json('User not found');
-      res.json(user);
+      res.json(stripCredentials(user.toObject));
     })
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/:id').patch(auth, (req, res) => {
+  if (req.session.user.id !== req.params.id) return res.status(403).end();
+  let {firstName, lastName, location, address} = req.body;
+  firstName = validator.escape(firstName.trim());
+  lastName = validator.escape(lastName.trim());
+  address = validator.escape(address.trim());
+  if (!validator.isAlpha(firstName) || !validator.isAlpha(lastName)) {
+    return res.status(400).end();
+  }
+  User.findById(req.params.id)
+    .then(user => {
+      user.name = `${firstName} ${lastName}`;
+      user.location = location;
+      user.address = address;
+      return user.save();
+    })
+    .then(user => {
+      res.json(stripCredentials(user.toObject()));
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).end();
+    });
+});
+
+const userInterestsSet = new Set(Object.values(userInterests));
+router.route('/:id/interests').put(auth, (req, res) => {
+  if (req.session.user.id !== req.params.id) return res.status(403).end();
+  const interests = req.body.value;
+  if (interests) {
+    // Validate interests
+    for (let i = 0; i < interests.length; i++) {
+      if (!userInterestsSet.has(interests[i])) {
+        return res
+          .status(400)
+          .send(`Invalid interest "${interests[i]}" specified`);
+      }
+    }
+  }
+  User.findById(req.params.id)
+    .then(user => {
+      user.interests = interests;
+      return user.save();
+    })
+    .then(user => {
+      res.json(stripCredentials(user.toObject));
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).end();
+    });
+});
+
 router.route('/:username').get(auth, (req, res) => {
-  User.find({username: req.params.username})
+  User.find({username: req.params.username}, {password: 0, salt: 0})
     .then(user => {
       if (!user) return res.status(404).json('User not found');
       res.json(user);
     })
-    .catch(err => res.status(400).json('Error: ' + err));
-});
-
-router.route('/name/:name').get((req, res) => {
-  User.findOne({username: req.params.name})
-    .then(user => res.json(user))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 

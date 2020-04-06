@@ -1,119 +1,136 @@
-import React, { Component } from 'react';
-import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
-import Geocode from "react-geocode";
+import React, {Component} from 'react';
+import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
+import {
+  getAddressFromCoordinates,
+  getCoordinatesFromAddress,
+} from '../util/MapUtil';
 import './style/map.css';
 
 class GoogleMap extends Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
-        Geocode.setApiKey("AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk");
+    this.onMarkerClick = this.onMarkerClick.bind(this);
+    this.onMapClicked = this.onMapClicked.bind(this);
+    this.updateMarker = this.updateMarker.bind(this);
 
-        this.onMarkerClick = this.onMarkerClick.bind(this);
-        this.onMapClicked = this.onMapClicked.bind(this);
-        this.updateMarker = this.updateMarker.bind(this);
+    this.state = {
+      showingInfoWindow: false,
+      activeMarker: {},
+      selectedPlace: {},
+      eventName: this.props.eventName,
+      eventAddress: '',
+      markerPos: {
+        lat: 0,
+        lng: 0,
+      },
+    };
+  }
 
-        this.state = {
-            showingInfoWindow: false,
-            activeMarker: {},
-            selectedPlace: {},
-            eventName: this.props.eventName,
-            eventAddress: '',
-            markerLat: 0,
-            marketLng: 0
-        };
+  componentDidMount() {
+    if (this.props.location) {
+      const [lat, lng] = this.props.location;
+      this.setState({
+        markerPos: {lat, lng},
+        eventAddress: this.props.addressName,
+      });
     }
+  }
 
-    componentDidMount() {
-        if (this.props.location) {
-            let lat = this.props.location[0];
-            let lng = this.props.location[1];
-            this.updateMarker(lat, lng);
-        } else {
-            // coordinates of Toronto
-            this.updateMarker(43.651070, -79.347015);
-        }
-
-        this.interval = setInterval(() => {
-            if (this.props.addressName !== this.state.eventAddress) {
-                Geocode.fromAddress(this.props.addressName)
-                    .then(res => {
-                        this.setState({
-                            markerLat: res.results[0].geometry.location.lat,
-                            markerLng: res.results[0].geometry.location.lng,
-                            eventAddress: this.props.addressName
-                        })
-                    })
-                    .catch(err => { })
-            }
-        }, 5000);
+  componentDidUpdate(prevProps) {
+    if (prevProps.addressName !== this.props.addressName) {
+      if (this.updateTimer) clearTimeout(this.updateTimer);
+      this.updateTimer = setTimeout(() => {
+        getCoordinatesFromAddress(this.props.addressName).then(([lat, lng]) => {
+          this.setState({
+            markerPos: {lat, lng},
+            eventAddress: this.props.addressName,
+          });
+        })
+        .catch(() => console.log('No results found.'));
+      }, 500);
     }
+  }
 
-    updateMarker(lat, lng) {
-        Geocode.fromLatLng(lat, lng)
-            .then(res => {
-                this.setState({
-                    markerLat: lat,
-                    markerLng: lng,
-                    eventAddress: res.results[0].formatted_address,
-                })
+  componentWillUnmount() {
+    if (this.updateTimer) clearTimeout(this.updateTimer);
+  }
 
-                this.props.onLocationChange(this.state.eventAddress);
-            })
-            .catch(err => console.error(err));
-    }
-
-    onMarkerClick = (props, marker, e) => {
+  updateMarker(lat, lng) {
+    getAddressFromCoordinates([lat, lng])
+      .then(address => {
         this.setState({
-            selectedPlace: props,
-            activeMarker: marker,
-            showingInfoWindow: true
+          markerPos: {lat, lng},
+          eventAddress: address,
         });
+
+        this.props.onLocationChange(this.state.eventAddress);
+      })
+      .catch(err => console.error(err));
+  }
+
+  onMarkerClick = (props, marker, e) => {
+    this.setState({
+      selectedPlace: props,
+      activeMarker: marker,
+      showingInfoWindow: true,
+    });
+  };
+
+  onMapClicked = (props, map, e) => {
+    if (this.state.showingInfoWindow) {
+      this.setState({
+        showingInfoWindow: false,
+        activeMarker: null,
+      });
+    } else {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+
+      this.updateMarker(lat, lng);
     }
+  };
 
-    onMapClicked = (props, map, e) => {
-        if (this.state.showingInfoWindow) {
-            this.setState({
-                showingInfoWindow: false,
-                activeMarker: null
-            })
-        }
-        else {
-            const lat = e.latLng.lat();
-            const lng = e.latLng.lng();
+  render() {
+    return (
+      <div className="map_small">
+        <Map
+          google={this.props.google}
+          zoom={15}
+          center={this.state.markerPos}
+          onClick={this.onMapClicked}
+        >
+          <Marker
+            name={this.state.eventName}
+            onClick={this.onMarkerClick}
+            position={this.state.markerPos}
+          />
 
-            this.updateMarker(lat, lng);
-        }
-    }
-
-    render() {
-        return (
-            <div className='map_small'>
-                <Map
-                    google={this.props.google}
-                    zoom={15}
-                    center={{ lat: this.state.markerLat, lng: this.state.markerLng }}
-                    onClick={this.onMapClicked}
-                >
-                    <Marker
-                        name={this.state.eventName}
-                        onClick={this.onMarkerClick}
-                        position={{ lat: this.state.markerLat, lng: this.state.markerLng }} />
-
-                    <InfoWindow
-                        marker={this.state.activeMarker}
-                        visible={this.state.showingInfoWindow}>
-                        <div>
-                            <h4>{this.state.selectedPlace.name}</h4>
-                            <h6>{this.state.eventAddress}</h6>
-                        </div>
-                    </InfoWindow>
-                </Map>
-            </div >
-        )
-    }
+          <InfoWindow
+            marker={this.state.activeMarker}
+            visible={this.state.showingInfoWindow}
+          >
+            <div>
+              <h4>{this.state.selectedPlace.name}</h4>
+              <h6>{this.state.eventAddress}</h6>
+            </div>
+          </InfoWindow>
+        </Map>
+      </div>
+    );
+  }
 }
 
 export default GoogleApiWrapper({
-    apiKey: (`AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk`)
-})(GoogleMap);
+  apiKey: `AIzaSyDjmOBK0u2QrCMhLTln-Z_yHWs9MzuzsSk`,
+})(
+  React.memo(GoogleMap, (prevProps, nextProps) => {
+    return (
+      prevProps.eventName === nextProps.eventName &&
+      prevProps.addressName === nextProps.addressName &&
+      prevProps.location === nextProps.location &&
+      prevProps.loaded === nextProps.loaded &&
+      prevProps.google === nextProps.google
+    );
+  }),
+);

@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import {Link, withRouter} from 'react-router-dom';
 import axios from 'axios';
 import {AuthContext} from './auth/context/AuthContext';
+import {Navbar, Nav, NavDropdown} from 'react-bootstrap';
 
-class Navbar extends Component {
+class Navigation extends Component {
   constructor(props) {
     super(props);
     this.logOut = this.logOut.bind(this);
@@ -26,45 +27,38 @@ class Navbar extends Component {
   render() {
     return (
       <>
-        {this.context.user && 
-          <nav className="navbar navbar-dark bg-dark navbar-expand-lg">
-            <Link to="/eventsList" className="navbar-brand">
-              Gather
-            </Link>
-            <div className="collpase navbar-collapse">
-              <ul className="navbar-nav mr-auto">
-                <li className="navbar-item">
-                  <Link to="/eventsList" className="nav-link">
-                    Events
-                  </Link>
-                </li>
-                <li className="navbar-item">
-                  <Link to="/create" className="nav-link">
-                    Create Event Log
-                  </Link>
-                </li>
-                <li className="navbar-item">
-                  <Link to="/friends" className="nav-link">
-                    Friends
-                  </Link>
-                </li>
-                <li>
-                  <a href="/" onClick={this.logOut} className="nav-link">
-                    Logout
-                  </a>
-                </li>
-                <li className="navbar-item">
-                  <Link to="/profile" className="nav-link">
-                    {this.context.user.username}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </nav>
-        }
+        {this.context.user && (
+          <Navbar bg="dark" variant="dark" expand="lg">
+            <Link className="navbar-brand" to="/eventsList">Gather</Link>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse>
+              <Nav>
+                <Link className="nav-link" to="/eventsList">
+                  Events
+                </Link>
+                <Link className="nav-link" to="/create">
+                  Create Event
+                </Link>
+                <Link className="nav-link" to="/friends">
+                  Friends
+                </Link>
+              </Nav>
+              <Nav className="ml-auto">
+                <NavDropdown alignRight title={this.context.user.username}>
+                    <Link className="dropdown-item" to="/profile">
+                      My Profile
+                    </Link>
+                    <a href="/" onClick={this.logOut} className="dropdown-item">
+                      Logout
+                    </a>
+                </NavDropdown>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
+        )}
       </>
     );
   }
 }
 
-export default withRouter(Navbar);
+export default withRouter(Navigation);

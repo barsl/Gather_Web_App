@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const validator = require("validator");
 const crypto = require("crypto");
+const auth = require('../middleware/auth');
+const {stripCredentials} = require('../util/functions/UserUtil');
 require("dotenv").config();
-const cookie = require("cookie");
 let User = require("../models/user.model");
-const fs = require("fs");
 const withGoogleOAuth2 = require("../middleware/withGoogleOAuth2");
 
 function generateSalt() {
@@ -35,11 +35,6 @@ router.route("/signin").post(checkUsername, (req, res) => {
     }
 
     req.session.user = { username: user.username, id: user._id };
-    res.setHeader("Set-Cookie", cookie.serialize("username", user.username), {
-      path: "/",
-      maxAge: parseInt(process.env.SESS_LIFETIME)
-    });
-
     return res.json(req.session.user.username);
   });
 });
@@ -73,15 +68,7 @@ router.route("/signup").post(checkUsername, (req, res) => {
       .save()
       .then(savedUser => {
         req.session.user = { username: savedUser.username, id: savedUser._id };
-        res.setHeader(
-          "Set-Cookie",
-          cookie.serialize("username", savedUser.username),
-          {
-            path: "/",
-            maxAge: parseInt(process.env.SESS_LIFETIME)
-          }
-        );
-        res.json(savedUser);
+        res.json(stripCredentials(savedUser.toObject()));
       })
       .catch(err => {
         return res.status(500).json(err);
@@ -100,7 +87,7 @@ router.route("/verify").get((req, res) => {
   else res.json({ isValid: true });
 });
 
-router.get("/authenticateGoogleUser", withGoogleOAuth2, (req, res) => {
+router.get("/authenticateGoogleUser", auth, withGoogleOAuth2, (req, res) => {
   const authUrl = req.oAuth2Client.generateAuthUrl({
     access_type: "offline",
     scope: ["https://www.googleapis.com/auth/calendar.readonly"] //change scope if necessary

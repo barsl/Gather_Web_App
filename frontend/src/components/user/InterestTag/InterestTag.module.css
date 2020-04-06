@@ -1,0 +1,39 @@
+.InterestTag {
+  border-radius: 0.25em;
+  cursor: pointer;
+  background-color: var(--primary-gray);
+  color: black;
+  display: inline-block;
+  margin: 0;
+  padding: 0.25em 1em;
+  width: 15em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  transition: background-color .15s ease-in-out,border-color .15s ease-in-out
+}
+
+.InterestTag:hover{
+  background-color: var(--secondary-gray);
+  border-color: var(--secondary-gray);
+}
+
+.InterestTag > label {
+  cursor: pointer;
+  padding: 0 1em;
+  margin: 0;
+}
+
+.InterestTag > input {
+  cursor: pointer;
+}
+
+.InterestTag.checked {
+  background-color: var(--primary-teal);
+  color: white;
+}
+
+.InterestTag.checked:hover {
+  background-color: var(--secondary-teal);
+  border-color: var(--secondary-teal);
+}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 class Signup extends Component {
     constructor(props) {
@@ -67,47 +67,52 @@ class Signup extends Component {
         const showError = this.state.error ? "d-inline-block" : "d-none";
         return (
             <div>
-                <div className={`alert alert-danger ${showError}`} >Invalid Entries</div>
-                <h3>Sign up</h3>
-                <form onSubmit={this.onSubmit}>
-                    <div className="form-group">
-                        <label>Username: </label>
-                        <input type="text"
-                            name="username"
-                            required
-                            className="form-control"
-                            value={this.state.username}
-                            onChange={this.onChange}
-                        />
-                        <label>First Name: </label>
-                        <input type="text"
-                            name="firstName"
-                            required
-                            className="form-control"
-                            value={this.state.firstName}
-                            onChange={this.onChange}
-                        />
-                        <label>Last Name: </label>
-                        <input type="text"
-                            name="lastName"
-                            required
-                            className="form-control"
-                            value={this.state.lastName}
-                            onChange={this.onChange}
-                        />
-                        <label>Password: </label>
-                        <input type="password"
-                            name="password"
-                            required
-                            className="form-control"
-                            value={this.state.password}
-                            onChange={this.onChange}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input type="submit" value="Sign up" className="btn btn-primary" />
-                    </div>
-                </form>
+                <div className="container py-5">
+                    <div className={`alert alert-danger ${showError}`} >Invalid Entries</div>
+                    <h1>Sign up</h1>
+                    <form className="py-2" onSubmit={this.onSubmit}>
+                        <div className="form-group">
+                            <label>Username: </label>
+                            <input type="text"
+                                name="username"
+                                required
+                                className="form-control"
+                                value={this.state.username}
+                                onChange={this.onChange}
+                            />
+                            <label>First Name: </label>
+                            <input type="text"
+                                name="firstName"
+                                required
+                                className="form-control"
+                                value={this.state.firstName}
+                                onChange={this.onChange}
+                            />
+                            <label>Last Name: </label>
+                            <input type="text"
+                                name="lastName"
+                                required
+                                className="form-control"
+                                value={this.state.lastName}
+                                onChange={this.onChange}
+                            />
+                            <label>Password: </label>
+                            <input type="password"
+                                name="password"
+                                required
+                                className="form-control"
+                                value={this.state.password}
+                                onChange={this.onChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input type="submit" value="Sign up" className="btn btn-primary" />
+                            <Link to="/">
+                                <input type="button" value="Cancel" className="btn btn-secondary ml-2" />
+                            </Link>
+                        </div>
+                    </form>
+                </div>
             </div >
         )
     }

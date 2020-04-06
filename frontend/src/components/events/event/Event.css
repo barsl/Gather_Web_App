@@ -1,0 +1,107 @@
+.btn.btn-link {
+  padding: 0;
+}
+
+.Square {
+  border: 2px solid var(--primary-gray);
+  min-width: 280px;
+  min-height: 280px;
+  margin: 0 1em;
+  cursor: pointer;
+}
+
+.Square:first-child {
+  margin-left: 0;
+}
+
+.Square:last-child {
+  margin-right: 0;
+}
+
+.Square:hover {
+  border-color: var(--secondary-gray);
+}
+
+.EventIconHolder {
+  min-height: 180px;
+  display: flex;
+  position: relative;
+}
+
+.AttendButton {
+  min-height: 10px;
+  min-width: 20px;
+  padding: 3px;
+  border-radius: 10%;
+  background-color: var(--primary-teal);
+  position: absolute;
+  right:0;
+  top:0;
+  margin: 10px;
+  color:white;
+  font-size: 11pt;
+  font-weight: bold;
+  display: none;
+}
+.AttendButton:hover {
+  background-color: var(--secondary-teal);
+}
+
+.UnattendButton {
+  min-height: 10px;
+  min-width: 20px;
+  padding: 3px;
+  border-radius: 10%;
+  background-color: var(--primary-pink);
+  position: absolute;
+  right:0;
+  top:0;
+  margin: 10px;
+  color:white;
+  font-size: 11pt;
+  font-weight: bold;
+  display: none;
+}
+.UnattendButton:hover {
+  background-color: var(--secondary-pink);
+}
+
+.Square:hover > .EventIconHolder > .AttendButton {
+  display: block;
+}
+.Square:hover > .EventIconHolder > .UnattendButton {
+  display: block;
+}
+
+.EventIcon {
+  height: 120px;
+  width: 120px;
+  margin: auto;
+  background-image: url('../../assets/love.svg');
+  background-repeat: no-repeat;
+}
+.EventInfo {
+  padding: 0.5em;
+  min-height: 100px;
+  max-height: 100px;
+  background-color: var(--primary-gray);
+  overflow-y: scroll;
+}
+
+.EventInfo::-webkit-scrollbar {
+  display: none;
+}
+
+.Title {
+  font-weight: 600;
+}
+
+.Time {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.Description {
+  margin: 0;
+  font-weight: 300;
+}

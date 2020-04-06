@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Chatkit from '@pusher/chatkit-client';
 import MessageList from './messageList.component';
 import { withRouter } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import SendMessageForm from './sendMessage.component';
+import { AuthContext } from './auth/context/AuthContext';
 
 class ChatScreen extends Component {
     constructor(props) {
@@ -15,10 +15,11 @@ class ChatScreen extends Component {
         }
         this.sendMessage = this.sendMessage.bind(this);
     }
+    static contextType = AuthContext;
     componentDidMount() {
         const chatManager = new Chatkit.ChatManager({
             instanceLocator: 'v1:us1:1956d6a4-c213-42ad-b3a5-ac091e1b514a',
-            userId: Cookies.get('username'),
+            userId: this.context.user.username,
             tokenProvider: new Chatkit.TokenProvider({
                 url: '/chat/auth'
             })

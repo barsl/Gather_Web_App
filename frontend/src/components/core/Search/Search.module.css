@@ -1,0 +1,8 @@
+.search-item {
+  cursor: pointer;
+}
+
+.search-item:focus {
+  background-color: var(--primary);
+  color: #fff;
+}

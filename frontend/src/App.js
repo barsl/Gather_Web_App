@@ -6,24 +6,24 @@ import Signup from "./components/signup.component";
 import EventsList from "./components/events/events-list.component";
 import EditEvent from "./components/events/edit-event.component";
 import CreateEvent from "./components/events/create-event.component";
-import CreateUser from "./components/create-user.component";
 import Friends from "./components/friends.component";
-import UserProfile from "./components/user-profile.component";
+import UserProfile from "./components/user/user-profile.component";
 import OAuthCallback from "./components/auth/oauth/OAuthCallback";
 import { AuthProvider } from "./components/auth/context/AuthContext";
+import EventPage from "./components/events/event-page";
+import './index.css';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="container">
-          <br />
+        <div className="container-fluid px-0">
           <Route exact path="/" component={Login} />
           <Route path="/signup" component={Signup} />
           <Route path="/eventsList" component={EventsList} />
+          <Route path="/event/:id" component={EventPage} />
           <Route path="/edit/:id" component={EditEvent} />
           <Route path="/create" component={CreateEvent} />
-          <Route path="/user" component={CreateUser} />
           <Route path="/friends" component={Friends} />
           <Route path="/profile" component={UserProfile} />
           <Route path="/oauthcallback" component={OAuthCallback} />

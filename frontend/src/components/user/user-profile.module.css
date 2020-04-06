@@ -1,0 +1,65 @@
+.button-ctrls {
+  display: flex;
+}
+
+.btn-primary {
+  background-color: var(--primary-teal);
+  border-color: var(--primary-teal);
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-teal);
+  border-color: var(--secondary-teal);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-gray);
+  border-color: var(--secondary-gray);
+}
+
+.btn-secondary:hover {
+  background-color: var(--dark-gray);
+  border-color: var(--dark-gray);
+}
+
+.button-ctrls > input:first-child {
+  margin-right: 0.25em;
+}
+
+.button-ctrls > input:last-child {
+  margin-left: 0.25em;
+}
+
+.interests-options {
+  align-content: flex-start;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: flex-start;
+  margin: 0.5em 0;
+  max-height: 15em;
+}
+
+.interests-options > div {
+  margin-bottom: 0.2em;
+  margin-right: 1em;
+}
+
+.interests-options > div:first-child {
+  margin-top: 0;
+}
+
+.interests-options > div:last-child {
+  margin-bottom: 0;
+}
+
+.connected-badge {
+  font-size: 1.25rem;
+}
+
+.connected-badge > * {
+  background-color: var(--primary-teal);
+}
+
+.Address {
+  margin-top: 1rem;
+}

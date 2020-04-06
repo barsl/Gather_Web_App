@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Link, withRouter, Redirect } from 'react-router-dom';
+import { withRouter, Redirect } from 'react-router-dom';
 import axios from 'axios';
-import Navbar from "./navbar.component"
 
 const Friend = props => (
   <tr>
@@ -124,7 +123,6 @@ class FriendRequests extends Component {
             {this.friendsList()}
           </tbody>
         </table>
-
       </div>
     )
   }

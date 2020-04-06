@@ -1,0 +1,23 @@
+.tag {
+  cursor: pointer;
+  padding: 0.5em 1em;
+}
+
+.readonly {
+  cursor: default;
+}
+
+.remove-icon {
+  opacity: 0.5;
+  display: inline-block;
+  background-image: url('../../../assets/close.svg');
+  background-size: 0.75em;
+  width: 0.75em;
+  height: 0.75em;
+  margin-left: 0.5em;
+  transition: opacity .15s ease-in-out;
+}
+
+.tag:hover > .remove-icon {
+  opacity: 1;
+}
