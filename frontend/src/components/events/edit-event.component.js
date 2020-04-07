@@ -156,7 +156,7 @@ export default withAuth(
           <GoogleMap
             onLocationChange={this.onLocationChange}
             eventName={this.state.title}
-            address={this.state.address}
+            addressName={this.state.address}
             location={this.state.location}
           />
           <form onSubmit={this.onSubmit}>
@@ -242,7 +242,6 @@ export default withAuth(
         <div className="edit_page">
           <div className="main_edit_screen">
             <NavBar />
-            {this.props.loadingAuth && 'Loading!'}
             {!this.state.loading ? editPage : null}
           </div>
           {!this.state.loading && chatScreen}

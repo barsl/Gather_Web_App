@@ -137,8 +137,8 @@ class CreateEvent extends Component {
 
   onLocationChange(address) {
     this.setState({
-      location: address
-    })
+      location: address,
+    });
   }
 
   onSubmit(e) {
@@ -205,7 +205,11 @@ class CreateEvent extends Component {
               onChange={this.onChangeTitle}
             />
           </div>
-          <GoogleMap onLocationChange={this.onLocationChange} eventName={this.state.title} addressName={this.state.location} />
+          <GoogleMap
+            onLocationChange={this.onLocationChange}
+            eventName={this.state.title}
+            addressName={this.state.location}
+          />
           <div className="form-group">
             <label>Event Address: </label>
             <input
@@ -260,7 +264,7 @@ class CreateEvent extends Component {
                   onChange={this.onChangeInvited}
                 >
                   <option value="">...</option>
-                  {this.state.userFriends.map(function({_id, username}) {
+                  {this.state.userFriends.map(function ({_id, username}) {
                     return (
                       <option key={username} value={_id}>
                         {username}
