@@ -253,20 +253,18 @@ class UserProfile extends Component {
               </div>
             ))}
           </div>
-          <div className={classes['button-ctrls']}>
+          {interestsModified && <div className={classes['button-ctrls']}>
             <input
               className={classes['button-primary']}
               type="submit"
               value="Save"
-              disabled={!interestsModified}
             />
             <input
               type="button"
               value="Cancel"
               onClick={this.cancelEditInterests}
-              disabled={!interestsModified}
             />
-          </div>
+          </div>}
         </form>
         <hr />
         <h4>Service Integrations</h4>
