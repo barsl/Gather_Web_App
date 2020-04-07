@@ -141,6 +141,8 @@ export default withAuth(
     }
 
     onLocationChange(address) {
+      this.socket.emit('CHANGE_ADDRESS', address);
+
       this.setState({
         address,
       });
