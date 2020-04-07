@@ -22,7 +22,6 @@ class UserProfile extends Component {
       lastName,
       address: this.props.user.address,
       location: this.props.user.location,
-      interests: this.props.user.interests,
       interestsList: [],
       editingInfo: false,
     };
@@ -37,7 +36,6 @@ class UserProfile extends Component {
     );
     this.updateContactInfoHandler = this.updateContactInfoHandler.bind(this);
     this.selectInterestHandler = this.selectInterestHandler.bind(this);
-    this.cancelEditInterests = this.cancelEditInterests.bind(this);
     this.updateInterestsHandler = this.updateInterestsHandler.bind(this);
   }
 
@@ -52,9 +50,6 @@ class UserProfile extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.user.interests !== this.props.user.interests) {
-      this.setState({interests: this.props.user.interests});
-    }
     if (prevProps.user.location !== this.props.user.location) {
       this.setState({
         location: this.props.user.location,
@@ -106,33 +101,25 @@ class UserProfile extends Component {
     });
   }
 
-  cancelEditInterests() {
-    this.setState({interests: this.props.user.interests});
-  }
-
   selectInterestHandler({value, checked}) {
-    this.setState(prevState => {
-      return checked
-        ? {interests: [...prevState.interests, value]}
-        : {interests: prevState.interests.filter(i => i !== value)};
-    });
+    const newInterests = checked
+      ? [...this.props.user.interests, value]
+      : this.props.user.interests.filter(i => i !== value);
+    this.updateInterestsHandler(this.props.user.interests, newInterests);
   }
 
-  updateInterestsHandler(e) {
-    e.preventDefault();
-    const userInterestsCache = this.props.user.interests;
-    const interestsArray = [...this.state.interests];
-    this.props.updateUser({interests: interestsArray});
+  updateInterestsHandler(prevInterests, nextInterests) {
+    this.props.updateUser({interests: nextInterests});
     axios
       .put(`/users/${this.props.user.id}/interests`, {
-        value: [...this.state.interests],
+        value: nextInterests,
       })
       .then(({data}) => {
         console.log(data);
       })
       .catch(err => {
         console.error(err);
-        this.props.updateUser({interests: userInterestsCache});
+        this.props.updateUser({interests: prevInterests});
       });
   }
 
@@ -228,10 +215,7 @@ class UserProfile extends Component {
         </div>
       </form>
     );
-    const interestsSet = new Set(this.state.interests);
-    const interestsModified =
-      this.props.user.interests.length !== this.state.interests.length ||
-      !this.props.user.interests.every(i => interestsSet.has(i));
+    const interestsSet = new Set(this.props.user.interests);
     return (
       <div>
         <Navbar />
@@ -241,31 +225,17 @@ class UserProfile extends Component {
         {contactInfo}
         <hr />
         <h4>My Interests</h4>
-        <form onSubmit={this.updateInterestsHandler}>
-          <div className={classes['interests-options']}>
-            {this.state.interestsList.map(i => (
-              <div key={i}>
-                <InterestTag
-                  value={i}
-                  checked={interestsSet.has(i)}
-                  onSelect={this.selectInterestHandler}
-                />
-              </div>
-            ))}
-          </div>
-          {interestsModified && <div className={classes['button-ctrls']}>
-            <input
-              className={classes['button-primary']}
-              type="submit"
-              value="Save"
-            />
-            <input
-              type="button"
-              value="Cancel"
-              onClick={this.cancelEditInterests}
-            />
-          </div>}
-        </form>
+        <div className={classes['interests-options']}>
+          {this.state.interestsList.map(i => (
+            <div key={i}>
+              <InterestTag
+                value={i}
+                checked={interestsSet.has(i)}
+                onSelect={this.selectInterestHandler}
+              />
+            </div>
+          ))}
+        </div>
         <hr />
         <h4>Service Integrations</h4>
         {!this.state.googleConnected && (
