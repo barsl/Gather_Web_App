@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import GoogleMap from '../map.component';
 import Navbar from '../navbar.component';
 import withUser from '../auth/hoc/withUser';
 import classes from './user-profile.module.css';
 import InterestTag from './InterestTag/InterestTag';
+import {getCoordinatesFromAddress} from '../../util/MapUtil';
 
 const extractName = fullName => {
   const [firstName, lastName] = fullName.split(' ');
@@ -13,12 +15,13 @@ const extractName = fullName => {
 class UserProfile extends Component {
   constructor(props) {
     super(props);
-
     const {firstName, lastName} = extractName(this.props.user.name);
     this.state = {
       googleConnected: false,
       firstName,
       lastName,
+      address: this.props.user.address,
+      location: this.props.user.location,
       interests: this.props.user.interests,
       interestsList: [],
       editingInfo: false,
@@ -51,6 +54,12 @@ class UserProfile extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.user.interests !== this.props.user.interests) {
       this.setState({interests: this.props.user.interests});
+    }
+    if (prevProps.user.location !== this.props.user.location) {
+      this.setState({
+        location: this.props.user.location,
+        address: this.props.user.address,
+      });
     }
   }
 
@@ -89,7 +98,12 @@ class UserProfile extends Component {
   }
 
   cancelEditContactInfo() {
-    this.setState({...extractName(this.props.user.name), editingInfo: false});
+    this.setState({
+      ...extractName(this.props.user.name),
+      address: this.props.user.address,
+      location: this.props.user.location,
+      editingInfo: false,
+    });
   }
 
   cancelEditInterests() {
@@ -125,19 +139,28 @@ class UserProfile extends Component {
   updateContactInfoHandler(e) {
     e.preventDefault();
     this.setState({editingInfo: false});
-    axios
-      .patch(`/users/${this.props.user.id}`, {
-        firstName: this.state.firstName,
-        lastName: this.state.lastName,
+    getCoordinatesFromAddress(this.state.address)
+      .then(location => {
+        return axios.patch(`/users/${this.props.user.id}`, {
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          address: this.state.address,
+          location: location,
+        });
       })
       .then(({data}) => {
-        console.log(data);
-        this.props.updateUser(data);
+        const {name, location, address} = data;
+        this.props.updateUser({name, location, address});
       })
       .catch(err => {
         console.error(err);
         const {firstName, lastName} = extractName(this.props.user.name);
-        this.setState({firstName, lastName});
+        this.setState({
+          firstName,
+          lastName,
+          location: this.props.user.location,
+          address: this.props.user.address,
+        });
       });
   }
 
@@ -146,6 +169,7 @@ class UserProfile extends Component {
       <>
         <p>First Name: {this.state.firstName}</p>
         <p>Last Name: {this.state.lastName}</p>
+        <p>Address: {this.state.address}</p>
         <input
           type="button"
           value="Edit"
@@ -171,6 +195,22 @@ class UserProfile extends Component {
             value={this.state.lastName}
             name="lastName"
             autoComplete="family-name"
+            onChange={this.editContactInfoFieldHandler}
+          />
+        </p>
+        <GoogleMap
+          onLocationChange={address => this.setState({address})}
+          eventName="Address"
+          addressName={this.state.address}
+          location={this.state.location}
+        />
+        <p>
+          Address:{' '}
+          <input
+            type="text"
+            value={this.state.address}
+            name="address"
+            autoComplete="street-address"
             onChange={this.editContactInfoFieldHandler}
           />
         </p>
