@@ -173,19 +173,22 @@ router.route('/:id').get(auth, checkId, (req, res) => {
 
 router.route('/:id').patch(auth, (req, res) => {
   if (req.session.user.id !== req.params.id) return res.status(403).end();
-  let {firstName, lastName} = req.body;
+  let {firstName, lastName, location, address} = req.body;
   firstName = validator.escape(firstName.trim());
   lastName = validator.escape(lastName.trim());
+  address = validator.escape(address.trim());
   if (!validator.isAlpha(firstName) || !validator.isAlpha(lastName)) {
     return res.status(400).end();
   }
   User.findById(req.params.id)
     .then(user => {
       user.name = `${firstName} ${lastName}`;
+      user.location = location;
+      user.address = address;
       return user.save();
     })
     .then(user => {
-      res.json({name: user.name});
+      res.json(user);
     })
     .catch((err) => {
       console.error(err);
@@ -211,7 +214,7 @@ router.route('/:id/interests').put(auth, (req, res) => {
       return user.save();
     })
     .then(user => {
-      res.json({interests: user.interests});
+      res.json(user);
     })
     .catch(err => {
       console.error(err);
