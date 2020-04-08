@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,7 +7,7 @@ import ChatScreen from '../chat.component';
 import GoogleMap from '../map.component';
 import Geocode from 'react-geocode';
 import '../style/map.css';
-import './style/edit-event.css';
+import classes from './style/edit-event.module.css';
 import withAuth from '../auth/hoc/withAuth';
 import io from 'socket.io-client';
 
@@ -27,6 +27,7 @@ export default withAuth(
       this.onAddressChange = this.onAddressChange.bind(this);
       this.onLocationChange = this.onLocationChange.bind(this);
       this.fetchEvents = this.fetchEvents.bind(this);
+      this.cancelHandler = this.cancelHandler.bind(this);
 
       this.state = {
         loading: true,
@@ -43,19 +44,19 @@ export default withAuth(
       };
 
       this.socket.on('RECEIVE_TITLE', title => {
-        this.setState({ title });
+        this.setState({title});
       });
 
       this.socket.on('RECEIVE_DESCRIPTION', description => {
-        this.setState({ description });
+        this.setState({description});
       });
 
       this.socket.on('RECEIVE_ADDRESS', address => {
-        this.setState({ address });
+        this.setState({address});
       });
 
       this.socket.on('RECEIVE_DATE', date => {
-        this.setState({ date: new Date(date) });
+        this.setState({date: new Date(date)});
       });
     }
 
@@ -84,11 +85,11 @@ export default withAuth(
     fetchEvents() {
       axios
         .get('/events/' + this.props.match.params.id)
-        .then(({ data }) => {
+        .then(({data}) => {
           const [lat, lng] = data.location;
           return Promise.all([Geocode.fromLatLng(lat, lng), data]);
         })
-        .then(([{ results }, data]) => {
+        .then(([{results}, data]) => {
           this.setState({
             public: data.public,
             location: data.location,
@@ -160,11 +161,15 @@ export default withAuth(
       });
     }
 
+    cancelHandler() {
+      this.props.history.push('/eventsList');
+    }
+
     onSubmit(e) {
       e.preventDefault();
       Geocode.fromAddress(this.state.address)
         .then(res => {
-          const { lat, lng } = res.results[0].geometry.location;
+          const {lat, lng} = res.results[0].geometry.location;
           const event = {
             username: this.state.username,
             title: this.state.title,
@@ -231,6 +236,8 @@ export default withAuth(
                 <DatePicker
                   selected={this.state.date}
                   onChange={this.onChangeDate}
+                  showTimeSelect
+                  dateFormat="MM/dd/yy h:mm aa"
                 />
               </div>
             </div>
@@ -258,11 +265,19 @@ export default withAuth(
             </div>
 
             <div className="form-group">
-              <input
-                type="submit"
-                value="Save changes"
-                className="btn btn-primary"
-              />
+              <div className={classes['button-ctrls']}>
+                <input
+                  type="submit"
+                  value="Create Event"
+                  className="btn btn-primary"
+                />
+                <input
+                  type="button"
+                  value="Cancel"
+                  className="btn btn-secondary"
+                  onClick={this.cancelHandler}
+                />
+              </div>
             </div>
           </form>
         </>

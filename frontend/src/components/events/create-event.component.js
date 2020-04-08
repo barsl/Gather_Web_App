@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -28,6 +28,7 @@ class CreateEvent extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onRemoveInvite = this.onRemoveInvite.bind(this);
     this.onLocationChange = this.onLocationChange.bind(this);
+    this.cancelHandler = this.cancelHandler.bind(this);
 
     this.state = {
       publicStatus: false,
@@ -45,7 +46,7 @@ class CreateEvent extends Component {
   }
 
   componentDidMount() {
-    this.setState({ userFriends: this.props.user.friends });
+    this.setState({userFriends: this.props.user.friends});
   }
 
   onChangeStatus(e) {
@@ -84,7 +85,7 @@ class CreateEvent extends Component {
     });
   }
 
-  onChangeInvited({ target }) {
+  onChangeInvited({target}) {
     const friendId = target.value;
     this.setState(prevState => {
       const updatedUserFriends = [...prevState.userFriends];
@@ -189,11 +190,16 @@ class CreateEvent extends Component {
       .catch(console.error);
   }
 
+  cancelHandler() {
+    this.props.history.push('/eventsList');
+  }
+
   render() {
     return (
       <div>
         <Navbar />
         <h3>Create New Event</h3>
+        <hr/>
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
             <label>Event Title: </label>
@@ -250,6 +256,8 @@ class CreateEvent extends Component {
               <DatePicker
                 selected={this.state.date}
                 onChange={this.onChangeDate}
+                showTimeSelect
+                dateFormat="MM/dd/yy h:mm aa"
               />
             </div>
           </div>
@@ -292,11 +300,19 @@ class CreateEvent extends Component {
           )}
 
           <div className="form-group">
-            <input
-              type="submit"
-              value="Create Event"
-              className="btn btn-primary"
-            />
+            <div className={classes['button-ctrls']}>
+              <input
+                type="submit"
+                value="Create Event"
+                className="btn btn-primary"
+              />
+              <input
+                type="button"
+                value="Cancel"
+                className="btn btn-secondary"
+                onClick={this.cancelHandler}
+              />
+            </div>
           </div>
         </form>
       </div>
