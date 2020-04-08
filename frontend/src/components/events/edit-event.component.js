@@ -63,7 +63,11 @@ export default withAuth(
       if (!this.props.loadingAuth && this.props.authenticated) {
         this.fetchEvents();
       }
-      this.socket.emit('JOIN_EVENT', this.props.location.event_id);
+      this.socket.emit('JOIN_EVENT', this.props.match.params.id);
+    }
+
+    componentWillUnmount() {
+      this.socket.close();
     }
 
     componentDidUpdate(prevProps) {
