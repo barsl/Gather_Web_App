@@ -43,3 +43,7 @@
 .interests-options > div:last-child {
   margin-bottom: 0;
 }
+
+.connected-badge {
+  font-size: 1.25rem;
+}

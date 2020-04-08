@@ -62,7 +62,13 @@ class UserProfile extends Component {
     axios
       .get('/authenticateGoogleUser')
       .then(res => {
-        window.open(res.data);
+        const x = window.top.outerWidth / 2 + window.top.screenX - 400 / 2;
+        const y = window.top.outerHeight / 2 + window.top.screenY - 440 / 2;
+        window.open(
+          res.data,
+          '_blank',
+          `menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes,width=400,height=440,left=${x},top=${y}`,
+        );
         window.addEventListener(
           'message',
           e => {
@@ -159,6 +165,7 @@ class UserProfile extends Component {
         <p>Address: {this.state.address}</p>
         <input
           type="button"
+          className="btn btn-primary"
           value="Edit"
           onClick={this.editContactInfoHandler}
         />
@@ -202,12 +209,9 @@ class UserProfile extends Component {
           />
         </p>
         <div className={classes['button-ctrls']}>
+          <input className={'btn btn-primary'} type="submit" value="Save" />
           <input
-            className={classes['button-primary']}
-            type="submit"
-            value="Save"
-          />
-          <input
+            className={'btn btn-secondary'}
             type="button"
             value="Cancel"
             onClick={this.cancelEditContactInfo}
@@ -238,17 +242,20 @@ class UserProfile extends Component {
         </div>
         <hr />
         <h4>Service Integrations</h4>
-        {!this.state.googleConnected && (
-          <button
-            onClick={this.googleCalendarHandler}
-            className="btn btn-primary"
-          >
-            Connect Google Calendar
-          </button>
-        )}
         <p>
           Google Calendar:{' '}
-          <label> {this.state.googleConnected ? '✔️' : '❌'}</label>{' '}
+          {this.state.googleConnected ? (
+            <span className={classes['connected-badge']}>
+              <span className="badge badge-success">Connected</span>
+            </span>
+          ) : (
+            <button
+              onClick={this.googleCalendarHandler}
+              className="btn btn-primary"
+            >
+              Connect
+            </button>
+          )}{' '}
         </p>
         {/* {this.state.googleConnected && (
               <button

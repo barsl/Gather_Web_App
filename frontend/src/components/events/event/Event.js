@@ -1,12 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import classes from './Event.module.css';
+import {Link} from 'react-router-dom';
+import {useAuthContext} from '../../auth/context/AuthContext';
+import './Event.css';
 
 const Event = props => {
+  const {user} = useAuthContext();
   const editLink = (
     <Link
-      key={"editLink"}
-      to={{ pathname: "/edit/" + props.event._id, event_id: props.event._id }}
+      className="btn btn-link"
+      key={'editLink'}
+      to={{pathname: '/edit/' + props.event._id, event_id: props.event._id}}
     >
       edit
     </Link>
@@ -14,8 +17,8 @@ const Event = props => {
   const deleteLink = (
     <button
       type="button"
-      className={classes["link-button"]}
-      key={"deleteLink"}
+      className="btn btn-link"
+      key={'deleteLink'}
       onClick={() => {
         props.deleteEvent(props.event);
       }}
@@ -25,8 +28,8 @@ const Event = props => {
   );
   const attendLink = (
     <button
-      key={"attendLink"}
-      className={classes["link-button"]}
+      key={'attendLink'}
+      className="btn btn-link"
       onClick={() => {
         props.setAttending(props.event, true);
       }}
@@ -37,8 +40,8 @@ const Event = props => {
 
   const unattendLink = (
     <button
-      key={"unattendLink"}
-      className={classes["link-button"]}
+      key={'unattendLink'}
+      className="btn btn-link"
       onClick={() => {
         props.setAttending(props.event, false);
       }}
@@ -49,33 +52,44 @@ const Event = props => {
 
   const actions = [];
 
-  if (!props.event.public || props.eventType === "created") {
-    actions.push(editLink);
+  if (props.eventType !== 'archive') {
+    if (!props.event.public) {
+      actions.push(editLink);
+    }
+
+    if (props.eventType === 'attending') {
+      actions.push(unattendLink);
+    }
+
+    if (props.eventType === 'invited' || props.eventType === 'public') {
+      actions.push(attendLink);
+    }
   }
 
-  if (props.eventType === "attending") {
-    actions.push(unattendLink);
-  }
-
-  if (props.eventType === "invited" || props.eventType === "public") {
-    actions.push(attendLink);
-  }
-  if (props.eventType === "created") {
+  if (user.username === props.event.username) {
     actions.push(deleteLink);
   }
 
   const actionsComponent = actions.reduce(
-    (prev, curr, i) => [...prev, i > 0 ? " | " : null, curr],
-    []
+    (prev, curr, i) => [...prev, i > 0 ? ' | ' : null, curr],
+    [],
   );
 
   return (
     <tr>
       <td>
-        <Link to={"/eventChat/" + props.event.title}>{props.event.title}</Link>
+        <Link to={'/eventChat/' + props.event.title}>{props.event.title}</Link>
       </td>
       <td>{props.event.description}</td>
-      <td>{props.event.date.substring(0, 10)}</td>
+      <td>
+        {new Date(props.event.date).toLocaleString('en-CA', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: 'numeric',
+          minute: 'numeric',
+        })}
+      </td>
       <td>{actionsComponent}</td>
     </tr>
   );

@@ -5,6 +5,14 @@ import Chatkit from '@pusher/chatkit-client';
 import withUser from '../auth/hoc/withUser';
 import Event from './event/Event';
 
+const pastDatesFilter = event => {
+  return new Date(event.date) < new Date();
+};
+
+const futureDatesFilter = event => {
+  return new Date(event.date) >= new Date();
+};
+
 class EventsList extends Component {
   constructor(props) {
     super(props);
@@ -101,62 +109,90 @@ class EventsList extends Component {
   }
 
   createdEventList() {
-    return this.props.user.createdEvents.map(currentevent => {
-      return (
-        <Event
-          event={currentevent}
-          deleteEvent={this.deleteEvent}
-          key={currentevent._id}
-          eventType="created"
-        />
-      );
-    });
+    return this.props.user.createdEvents
+      .filter(futureDatesFilter)
+      .map(currentevent => {
+        return (
+          <Event
+            event={currentevent}
+            deleteEvent={this.deleteEvent}
+            key={currentevent._id}
+          />
+        );
+      });
   }
 
   attendingEventList() {
-    return this.props.user.attendingEvents.map(currentevent => {
-      return (
-        <Event
-          event={currentevent}
-          key={currentevent._id}
-          setAttending={event => this.setAttending(event, false)}
-          eventType="attending"
-        />
-      );
-    });
+    return this.props.user.attendingEvents
+      .filter(futureDatesFilter)
+      .map(currentevent => {
+        return (
+          <Event
+            event={currentevent}
+            key={currentevent._id}
+            setAttending={event => this.setAttending(event, false)}
+            eventType="attending"
+          />
+        );
+      });
   }
 
   invitedEventList() {
-    return this.props.user.invitedEvents.map(currentevent => {
-      return (
-        <Event
-          event={currentevent}
-          key={currentevent._id}
-          setAttending={event => this.setAttending(event, true)}
-          eventType="invited"
-        />
-      );
-    });
+    return this.props.user.invitedEvents
+      .filter(futureDatesFilter)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .map(currentevent => {
+        return (
+          <Event
+            event={currentevent}
+            key={currentevent._id}
+            setAttending={event => this.setAttending(event, true)}
+            eventType="invited"
+          />
+        );
+      });
   }
 
   publicEventList() {
-    return this.state.publicEvents.map(currentevent => {
+    return this.state.publicEvents
+      .filter(futureDatesFilter)
+      .map(currentevent => {
+        return (
+          <Event
+            event={currentevent}
+            key={currentevent._id}
+            setAttending={event => this.setAttending(event, true)}
+            eventType="public"
+          />
+        );
+      });
+  }
+
+  pastEventList() {
+    const pastEvents = [
+      ...this.props.user.createdEvents.filter(pastDatesFilter),
+      ...this.props.user.attendingEvents.filter(pastDatesFilter),
+      ...this.state.publicEvents.filter(pastDatesFilter),
+    ];
+    return pastEvents.map(currentevent => {
       return (
         <Event
           event={currentevent}
           key={currentevent._id}
-          setAttending={event => this.setAttending(event, true)}
-          eventType="public"
+          eventType="archive"
         />
       );
     });
   }
 
   render() {
+    const publicEventList = this.publicEventList();
+    const pastEventList = this.pastEventList();
     return (
       <div>
         <Navbar />
         <h3> My Events </h3>
+        <hr/>
         {this.props.user.createdEvents.length > 0 && (
           <>
             <h4>Created Events</h4>
@@ -205,18 +241,40 @@ class EventsList extends Component {
             </table>
           </>
         )}
+        <hr/>
         <h3> Public Events </h3>
-        <table className="table">
-          <thead className="thead-light">
-            <tr>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>{this.publicEventList()}</tbody>
-        </table>
+        {publicEventList.length > 0 ? (
+          <table className="table">
+            <thead className="thead-light">
+              <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>{publicEventList}</tbody>
+          </table>
+        ) : (
+          <p className='text-muted'>No public events available.</p>
+        )}
+        {pastEventList.length > 0 && (
+          <>
+            <hr/>
+            <h3> Past Events </h3>
+            <table className="table">
+              <thead className="thead-light">
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>{pastEventList}</tbody>
+            </table>
+          </>
+        )}
       </div>
     );
   }

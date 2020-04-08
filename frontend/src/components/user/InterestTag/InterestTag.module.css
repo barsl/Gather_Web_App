@@ -4,10 +4,15 @@
   background-color: var(--secondary);
   color: white;
   display: inline-block;
-  font-weight: 600;
   margin: 0;
   padding: 0.25em 1em;
   width: 15em;
+  transition: background-color .15s ease-in-out,border-color .15s ease-in-out
+}
+
+.InterestTag:hover{
+  background-color: #5a6269;
+  border-color: #545b62;
 }
 
 .InterestTag > label {
@@ -22,4 +27,9 @@
 
 .InterestTag.checked {
   background-color: var(--primary);
+}
+
+.InterestTag.checked:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
 }

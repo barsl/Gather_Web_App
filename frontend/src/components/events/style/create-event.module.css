@@ -21,3 +21,15 @@
   color: white;
   cursor: pointer;
 }
+
+.button-ctrls {
+  display: flex;
+}
+
+.button-ctrls > input:first-child {
+  margin-right: 0.25em;
+}
+
+.button-ctrls > input:last-child {
+  margin-left: 0.25em;
+}
