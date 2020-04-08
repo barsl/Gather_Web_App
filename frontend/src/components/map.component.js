@@ -19,7 +19,7 @@ class GoogleMap extends Component {
       activeMarker: {},
       selectedPlace: {},
       eventName: this.props.eventName,
-      eventAddress: '',
+      eventAddress: this.props.addressName,
       markerPos: {
         lat: 0,
         lng: 0,
@@ -32,8 +32,11 @@ class GoogleMap extends Component {
       const [lat, lng] = this.props.location;
       this.setState({
         markerPos: {lat, lng},
-        eventAddress: this.props.addressName,
       });
+    } else {
+      this.setState({
+        markerPos: {lat: 43.651070, lng: -79.347015}
+      })
     }
   }
 

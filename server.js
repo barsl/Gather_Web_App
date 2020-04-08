@@ -7,7 +7,10 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 app.use(helmet());
+
 const port = process.env.PORT || 5000;
 const corsOptions = {
   origin: ['http://localhost:3000'],
@@ -39,6 +42,29 @@ app.use(session({
   }
 }));
 
+io.on('connection', socket => {
+
+  socket.on('JOIN_EVENT', event => {
+    socket.join(event);
+
+    socket.on('CHANGE_TITLE', title => {
+      io.to(event).emit('RECEIVE_TITLE', title);
+    });
+
+    socket.on('CHANGE_DESCRIPTION', description => {
+      io.to(event).emit('RECEIVE_DESCRIPTION', description);
+    });
+
+    socket.on('CHANGE_ADDRESS', address => {
+      io.to(event).emit('RECEIVE_ADDRESS', address);
+    });
+
+    socket.on('CHANGE_DATE', date => {
+      io.to(event).emit('RECEIVE_DATE', date);
+    });
+  });
+})
+
 const uri = process.env.MONGO_URI;
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
 );
@@ -68,6 +94,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.listen(port, () => {
+http.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });

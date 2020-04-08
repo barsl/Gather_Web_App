@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import Navbar from '../navbar.component';
 import Chatkit from '@pusher/chatkit-client';
@@ -23,11 +23,31 @@ class EventsList extends Component {
     axios
       .get('/events/public')
       .then(response => {
-        this.setState({publicEvents: response.data});
+        this.setState({ publicEvents: response.data });
       })
       .catch(error => {
         console.log(error);
       });
+
+    this.interval = setInterval(() => {
+      axios
+        .get('/users/currentUser')
+        .then(response => {
+          this.props.updateUser({ invitedEvents: response.data.invitedEvents });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+      axios
+        .get('/events/public')
+        .then(response => {
+          this.setState({ publicEvents: response.data });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }, 5000);
   }
 
   deleteEvent(event) {
@@ -39,11 +59,11 @@ class EventsList extends Component {
       }),
     });
     const deleteChatManager = chatManager.connect().then(currentUser => {
-      return currentUser.deleteRoom({roomId: event.roomId});
+      return currentUser.deleteRoom({ roomId: event.roomId });
     });
     const deleteEvent = axios.delete('/events/' + event._id);
     Promise.allSettled([deleteEvent, deleteChatManager])
-      .then(([{status}]) => {
+      .then(([{ status }]) => {
         if (status === 'fulfilled') {
           this.props.updateUser({
             createdEvents: this.props.user.createdEvents.filter(
@@ -69,8 +89,8 @@ class EventsList extends Component {
         op: isAttending ? 'add' : 'remove',
       })
       .then(res => {
-        const {attendingEvents, invitedEvents} = res.data;
-        this.props.updateUser({attendingEvents, invitedEvents});
+        const { attendingEvents, invitedEvents } = res.data;
+        this.props.updateUser({ attendingEvents, invitedEvents });
       })
       .catch(console.log);
   }

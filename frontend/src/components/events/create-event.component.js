@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -45,7 +45,7 @@ class CreateEvent extends Component {
   }
 
   componentDidMount() {
-    this.setState({userFriends: this.props.user.friends});
+    this.setState({ userFriends: this.props.user.friends });
   }
 
   onChangeStatus(e) {
@@ -84,7 +84,7 @@ class CreateEvent extends Component {
     });
   }
 
-  onChangeInvited({target}) {
+  onChangeInvited({ target }) {
     const friendId = target.value;
     this.setState(prevState => {
       const updatedUserFriends = [...prevState.userFriends];
