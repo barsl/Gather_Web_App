@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
 import Navbar from '../navbar.component';
 import Chatkit from '@pusher/chatkit-client';
@@ -6,14 +6,12 @@ import withUser from '../auth/hoc/withUser';
 import Event from './event/Event';
 
 class EventsList extends Component {
-  _isMounted = false;
-
   constructor(props) {
     super(props);
 
     this.deleteEvent = this.deleteEvent.bind(this);
     this.setAttending = this.setAttending.bind(this);
-
+    this.source = axios.CancelToken.source();
     this.state = {
       publicEvents: [],
     };
@@ -23,7 +21,7 @@ class EventsList extends Component {
     axios
       .get('/events/public')
       .then(response => {
-        this.setState({ publicEvents: response.data });
+        this.setState({publicEvents: response.data});
       })
       .catch(error => {
         console.log(error);
@@ -33,21 +31,28 @@ class EventsList extends Component {
       axios
         .get('/users/currentUser')
         .then(response => {
-          this.props.updateUser({ invitedEvents: response.data.invitedEvents });
+          this.props.updateUser({invitedEvents: response.data.invitedEvents});
         })
         .catch(error => {
           console.log(error);
         });
 
       axios
-        .get('/events/public')
+        .get('/events/public', {cancelToken: this.source.token})
         .then(response => {
-          this.setState({ publicEvents: response.data });
+          this.setState({publicEvents: response.data});
         })
         .catch(error => {
-          console.log(error);
+          if (!axios.isCancel(error)) {
+            console.log(error);
+          }
         });
     }, 5000);
+  }
+
+  componentWillUnmount() {
+    this.source.cancel();
+    clearInterval(this.interval);
   }
 
   deleteEvent(event) {
@@ -59,11 +64,11 @@ class EventsList extends Component {
       }),
     });
     const deleteChatManager = chatManager.connect().then(currentUser => {
-      return currentUser.deleteRoom({ roomId: event.roomId });
+      return currentUser.deleteRoom({roomId: event.roomId});
     });
     const deleteEvent = axios.delete('/events/' + event._id);
     Promise.allSettled([deleteEvent, deleteChatManager])
-      .then(([{ status }]) => {
+      .then(([{status}]) => {
         if (status === 'fulfilled') {
           this.props.updateUser({
             createdEvents: this.props.user.createdEvents.filter(
@@ -89,8 +94,8 @@ class EventsList extends Component {
         op: isAttending ? 'add' : 'remove',
       })
       .then(res => {
-        const { attendingEvents, invitedEvents } = res.data;
-        this.props.updateUser({ attendingEvents, invitedEvents });
+        const {attendingEvents, invitedEvents} = res.data;
+        this.props.updateUser({attendingEvents, invitedEvents});
       })
       .catch(console.log);
   }
