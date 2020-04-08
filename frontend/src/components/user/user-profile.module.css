@@ -28,7 +28,7 @@
   flex-flow: column wrap;
   align-items: flex-start;
   margin: 0.5em 0;
-  max-height: 12em;
+  max-height: 15em;
 }
 
 .interests-options > div {

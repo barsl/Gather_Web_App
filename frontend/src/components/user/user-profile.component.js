@@ -115,7 +115,7 @@ class UserProfile extends Component {
         value: nextInterests,
       })
       .then(({data}) => {
-        console.log(data);
+        console.debug(data);
       })
       .catch(err => {
         console.error(err);
@@ -247,8 +247,8 @@ class UserProfile extends Component {
           </button>
         )}
         <p>
-          Google Calendar Connected:{' '}
-          <label> {this.state.googleConnected ? 'Yes' : 'No'}</label>{' '}
+          Google Calendar:{' '}
+          <label> {this.state.googleConnected ? '✔️' : '❌'}</label>{' '}
         </p>
         {/* {this.state.googleConnected && (
               <button
