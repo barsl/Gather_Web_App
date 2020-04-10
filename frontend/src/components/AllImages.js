@@ -30,8 +30,6 @@ class AllImages extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.event_id);
-
     axios.get('/events/pics/get/'+this.props.event_id)
     .then(response => {
       this.setState({ pics: response.data })
