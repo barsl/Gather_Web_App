@@ -16,7 +16,7 @@ const eventSchema = new Schema(
     invited: [{type: Schema.Types.ObjectId, ref: 'User', required: true}],
     attending: [{type: Schema.Types.ObjectId, ref: 'User', required: false}],
     tags: {type: [String], required: false},
-    // TODO: add media
+    pics: {type: Array, required: false}
   },
   {
     timestamps: true,

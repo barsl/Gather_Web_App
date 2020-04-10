@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { addImage } from "./actions/imageActions";
 import axios from 'axios';
-import AxiosAPI from "./AxiosAPI";
 
 class Form extends React.Component {
   constructor(props) {
@@ -61,7 +60,7 @@ class Form extends React.Component {
 
 
   getGif() {
-    AxiosAPI.get('/events/pics/gif/'+this.props.event_id)
+    axios.get('/events/pics/gif/'+this.props.event_id)
     .then(response => {
       window.location.href = response.data.url
       })

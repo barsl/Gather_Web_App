@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { getAllImages } from "./actions/imageActions";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -74,6 +73,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(
-  mapStateToProps,
-  { getAllImages }
+  mapStateToProps
 )(AllImages);
