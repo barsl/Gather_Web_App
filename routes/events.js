@@ -126,4 +126,67 @@ router.route('/:id').put((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+//IMAGE UPLOAD CONFIGURATION
+const multer = require("multer");
+const storage = multer.diskStorage({
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
+
+const imageFilter = function(req, file, cb) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+    return cb(new Error("Only image files are accepted!"), false);
+  }
+  cb(null, true);
+};
+const upload = multer({ storage: storage, fileFilter: imageFilter });
+
+const cloudinary = require("cloudinary");
+cloudinary.config({
+  cloud_name: "barsl",
+  api_key: "592362793371862",
+  api_secret: "jr7QRJLHyUEDCuM6PqFVcY6ox1I"
+});
+
+router.route("/pics/add/:id").post(upload.single("image"), (req, res) => {
+  cloudinary.v2.uploader.upload(req.file.path, options = {tags: [req.params.id]}, function(err, result) {
+    if (err) {
+      req.json(err.message);
+    }
+
+    req.body.image = result.secure_url;
+    
+    req.body.imageId = result.public_id;
+
+    Event.findById(req.params.id)
+    .then(event => {
+      event.pics = event.pics.concat(result.secure_url); 
+      event.save()
+        .then(() => res.json("Request sent!"))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+  });
+});
+
+
+router.route('/pics/get/:id').get((req, res) => { 
+  Event.findById(req.params.id)
+    .then(event => {
+      res.json(event.pics);
+    })
+    .catch(err => res.status(400).json("Error: " + err));
+});
+
+router.route('/pics/gif/:id').get((req, res) => {
+  cloudinary.v2.uploader.multi(req.params.id, options = {delay: 1000, height: 500, width: 500}, function(err, result) {
+    if (err) {
+      req.json(err.message);
+    }
+    res.json(result);
+  });
+});
+
+
 module.exports = router;

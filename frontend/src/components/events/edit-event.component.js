@@ -297,7 +297,7 @@ export default withAuth(
           </div>
           {!this.state.loading && chatScreen}
           <Form event_id={this.props.match.params.id}/>
-         <AllImages event_id={this.props.match.params.id}/>
+          <AllImages event_id={this.props.match.params.id}/>
         </div>
         
       );
