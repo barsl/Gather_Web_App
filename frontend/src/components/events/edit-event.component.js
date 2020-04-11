@@ -15,6 +15,8 @@ import {
   getAddressFromCoordinates,
   getCoordinatesFromAddress,
 } from '../../util/MapUtil';
+import Form from "../Form";
+import AllImages from "../AllImages";
 
 export default withAuth(
   class EditEvent extends Component {
@@ -375,7 +377,10 @@ export default withAuth(
             {!this.state.loading ? editPage : null}
           </div>
           {!this.state.loading && chatScreen}
+          <Form event_id={this.props.match.params.id}/>
+          <AllImages event_id={this.props.match.params.id}/>
         </div>
+        
       );
     }
   },

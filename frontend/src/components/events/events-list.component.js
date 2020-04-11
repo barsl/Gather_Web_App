@@ -14,6 +14,14 @@ const futureDatesFilter = event => {
   return new Date(event.endDate) >= new Date();
 };
 
+const pastDatesFilter = event => {
+  return new Date(event.date) < new Date();
+};
+
+const futureDatesFilter = event => {
+  return new Date(event.date) >= new Date();
+};
+
 class EventsList extends Component {
   constructor(props) {
     super(props);

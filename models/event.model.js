@@ -13,9 +13,9 @@ const eventSchema = new Schema(
     location: [{type: Number, required: true}],
     roomId: { type: String , required: true},
     invited: [{type: Schema.Types.ObjectId, ref: 'User', required: true}],
-    attending: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    tags: {type: [String]},
-    // TODO: add media
+    attending: [{type: Schema.Types.ObjectId, ref: 'User', required: false}],
+    tags: {type: [String], required: false},
+    pics: {type: Array, required: false}
   },
   {
     timestamps: true,

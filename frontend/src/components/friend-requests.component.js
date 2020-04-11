@@ -74,21 +74,20 @@ class FriendRequests extends Component {
     })
     console.log("request deleted");
     });
-
   }
 
   acceptFriend(friend) {
     
     axios.get("/users/currentUser", { withCredentials: true })
     .then(({ data }) => {
-      // add curr_id to tar_id.friends[]
+      
       axios.post("/friends/friends/add/" + data._id, {target: friend})
       .then(res => console.log(res.data));
     });
 
     axios.get("/users/currentUser", { withCredentials: true })
     .then(({ data }) => {
-      // add curr_id to tar_id.friends[]
+      
       axios.post("/friends/friends/add/" + friend, {target: data._id})
       .then(res => console.log(res.data));
     });

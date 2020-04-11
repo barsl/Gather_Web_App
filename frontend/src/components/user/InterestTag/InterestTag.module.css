@@ -37,3 +37,8 @@
   background-color: var(--secondary-teal);
   border-color: var(--secondary-teal);
 }
+
+.InterestTag.checked:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
