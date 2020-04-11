@@ -8,7 +8,7 @@ var mongoose = require('mongoose');
 // add request from current user to user with 'id'
 router.route('/requests/add/:id').post(auth, (req, res) => {
   if (req.body.req !== req.session.user.id) {
-    return res.status(403).end();
+    return res.status(401).end();
   }
   User.findById(req.params.id)
     .then(user => {
@@ -25,7 +25,7 @@ router.route('/requests/add/:id').post(auth, (req, res) => {
 // add body.req._id to friends of params.id._id
 router.route('/friends/add/:id').post(auth, (req, res) => {
   if (req.params.id !== req.session.user.id) {
-    return res.status(403).end();
+    return res.status(401).end();
   }
   User.findById(req.params.id)
     .then(user => {
@@ -42,7 +42,7 @@ router.route('/friends/add/:id').post(auth, (req, res) => {
 // remove body.req.traget from friend requests of params.id
 router.route('/friends/delete/:id').post(auth, (req, res) => {
   if (req.params.id !== req.session.user.id) {
-    return res.status(403).end();
+    return res.status(401).end();
   }
   User.findByIdAndUpdate(req.params.id, 
     { $pull: { friends: req.body.target } }).exec()
@@ -52,7 +52,7 @@ router.route('/friends/delete/:id').post(auth, (req, res) => {
 // remove body.req.traget from friend requests of params.id
 router.route('/requests/delete/:id').post(auth, (req, res) => {
   if (req.params.id !== req.session.user.id) {
-    return res.status(403).end();
+    return res.status(401).end();
   }
   User.findByIdAndUpdate(req.params.id, 
     { $pull: { friend_requests: req.body.target } }).exec()

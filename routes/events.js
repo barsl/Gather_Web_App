@@ -94,7 +94,7 @@ router.route('/:id').get(auth, (req, res) => {
     .populate('invited')
     .populate('attending')
     .then(event => {
-      if (!checkEventPermissions) return res.status(403).end();
+      if (!checkEventPermissions) return res.status(401).end();
       res.json(event);
     })
     .catch(err => res.status(400).json('Error: ' + err));
@@ -104,7 +104,7 @@ router.route('/:id').delete(auth, (req, res) => {
   Event.findById(req.params.id)
     .then(event => {
       if (event.username !== req.session.user.username) {
-        throw {msg: 'Unauthorized', status: 403};
+        throw {msg: 'Unauthorized', status: 401};
       }
       return Promise.all([event, Event.deleteOne({_id: event._id}).exec()]);
     })
@@ -155,7 +155,7 @@ router.route('/:id').put(auth, (req, res) => {
     .populate('attending')
     .then(event => {
       if (!checkEventPermissions(event, req.session.user)) {
-        return res.status(403).end();
+        return res.status(401).end();
       }
       Object.entries(req.body).forEach(([prop, updatedValue]) => {
         event[prop] = updatedValue;

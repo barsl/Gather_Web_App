@@ -41,13 +41,13 @@ router.route('/currentUser').get(auth, (req, res) => {
       })
       .catch(err => res.status(400).json('Error: ' + err));
   } else {
-    res.status(403).end();
+    res.status(401).end();
   }
 });
 
 router.route('/:id/attendingEvents').patch(auth, (req, res) => {
   if (req.session.user.id !== req.params.id) {
-    return res.status(403).end();
+    return res.status(401).end();
   }
   const {value, op} = req.body;
   console.log(value, op);
@@ -65,7 +65,7 @@ router.route('/:id/attendingEvents').patch(auth, (req, res) => {
   Promise.all([getUserPromise, getEventPromise])
     .then(([user, event]) => {
       if (!checkEventPermissions(event, req.session.user)) {
-        throw {msg: 'Unauthorized', status: 403};
+        throw {msg: 'Unauthorized', status: 401};
       }
       const eventIdStr = event._id.toString();
       const userIdStr = user._id.toString();
@@ -172,7 +172,7 @@ router.route('/:id/gcevents').get(auth, withGoogleOAuth2, (req, res) => {
 
 router.route('/:id').get(auth, checkId, (req, res) => {
   if (req.params.id !== req.session.user.id) {
-    return res.status(403).end();
+    return res.status(401).end();
   }
   User.findById(req.params.id)
     .then(user => {
@@ -183,7 +183,7 @@ router.route('/:id').get(auth, checkId, (req, res) => {
 });
 
 router.route('/:id').patch(auth, (req, res) => {
-  if (req.session.user.id !== req.params.id) return res.status(403).end();
+  if (req.session.user.id !== req.params.id) return res.status(401).end();
   let {firstName, lastName, location, address} = req.body;
   firstName = validator.escape(firstName.trim());
   lastName = validator.escape(lastName.trim());
@@ -209,7 +209,7 @@ router.route('/:id').patch(auth, (req, res) => {
 
 const userInterestsSet = new Set(Object.values(userInterests));
 router.route('/:id/interests').put(auth, (req, res) => {
-  if (req.session.user.id !== req.params.id) return res.status(403).end();
+  if (req.session.user.id !== req.params.id) return res.status(401).end();
   const interests = req.body.value;
   if (interests) {
     // Validate interests
