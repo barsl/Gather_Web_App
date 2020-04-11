@@ -10,6 +10,8 @@ import TagList from '../core/Tag/TagList/TagList';
 import {getAddressFromCoordinates} from '../../util/MapUtil';
 import classes from './style/event-page.module.css';
 import {getFormattedDateStringNumeric} from '../../util/DateUtil';
+import Form from "../Form";
+import AllImages from "../AllImages";
 
 class EventPage extends Component {
   constructor(props) {
@@ -118,73 +120,88 @@ class EventPage extends Component {
 
   render() {
     const eventPage = (
-      <div className="container-fluid px-4 py-3">
-        <h3>{this.state.title}</h3>
-        <hr/>
-        <GoogleMap
-          eventName={this.state.title}
-          addressName={this.state.address}
-          location={this.state.location}
-        />
-        <div className="form-group">
-          <p>Event owner: {this.state.username}</p>
-        </div>
-        <div className="form-group">
-          <p>Description: {this.state.description}</p>
-        </div>
-        <div className="form-group">
-          Tags:
-          <TagList tags={this.state.tags} />
-        </div>
-        <div className="form-group">
-          <p>Event Address: {this.state.address}</p>
-        </div>
-        <div className="form-group">
-          <p>Start date: {getFormattedDateStringNumeric(this.state.startDate)}</p>
-        </div>
-        <div className="form-group">
-          <p>End date: {getFormattedDateStringNumeric(this.state.endDate)}</p>
-        </div>
+      <div className={[classes.HorizontalFlex, classes.OuterContainer].join(" ")}>
+        <div className={[classes.VerticalFlex, classes.MainContent].join(' ')}>
+          <div className="container-fluid px-4 py-3">
+            <div className={classes.HorizontalFlex}>
+              <h3 className={[classes.Title, "font-weight-bold"].join(" ")}>{this.state.title}</h3>
 
-        {!this.state.public && this.state.invited.length > 0 && (
-          //if the event is public, do not show invited list
-          <div className="form-group">
-            <p>Invited: </p>
-            <ul>
-              {this.state.invited.map(user => (
-                <li key={user._id}>{user.username}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+              <div className={classes.ButtonGroup}>
+                <div className={classes['button-ctrls']}>
+                  {this.state.endDate > new Date() && (
+                    <input
+                      type="submit"
+                      value="Edit"
+                      className="btn btn-primary"
+                      onClick={this.editHandler}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
 
-        {this.state.attending.length > 0 && (
-          <div className="form-group">
-            <p>Attending: </p>
-            <ul>
-              {this.state.attending.map(user => (
-                <li key={user._id}>{user.username}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+            <hr />
 
-        <div className="form-group">
-          <div className={classes['button-ctrls']}>
-            {this.state.endDate > new Date() && (
-              <input
-                type="submit"
-                value="Edit"
-                className="btn btn-primary"
-                onClick={this.editHandler}
-              />
-            )}
-            <input
-              type="button"
-              value="Back"
-              className="btn btn-secondary"
-              onClick={this.backHandler}
-            />
+            <div className={classes.HorizontalFlex}>
+              <div className={[classes.VerticalFlex, classes.Left].join(' ')}>
+                <div className="form-group">
+                  <label className={classes.Label}>Event owner: </label> {this.state.username}
+                </div>
+                <div className="form-group">
+                  <label className={classes.Label}>Description:</label> {this.state.description}
+                </div>
+
+                <div className="form-group">
+                  <label className={classes.Label}>Start date: </label>
+                  {getFormattedDateStringNumeric(this.state.startDate)}
+                </div>
+                <div className="form-group">
+                  <label className={classes.Label}>End date: </label>
+                  {getFormattedDateStringNumeric(this.state.endDate)}
+                </div>
+
+                <div className="form-group">
+                  <label className={classes.Label}>Tags:</label>
+                  <TagList tags={this.state.tags} />
+                </div>
+
+                {!this.state.public && this.state.invited.length > 0 && (
+                  //if the event is public, do not show invited list
+                  <div className="form-group">
+                    <label className={classes.Label}>Invited: </label>
+                    <ul>
+                      {this.state.invited.map(user => (
+                        <li key={user._id}>{user.username}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {this.state.attending.length > 0 && (
+                  <div className="form-group">
+                    <label className={classes.Label}>Attending:</label>
+                    <ul>
+                      {this.state.attending.map(user => (
+                        <li key={user._id}>{user.username}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className={[classes.VerticalFlex, classes.Right].join(' ')}>
+                <GoogleMap
+                  eventName={this.state.title}
+                  addressName={this.state.address}
+                  location={this.state.location}
+                />
+                <div className="form-group">
+                  <p>{this.state.address}</p>
+                </div>
+              </div>
+            </div>
+            <hr/>
+            <h4>Media</h4>
+            <Form event_id={this.props.match.params.id}/>
+            <AllImages event_id={this.props.match.params.id}/>
           </div>
         </div>
         <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />

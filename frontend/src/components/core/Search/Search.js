@@ -1,7 +1,14 @@
 import React, {useState, useRef, useCallback} from 'react';
 import classes from './Search.module.css';
 
-const Search = ({data, placeholder, onSelect, emptyMessage}) => {
+const Search = ({
+  data,
+  placeholder,
+  onSelect,
+  emptyMessage,
+  fillOnSelect,
+  onChange,
+}) => {
   const [dropdownToggled, setDropdownToggled] = useState(false);
   const [value, setValue] = useState('');
   const componentRef = useRef(null);
@@ -12,10 +19,12 @@ const Search = ({data, placeholder, onSelect, emptyMessage}) => {
 
   const selectItemHandler = useCallback(
     item => {
-      onSelect(item);
+      if (onSelect) onSelect(item);
+      if (onChange) onChange(item);
+      if (fillOnSelect) setValue(item);
       hideDropdown();
     },
-    [hideDropdown, onSelect],
+    [hideDropdown, onSelect, onChange, fillOnSelect],
   );
 
   const showDropdown = useCallback(() => {
@@ -81,6 +90,7 @@ const Search = ({data, placeholder, onSelect, emptyMessage}) => {
           }
         }}
         onChange={({target}) => {
+          if (onChange) onChange(target.value);
           setValue(target.value);
           if (!dropdownToggled && target.value.length > 0) {
             showDropdown();

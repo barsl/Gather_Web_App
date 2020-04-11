@@ -1,130 +1,94 @@
-import React, { Component } from 'react';
-import { withRouter, Redirect } from 'react-router-dom';
+import React, {Component} from 'react';
 import axios from 'axios';
+import classes from './style/friend-requests.module.css';
 
-const Friend = props => (
-  <tr>
-    <td>
-      {props.friend.title}
-    </td>
-    <td>{props.friend.username}</td>
-    <td>
-      <a href="#" onClick={() => { props.acceptFriend(props.friend._id) }}>Accept </a>   |
-      <a href="#" onClick={() => { props.deleteFriend(props.friend._id) }}> Delete</a>
-    </td>
-  </tr>
-)
-
+const FriendRequest = props => (
+  <div className={classes['friend-request-card']}>
+    <button
+      className="btn btn-primary my-auto mr-3"
+      type="button"
+      onClick={() => {
+        props.acceptFriend(props.friend._id);
+      }}
+    >
+      Accept
+    </button>
+    <i
+      className={classes['friend-request-cancel']}
+      onClick={() => {
+        props.deleteFriend(props.friend._id);
+      }}
+    />
+    <p className={['m-auto', classes['friend-request-message']].join(' ')}>
+      Friend request from{' '}
+      <span className="font-weight-bold">{props.friend.username}</span>.
+    </p>
+  </div>
+);
 
 class FriendRequests extends Component {
-  _isMounted = false;
-
   constructor(props) {
     super(props);
 
-    this.deleteFriend = this.deleteFriend.bind(this)
-    this.acceptFriend = this.acceptFriend.bind(this)
-
-    this.state = {friends: [], users: [], isAuthenticated: true};
-  }
-
-  componentDidMount() {
-    axios.get('/verify', { withCredentials: true })
-      .then(res => {
-        if (!res.data.isValid) {
-          this.setState({
-            isAuthenticated: false
-          });
-        }
-      })
-      .catch(err => {
-        console.error(err);
-      })
-
-    axios.get('/users/currentUser/requests')
-      .then(response => {
-        this.setState({ friends: response.data })
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-
-    axios.get("/users/currentUser", { withCredentials: true })
-      .then(({ data }) => {
-        this.setState({
-          current_id: data._id,
-          userFriends: data.friends
-        });
-      })
-      .catch(error => {
-        this.setState({
-          isAuthenticated: false
-        });
-        console.log("Unable to get current user. " + error);
-      });
+    this.deleteFriend = this.deleteFriend.bind(this);
+    this.acceptFriend = this.acceptFriend.bind(this);
   }
 
   deleteFriend(friend) {
-    axios.get("/users/currentUser", { withCredentials: true })
-    .then(({ data }) => {
-      axios.post('/friends/requests/delete/' + data._id, {target: friend})
-      .then(response => { console.log(response.data) });
-    this.setState({
-      requests: this.state.friends.filter(el => el !== friend)
-    })
-    console.log("request deleted");
-    });
+    axios
+      .patch(`/users/${this.props.user.id}/friend_requests`, {
+        op: 'remove',
+        value: friend,
+      })
+      .then(({data}) => {
+        this.props.updateUser({friend_requests: data.friend_requests});
+      });
   }
 
   acceptFriend(friend) {
-    
-    axios.get("/users/currentUser", { withCredentials: true })
-    .then(({ data }) => {
-      
-      axios.post("/friends/friends/add/" + data._id, {target: friend})
-      .then(res => console.log(res.data));
-    });
-
-    axios.get("/users/currentUser", { withCredentials: true })
-    .then(({ data }) => {
-      
-      axios.post("/friends/friends/add/" + friend, {target: data._id})
-      .then(res => console.log(res.data));
-    });
-
-  this.deleteFriend(friend);
-
-    console.log("accepted");
+    axios
+      .patch(`/users/${this.props.user.id}/friends`, {
+        op: 'add',
+        value: friend,
+      })
+      .then(({data}) => {
+        this.props.updateUser({
+          friends: data.friends,
+          friend_requests: data.friend_requests,
+        });
+      });
   }
 
   friendsList() {
-    return this.state.friends.map(currentfriend => {
-      return <Friend friend={currentfriend} acceptFriend={this.acceptFriend} deleteFriend={this.deleteFriend} key={currentfriend._id} />;
-    })
-
+    return this.props.user.friend_requests.map(currentfriend => {
+      return (
+        <div
+          key={currentfriend._id}
+          className={classes['friend-request-container']}
+        >
+          <FriendRequest
+            friend={currentfriend}
+            acceptFriend={this.acceptFriend}
+            deleteFriend={this.deleteFriend}
+          />
+        </div>
+      );
+    });
   }
 
-  
-
   render() {
-    if (!this.state.isAuthenticated) return <Redirect to="/" />
+    const friendRequests = this.friendsList();
     return (
-      <div>
-        <h3> Friend Requests </h3>
-        <table className="table">
-          <thead className="thead-light">
-            {/* <tr>
-              <th>User Name</th>
-              <th>Actions</th>
-            </tr> */}
-          </thead>
-          <tbody>
-            {this.friendsList()}
-          </tbody>
-        </table>
+      <div className="d-flex flex-column hidden-y">
+        <h3 className="font-weight-bold">Friend Requests</h3>
+        {friendRequests.length > 0 ? (
+          <div className="scroll-y">{friendRequests}</div>
+        ) : (
+          <p className="text-muted">No friend requests.</p>
+        )}
       </div>
-    )
+    );
   }
 }
 
-export default withRouter(FriendRequests);
+export default FriendRequests;

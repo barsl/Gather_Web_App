@@ -39,10 +39,15 @@
 
 .Link {
   margin-left: 1rem;
+  color: var(--primary-teal);
+}
+
+.Link:hover {
+  color: var(--secondary-teal);
 }
 
 .Form {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .ErrorMessage {

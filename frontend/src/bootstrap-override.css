@@ -1,0 +1,56 @@
+.btn-primary {
+  background-color: var(--primary-teal) !important;
+  border-color: var(--primary-teal) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus
+.btn-primary:target
+ {
+  background-color: var(--secondary-teal) !important;
+  border-color: var(--secondary-teal) !important;
+}
+
+.btn-secondary {
+  background-color: var(--primary-gray) !important;
+  border-color: var(--primary-gray) !important;
+  color: black;
+}
+
+.btn-secondary:hover,
+.btn-secondary:active,
+.btn-secondary:focus
+.btn-secondary:target
+ {
+  background-color: var(--secondary-gray) !important;
+  border-color: var(--secondary-gray) !important;
+  color: black;
+}
+
+.fh {
+  height: 100vh;
+}
+
+.scroll-x {
+  overflow-x: scroll;
+}
+.scroll-y {
+  overflow-y: scroll;
+}
+.hidden-x {
+  overflow-x: hidden;
+}
+.hidden-y {
+  overflow-y: hidden;
+}
+
+@media (max-width: 576px) {
+  .hidden-y {
+    overflow-y: auto;
+  }
+
+  .h-100 {
+    height: auto !important;
+  }
+}

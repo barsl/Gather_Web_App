@@ -1,0 +1,21 @@
+.FileInput {
+  max-width: 100%;
+}
+
+.CustomFile{
+  max-width: 50%;
+  margin-right:1em;
+}
+
+.FormContainer {
+  margin-bottom: 2em;
+}
+
+.HorizontalFlex {
+  display: flex;
+  flex-direction: row;
+}
+
+.GifButton{
+ margin-left:auto;
+}

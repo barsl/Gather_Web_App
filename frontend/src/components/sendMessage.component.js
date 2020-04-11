@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classes from "./style/chat.module.css";
 
 class SendMessageForm extends Component {
     constructor() {
@@ -31,15 +32,15 @@ class SendMessageForm extends Component {
 
     render() {
         return (
-            <div>
-                <form onSubmit={this.onSubmit}>
+            <div className={classes.MessageComposer}>
+                <form className={classes.MessageForm} onSubmit={this.onSubmit}>
                     <input
+                        className={classes.TextInput}
                         type="text"
                         value={this.state.text}
-                        placeholder="Enter message"
                         onChange={this.onChange}>
                     </input>
-                    <input type="submit" />
+                    <input className={["btn", "btn-primary", classes.SendButton].join(" ")} type="submit" value="send"/>
                 </form>
             </div>
         )

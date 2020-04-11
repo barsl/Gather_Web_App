@@ -4,6 +4,7 @@ import MessageList from './messageList.component';
 import { withRouter } from 'react-router-dom';
 import SendMessageForm from './sendMessage.component';
 import { AuthContext } from './auth/context/AuthContext';
+import classes from './style/chat.module.css';
 
 class ChatScreen extends Component {
     constructor(props) {
@@ -64,8 +65,8 @@ class ChatScreen extends Component {
 
     render() {
         return (
-            <div>
-                <h1>Chat</h1>
+            <div className={classes.ChatScreen}>
+                <h5 className={classes.ChatHeader}>Chat</h5>
                 <MessageList messages={this.state.messages} />
                 <SendMessageForm onSubmit={this.sendMessage} />
             </div>

@@ -29,7 +29,7 @@ class Navigation extends Component {
       <>
         {this.context.user && (
           <Navbar bg="dark" variant="dark" expand="lg">
-            <Link className="navbar-brand" to="/eventsList">Gather</Link>
+            <Link className="navbar-brand font-weight-bold" to="/eventsList">gather</Link>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse>
               <Nav>

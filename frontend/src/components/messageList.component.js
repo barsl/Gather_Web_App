@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
+import classes from './style/chat.module.css';
 
 class MessageList extends Component {
 
     render() {
         return (
-            <ul>
+            <div className={classes.MessagesView}>
                 {this.props.messages.map((message, index) => (
-                    <li key={index}>
+                    <div className={classes.Message} key={index}>
                         <div>
-                            <span>{message.senderId}</span>
-                            <p>{message.text}</p>
+                            <span className={classes.SenderName}>{message.senderId}</span>
+                            <div className={classes.MessageBox}>{message.text}</div>
                         </div>
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         )
     }
 }

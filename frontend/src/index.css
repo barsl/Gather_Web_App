@@ -7,10 +7,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   /* Colour variables */
-  --primary-teal: cadetblue;
-  --secondary-teal: rgb(77, 126, 128);
-  --primary-pink: lightcoral;
-  --secondary-pink: rgb(209, 106, 106);
+  --primary-teal: #00C7A9;
+  --secondary-teal: #04AF92;
+  --primary-pink: rgb(252, 104, 136);
+  --secondary-pink: #D8254F;
   --primary-gray: #EAEAEA;
   --secondary-gray: darkgray;
   --dark-gray: rgb(102, 102, 102);

@@ -14,14 +14,6 @@ const futureDatesFilter = event => {
   return new Date(event.endDate) >= new Date();
 };
 
-const pastDatesFilter = event => {
-  return new Date(event.date) < new Date();
-};
-
-const futureDatesFilter = event => {
-  return new Date(event.date) >= new Date();
-};
-
 class EventsList extends Component {
   constructor(props) {
     super(props);
@@ -38,7 +30,6 @@ class EventsList extends Component {
     axios
       .get('/events/public?recommend=true')
       .then(response => {
-        console.debug(response.data);
         this.setState({publicEvents: response.data});
       })
       .catch(error => {
@@ -210,7 +201,7 @@ class EventsList extends Component {
       <div>
         <Navbar />
         <div className="container-fluid px-4 py-3">
-          <h3> My Events </h3>
+          <h3 className="font-weight-bold"> My Events </h3>
           {(createdEventList.length > 0 ||
             attendingEventList.length > 0 ||
             invitedEventList.length > 0) && <hr />}
@@ -233,7 +224,7 @@ class EventsList extends Component {
             </>
           )}
           <hr />
-          <h3> Public Events </h3>
+          <h3 className="font-weight-bold"> Public Events </h3>
           {publicEventList.length > 0 ? (
             <EventsPanel eventList={publicEventList}/>
           ) : (
@@ -242,7 +233,7 @@ class EventsList extends Component {
           {pastEventList.length > 0 && (
             <>
               <hr />
-              <h3> Past Events </h3>
+              <h3 className="font-weight-bold"> Past Events </h3>
               <EventsPanel eventList={pastEventList}/>
             </>
           )}

@@ -15,8 +15,7 @@ import {
   getAddressFromCoordinates,
   getCoordinatesFromAddress,
 } from '../../util/MapUtil';
-import Form from "../Form";
-import AllImages from "../AllImages";
+import eventPage from './style/event-page.module.css';
 
 export default withAuth(
   class EditEvent extends Component {
@@ -131,7 +130,7 @@ export default withAuth(
             loading: false,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     }
@@ -247,140 +246,186 @@ export default withAuth(
 
     render() {
       const tagsSet = new Set(this.state.tags);
-      const editPage = (
-        <div className="container-fluid px-4 py-3">
-          <h3>Edit Event</h3>
-
-          <GoogleMap
-            onLocationChange={this.onLocationChange}
-            eventName={this.state.title}
-            addressName={this.state.address}
-            location={this.state.location}
-          />
-          <form onSubmit={this.onSubmit}>
-            <div className="form-group">
-              <label>Event title: </label>
-              <input
-                type="text"
-                className="form-control"
-                value={this.state.title}
-                onChange={this.onChangeTitle}
-              />
-            </div>
-            <div className="form-group">
-              <label>Event owner: {this.state.username}</label>
-            </div>
-            <div className="form-group">
-              <label>Description: </label>
-              <input
-                type="text"
-                className="form-control"
-                value={this.state.description}
-                onChange={this.onChangeDescription}
-              />
-            </div>
-            <div className="form-group">
-              <label>Tags: </label>
-              <TagList
-                tags={this.state.tags}
-                onTagRemove={this.removeTagHandler}
-              />
-              <Search
-                data={this.state.tagsList.filter(tag => !tagsSet.has(tag))}
-                onSelect={this.selectTagHandler}
-                placeholder="Search tags..."
-                emptyMessage="No matching tags..."
-              />
-            </div>
-            <div className="form-group">
-              <label>Event Address: </label>
-              <input
-                type="text"
-                required
-                className="form-control"
-                value={this.state.address}
-                onChange={this.onAddressChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Start date: </label>
-              <div>
-                <DatePicker
-                  selected={this.state.startDate}
-                  onChange={this.onChangeStartDate}
-                  showTimeSelect
-                  dateFormat="MM/dd/yy h:mm aa"
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>End date: </label>
-              <div>
-                <DatePicker
-                  selected={this.state.endDate}
-                  onChange={this.onChangeEndDate}
-                  showTimeSelect
-                  dateFormat="MM/dd/yy h:mm aa"
-                />
-              </div>
-            </div>
-
-            {!this.state.public &&
-            this.state.invited.length > 0 && ( //if the event is public, do not show invited list
-                <>
-                  <div className="form-group">
-                    <label>Invited: </label>
-                    <ul>
-                      {this.state.invited.map(user => (
-                        <li key={user._id}>{user.username}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              )}
-
-            {this.state.attending.length > 0 && (
-              <div className="form-group">
-                <label>Attending: </label>
-                <ul>
-                  {this.state.attending.map(user => (
-                    <li key={user._id}>{user.username}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="form-group">
-              <div className={classes['button-ctrls']}>
-                <input type="submit" value="Save" className="btn btn-primary" />
-                <input
-                  type="button"
-                  value="Cancel"
-                  className="btn btn-secondary"
-                  onClick={this.cancelHandler}
-                />
-              </div>
-            </div>
-          </form>
-        </div>
-      );
       const chatScreen = (
         <div className="chat_screen">
           <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />
         </div>
       );
+      const editPage = (
+        <div
+          className={[eventPage.HorizontalFlex, eventPage.OuterContainer].join(
+            ' ',
+          )}
+        >
+          <div
+            className={[eventPage.VerticalFlex, eventPage.MainContent].join(
+              ' ',
+            )}
+          >
+            <div className="container-fluid px-4 py-3">
+              <form onSubmit={this.onSubmit}>
+                <div className={eventPage.HorizontalFlex}>
+                  <h3 className="font-weight-bold">Editing: {this.state.title}</h3>
+                  <div className={eventPage.ButtonGroup}>
+                    <div className={classes['button-ctrls']}>
+                      <input
+                        type="submit"
+                        value="Save"
+                        className="btn btn-primary"
+                      />
+                      <input
+                        type="button"
+                        value="Cancel"
+                        className="btn btn-secondary"
+                        onClick={this.cancelHandler}
+                      />
+                    </div>
+                  </div>
+                </div>{' '}
+                {/* Title horizontal flex */}
+                <hr />
+                <div className={eventPage.HorizontalFlex}>
+                  <div
+                    className={[eventPage.VerticalFlex, eventPage.Left].join(
+                      ' ',
+                    )}
+                  >
+                    <div className="form-group">
+                      <div className="form-group">
+                        <p>
+                          <label className={eventPage.Label}>
+                            Event owner:
+                          </label>{' '}
+                          {this.state.username}
+                        </p>
+                      </div>
+                      <label className={eventPage.Label}>Event title: </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={this.state.title}
+                        onChange={this.onChangeTitle}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className={eventPage.Label}>Description: </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={this.state.description}
+                        onChange={this.onChangeDescription}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="font-weight-bold">Tags: </label>
+                      <TagList
+                        tags={this.state.tags}
+                        onTagRemove={this.removeTagHandler}
+                      />
+                      <Search
+                        data={this.state.tagsList.filter(
+                          tag => !tagsSet.has(tag),
+                        )}
+                        onSelect={this.selectTagHandler}
+                        placeholder="Search tags..."
+                        emptyMessage="No matching tags..."
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className={eventPage.Label}>Start date: </label>
+                      <div>
+                        <DatePicker
+                          selected={this.state.startDate}
+                          onChange={this.onChangeStartDate}
+                          showTimeSelect
+                          dateFormat="MM/dd/yy h:mm aa"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className={eventPage.Label}>End date: </label>
+                      <div>
+                        <DatePicker
+                          selected={this.state.endDate}
+                          onChange={this.onChangeEndDate}
+                          showTimeSelect
+                          dateFormat="MM/dd/yy h:mm aa"
+                        />
+                      </div>
+                    </div>
+
+                    {!this.state.public &&
+                    this.state.invited.length > 0 && ( //if the event is public, do not show invited list
+                        <>
+                          <div className="form-group">
+                            <label className={eventPage.Label}>Invited: </label>
+                            <ul>
+                              {this.state.invited.map(user => (
+                                <li key={user._id}>{user.username}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </>
+                      )}
+
+                    {this.state.attending.length > 0 && (
+                      <div className="form-group">
+                        <label className={eventPage.Label}>Attending: </label>
+                        <ul>
+                          {this.state.attending.map(user => (
+                            <li key={user._id}>{user.username}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                  {/* Left side */}
+                  <div
+                    className={[eventPage.VerticalFlex, eventPage.Right].join(
+                      ' ',
+                    )}
+                  >
+                    <div className="form-group">
+                      <label className={eventPage.Label}>Event Address: </label>
+                      <input
+                        type="text"
+                        required
+                        className="form-control"
+                        value={this.state.address}
+                        onChange={this.onAddressChange}
+                      />
+                    </div>
+                    <GoogleMap
+                      onLocationChange={this.onLocationChange}
+                      eventName={this.state.title}
+                      addressName={this.state.address}
+                      location={this.state.location}
+                    />
+                  </div>{' '}
+                  {/* Right side */}
+                </div>
+              </form>
+            </div>{' '}
+            {/* Page wrapper */}
+          </div>
+          {!this.state.loading && chatScreen}
+        </div>
+      );
+
       return (
         <div className="edit_page">
           <div className="main_edit_screen">
             <NavBar />
             {!this.state.loading ? editPage : null}
           </div>
-          {!this.state.loading && chatScreen}
-          <Form event_id={this.props.match.params.id}/>
-          <AllImages event_id={this.props.match.params.id}/>
+          {/* {!this.state.loading && chatScreen} */}
+
+          {/* <Form event_id={this.props.match.params.id}/>
+          <AllImages event_id={this.props.match.params.id}/> */}
         </div>
-        
       );
     }
   },

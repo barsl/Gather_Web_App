@@ -9,3 +9,49 @@
 .button-ctrls > input:last-child {
   margin-left: 0.25em;
 }
+
+.HorizontalFlex {
+  display: flex;
+  flex-direction: row;
+}
+
+.VerticalFlex {
+  display: flex;
+  flex-direction: column;
+}
+
+.MainContent {
+  max-width: 80%;
+  min-width: 80%;
+}
+
+.Left {
+  min-width: 50%;
+  padding: 10px;
+}
+.Right {
+  min-width: 50%;
+  padding: 10px;
+}
+
+.ButtonGroup {
+  margin-left: auto;
+  margin-top: auto;
+}
+
+.Title {
+  margin: 0;
+}
+
+.Label {
+  margin: 0;
+  font-weight: bold;
+}
+
+.Chat {
+  height: 100%;
+}
+
+.OuterContainer {
+  height: 100vh;
+}

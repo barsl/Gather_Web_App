@@ -12,6 +12,7 @@ import OAuthCallback from "./components/auth/oauth/OAuthCallback";
 import { AuthProvider } from "./components/auth/context/AuthContext";
 import EventPage from "./components/events/event-page";
 import './index.css';
+import './bootstrap-override.css';
 
 function App() {
   return (

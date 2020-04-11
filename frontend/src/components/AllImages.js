@@ -62,10 +62,6 @@ class AllImages extends React.Component {
       return (
       <table className="table table-image">
         <thead className="thead-light">
-          <tr>
-            <th>Image</th>
-            <th>Action</th>
-          </tr>
         </thead>
         <tbody>
           {this.picsList()}

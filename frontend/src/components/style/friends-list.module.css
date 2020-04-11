@@ -1,0 +1,42 @@
+.friend-container {
+  margin: 1em 0;
+}
+
+.friend-container:first-child {
+  margin-top: 0;
+}
+
+.friend-container:last-child {
+  margin-bottom: 0;
+}
+
+.friend-card {
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 0.25em;
+  display: flex;
+  padding: 1em;
+  position: relative;
+  transition: 0.15s ease-in-out;
+}
+
+.friend-cancel {
+  background-image: url('../assets/close_b.svg');
+  background-repeat: no-repeat;
+  background-size: 0.75em;
+  width: 0.75em;
+  height: 0.75em;
+  cursor: pointer;
+  opacity: 0.5;
+  position: absolute;
+  top: calc(50% - 0.75em/2);
+  right: 1em;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.friend-cancel:hover {
+  opacity: 1;
+}
+
+.friend-message {
+  font-size: 1.25rem;
+}

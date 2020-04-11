@@ -1,6 +1,8 @@
 .map_small{
     display: flex;
-    height: 30vh !important;
-    width: 30vw !important;
+    /* height: 30vh !important;
+    width: 30vw !important; */
+    width: 100%;
+    height: 30vw !important;
     position: relative !important;
 }

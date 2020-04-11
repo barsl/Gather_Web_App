@@ -6,6 +6,8 @@
 
 .InvitedList > li {
   background-image: url('../../assets/close.svg');
+  background-color: var(--primary-teal);
+  color: white;
   background-repeat: no-repeat;
   background-size: 0.75rem;
   background-position: 95% center;
@@ -14,10 +16,11 @@
   border: 0.5px solid gainsboro;
   max-width: 15em;
   padding: 0.5em 1em;
+  margin-bottom: 0.5em;
 }
 
 .InvitedList > li:hover {
-  background-color: #007BFF;
+  background-color: var(--secondary-teal);
   color: white;
   cursor: pointer;
 }
