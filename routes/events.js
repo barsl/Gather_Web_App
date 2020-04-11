@@ -189,4 +189,13 @@ router.route('/pics/gif/:id').get((req, res) => {
 });
 
 
+router.route('/pics/delete').post((req, res) => {
+  console.log(req.body);
+  Event.findByIdAndUpdate(req.body.event_id, 
+    { $pull: { pics: req.body.pic } }).exec()
+    .catch(err => res.status(400).json('cant delete: ' + err));
+});
+
+
+
 module.exports = router;

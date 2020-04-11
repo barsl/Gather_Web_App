@@ -13,7 +13,7 @@ const Image = props => (
     </td>
 
     <td>
-      <Link to={"/" }>delete</Link>
+      <a href="#" onClick={() => { props.deletePic(props.url) }}> Delete</a>
     </td>
   </tr>
 )
@@ -24,6 +24,7 @@ class AllImages extends React.Component {
   constructor(props) {
     super(props);
 
+    this.deletePic = this.deletePic.bind(this)
     this.picsList = this.picsList.bind(this)
 
     this.state = { pics: [] };
@@ -41,7 +42,18 @@ class AllImages extends React.Component {
 
   picsList() {
     return this.state.pics.map(pic => {
-      return <Image url={pic} key={pic}/>;
+      return <Image url={pic} key={pic} deletePic={this.deletePic}/>;
+    })
+  }
+
+  deletePic(pic) {
+    console.log("deleting pic");
+    axios.post('/events/pics/delete', {event_id: this.props.event_id, url: pic})
+    .then(() => {
+        console.log("pic deleted");
+      })
+    .catch((error) => {
+      console.log(error);
     })
   }
 
