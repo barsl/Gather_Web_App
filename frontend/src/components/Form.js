@@ -44,7 +44,6 @@ class Form extends React.Component {
     return (
       <div className={['form-container', classes.FormContainer].join(' ')}>
         <p className="form-label">Upload an Image</p>
-
         <form
           className="custom-file"
           encType="multipart/form-data"
@@ -58,10 +57,11 @@ class Form extends React.Component {
                 onChange={this.onChangeImage}
               ></input>
               <label
+                id="ImageLabel"
                 className={['custom-file-label', classes.FileInput].join(' ')}
                 htmlFor="customFile"
               >
-                Choose file
+                {this.state.image ? this.state.image.name : 'Choose file'}
               </label>
             </div>
 
