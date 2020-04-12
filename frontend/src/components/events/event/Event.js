@@ -2,6 +2,7 @@ import React from 'react';
 import {Link, withRouter} from 'react-router-dom';
 import {useAuthContext} from '../../auth/context/AuthContext';
 import './Event.css';
+import {getFormattedDateStringShort} from '../../../util/DateUtil';
 
 const Event = props => {
   const {user} = useAuthContext();
@@ -84,15 +85,15 @@ const Event = props => {
         <div className="EventIcon" />
 
         {(props.eventType === 'invited' || props.eventType === 'public') && (
-            <div
-              className="AttendButton"
-              onClick={e => {
-                e.stopPropagation();
-                props.setAttending(props.event, true);
-              }}
-            >
-              attend
-            </div>
+          <div
+            className="AttendButton"
+            onClick={e => {
+              e.stopPropagation();
+              props.setAttending(props.event, true);
+            }}
+          >
+            attend
+          </div>
         )}
 
         {props.eventType === 'attending' && (
@@ -106,18 +107,11 @@ const Event = props => {
             unattend
           </div>
         )}
-
       </div>
       <div className="EventInfo">
         <h5 className="Title">{props.event.title}</h5>
         <p className="Time">
-          {new Date(props.event.startDate).toLocaleString('en-CA', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: 'numeric',
-            minute: 'numeric',
-          })}
+          {getFormattedDateStringShort(new Date(props.event.startDate))}
         </p>
         <p className="Description">{props.event.description}</p>
       </div>
