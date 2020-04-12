@@ -31,13 +31,15 @@ class AllImages extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/events/pics/get/'+this.props.event_id)
-    .then(response => {
-      this.setState({ pics: response.data })
+    this.interval = setInterval(() => {
+      axios.get('/events/pics/get/'+this.props.event_id)
+      .then(response => {
+        this.setState({ pics: response.data })
+        })
+      .catch((error) => {
+        console.log(error);
       })
-    .catch((error) => {
-      console.log(error);
-    })
+    }, 1000);
   }
 
   picsList() {
