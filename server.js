@@ -67,14 +67,12 @@ const eventsRouter = require('./routes/events');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const chatRouter = require('./routes/chat');
-const friendsRouter = require('./routes/friends');
 const constsRouter = require('./routes/consts');
 
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 app.use('/', authRouter);
 app.use('/chat', chatRouter);
-app.use('/friends', friendsRouter);
 app.use('/consts', constsRouter);
 
 if (process.env.NODE_ENV === 'production') {
