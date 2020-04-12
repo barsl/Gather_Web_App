@@ -47,14 +47,7 @@ class AllImages extends React.Component {
   }
 
   deletePic(pic) {
-    console.log("deleting pic");
-    axios.post('/events/pics/delete', {event_id: this.props.event_id, url: pic})
-    .then(() => {
-        console.log("pic deleted");
-      })
-    .catch((error) => {
-      console.log(error);
-    })
+    axios.post('/events/pics/delete', {event_id: this.props.event_id, url: pic});
   }
 
   render() {
