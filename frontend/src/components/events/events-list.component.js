@@ -30,7 +30,6 @@ class EventsList extends Component {
     axios
       .get('/events/public?recommend=true')
       .then(response => {
-        console.debug(response.data);
         this.setState({publicEvents: response.data});
       })
       .catch(error => {

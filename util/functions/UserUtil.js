@@ -23,4 +23,4 @@ const checkEventPermissions = (
   return true;
 };
 
-module.exports = {checkEventPermissions, stripCredentials};
+module.exports = {checkEventPermissions, stripCredentials, userExistsInCollection};
