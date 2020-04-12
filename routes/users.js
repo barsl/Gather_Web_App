@@ -372,7 +372,9 @@ router.route('/:id/friends').patch(auth, (req, res) => {
 router.route('/:id/friend_requests/').patch(auth, (req, res) => {
   const {op, value} = req.body;
   if (req.params.id === value) {
-    return res.status(400).send('Cannot add/remove self from friends requests.');
+    return res
+      .status(400)
+      .send('Cannot add/remove self from friends requests.');
   }
   if (op === 'add' && value !== req.session.user.id) {
     return res.status(401).end();
@@ -384,6 +386,12 @@ router.route('/:id/friend_requests/').patch(auth, (req, res) => {
       .then(user => {
         if (userExistsInCollection(value, user.friend_requests)) {
           throw {msg: 'Cannot send duplicate friend requests.', status: 409};
+        }
+        if (userExistsInCollection(value, user.friends)) {
+          throw {
+            msg: `Already have "${user.username}" as a friend.`,
+            status: 409,
+          };
         }
         user.friend_requests.push(mongoose.Types.ObjectId(value));
         return user.save();
