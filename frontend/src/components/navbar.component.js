@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {Link, withRouter} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
-import {AuthContext} from './auth/context/AuthContext';
-import {Navbar, Nav, NavDropdown} from 'react-bootstrap';
+import { AuthContext } from './auth/context/AuthContext';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
 class Navigation extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class Navigation extends Component {
   logOut(e) {
     e.preventDefault();
     axios
-      .get('/logout', {withCredentials: true})
+      .get('/logout', { withCredentials: true })
       .then(res => {
         console.log('Logged out successfully');
         this.props.history.replace('/');
@@ -42,14 +42,17 @@ class Navigation extends Component {
                 <Link className="nav-link" to="/friends">
                   Friends
                 </Link>
+                <Link className="nav-link" to="/credits">
+                  Credits
+                </Link>
               </Nav>
               <Nav className="ml-auto">
                 <NavDropdown alignRight title={this.context.user.username}>
-                    <Link className="dropdown-item" to="/profile">
-                      My Profile
+                  <Link className="dropdown-item" to="/profile">
+                    My Profile
                     </Link>
-                    <a href="/" onClick={this.logOut} className="dropdown-item">
-                      Logout
+                  <a href="/" onClick={this.logOut} className="dropdown-item">
+                    Logout
                     </a>
                 </NavDropdown>
               </Nav>
