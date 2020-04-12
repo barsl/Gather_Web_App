@@ -2,6 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Login from "./components/login.component";
+import Credits from "./components/credits.component";
 import Signup from "./components/signup.component";
 import EventsList from "./components/events/events-list.component";
 import EditEvent from "./components/events/edit-event.component";
@@ -27,6 +28,7 @@ function App() {
           <Route path="/friends" component={Friends} />
           <Route path="/profile" component={UserProfile} />
           <Route path="/oauthcallback" component={OAuthCallback} />
+          <Route path="/credits" component={Credits} />
         </div>
       </Router>
     </AuthProvider>
