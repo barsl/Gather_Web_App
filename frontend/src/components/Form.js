@@ -37,6 +37,7 @@ class Form extends React.Component {
       title: '',
       image: '',
     });
+    this.forceUpdate();
   }
 
   render() {

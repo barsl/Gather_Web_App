@@ -232,10 +232,14 @@ router.route('/pics/gif/:id').get((req, res) => {
 
 
 router.route('/pics/delete').post((req, res) => {
-  console.log(req.body);
-  Event.findByIdAndUpdate(req.body.event_id, 
-    { $pull: { pics: req.body.pic } }).exec()
-    .catch(err => res.status(400).json('cant delete: ' + err));
+  Event.findById(req.body.event_id)
+  .then(event => {
+    console.log(event.pics);
+    event.updateOne(
+      { $pull: { pics: req.body.url} }
+    ).exec();
+  })
+  .catch(err => res.status(400).json("Error: " + err));
 });
 
 

@@ -13,6 +13,7 @@ import {getFormattedDateStringNumeric} from '../../util/DateUtil';
 import Form from "../Form";
 import AllImages from "../AllImages";
 
+
 class EventPage extends Component {
   constructor(props) {
     super(props);
@@ -204,7 +205,6 @@ class EventPage extends Component {
             <AllImages event_id={this.props.match.params.id}/>
           </div>
         </div>
-        <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />
       </div>
     );
     return (
