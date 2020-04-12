@@ -8,9 +8,6 @@ import axios from 'axios';
 
 export default withUser(
   class Friends extends Component {
-    constructor(props) {
-      super(props);
-    }
     componentDidMount() {
       this.interval = setInterval(() => {
         axios
