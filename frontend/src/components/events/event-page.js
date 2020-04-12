@@ -4,15 +4,14 @@ import NavBar from '../navbar.component';
 import ChatScreen from '../chat.component';
 import GoogleMap from '../map.component';
 import '../style/map.css';
-import withAuth from '../auth/hoc/withAuth';
+import withUser from '../auth/hoc/withUser';
 import io from 'socket.io-client';
 import TagList from '../core/Tag/TagList/TagList';
 import {getAddressFromCoordinates} from '../../util/MapUtil';
 import classes from './style/event-page.module.css';
 import {getFormattedDateStringNumeric} from '../../util/DateUtil';
-import Form from "../Form";
-import AllImages from "../AllImages";
-
+import Form from '../Form';
+import AllImages from '../AllImages';
 
 class EventPage extends Component {
   constructor(props) {
@@ -22,7 +21,7 @@ class EventPage extends Component {
 
     this.fetchEvents = this.fetchEvents.bind(this);
     this.editHandler = this.editHandler.bind(this);
-    this.backHandler = this.backHandler.bind(this);
+    this.deleteHandler = this.deleteHandler.bind(this);
 
     this.state = {
       loading: true,
@@ -54,7 +53,7 @@ class EventPage extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.loadingAuth && this.props.authenticated) {
+    if (!this.props.loadingUser && this.props.authenticated) {
       this.fetchEvents();
     }
     this.socket.emit('JOIN_EVENT', this.props.match.params.id);
@@ -66,11 +65,7 @@ class EventPage extends Component {
 
   componentDidUpdate(prevProps) {
     // if authentication complete (ie. no longer loading) && authenticated
-    if (
-      prevProps.loadingAuth &&
-      !this.props.loadingAuth &&
-      this.props.authenticated
-    ) {
+    if (prevProps.loadingUser && !this.props.loadingUser && this.props.user) {
       this.fetchEvents();
     }
   }
@@ -115,26 +110,45 @@ class EventPage extends Component {
     });
   }
 
-  backHandler() {
-    this.props.history.push('/eventsList');
+  deleteHandler() {
+    axios
+      .delete('/events/' + this.props.match.params.id)
+      .then(() => {
+        this.props.history.push('/eventsList');
+      })
+      .catch(console.debug);
   }
 
   render() {
     const eventPage = (
-      <div className={[classes.HorizontalFlex, classes.OuterContainer].join(" ")}>
+      <div
+        className={[classes.HorizontalFlex, classes.OuterContainer, "scroll-y"].join(' ')}
+      >
         <div className={[classes.VerticalFlex, classes.MainContent].join(' ')}>
           <div className="container-fluid px-4 py-3">
             <div className={classes.HorizontalFlex}>
-              <h3 className={[classes.Title, "font-weight-bold"].join(" ")}>{this.state.title}</h3>
+              <h3 className={[classes.Title, 'font-weight-bold'].join(' ')}>
+                {this.state.title}
+              </h3>
 
               <div className={classes.ButtonGroup}>
                 <div className={classes['button-ctrls']}>
-                  {this.state.endDate > new Date() && (
+                  {this.state.endDate > new Date() &&
+                    (!this.state.public ||
+                      this.state.username === this.props.user.username) && (
+                      <input
+                        type="submit"
+                        value="Edit"
+                        className="btn btn-primary"
+                        onClick={this.editHandler}
+                      />
+                    )}
+                  {this.state.username === this.props.user.username && (
                     <input
-                      type="submit"
-                      value="Edit"
-                      className="btn btn-primary"
-                      onClick={this.editHandler}
+                      type="button"
+                      value="Delete"
+                      className="btn btn-danger"
+                      onClick={this.deleteHandler}
                     />
                   )}
                 </div>
@@ -146,10 +160,12 @@ class EventPage extends Component {
             <div className={classes.HorizontalFlex}>
               <div className={[classes.VerticalFlex, classes.Left].join(' ')}>
                 <div className="form-group">
-                  <label className={classes.Label}>Event owner: </label> {this.state.username}
+                  <label className={classes.Label}>Event owner: </label>{' '}
+                  {this.state.username}
                 </div>
                 <div className="form-group">
-                  <label className={classes.Label}>Description:</label> {this.state.description}
+                  <label className={classes.Label}>Description:</label>{' '}
+                  {this.state.description}
                 </div>
 
                 <div className="form-group">
@@ -199,16 +215,17 @@ class EventPage extends Component {
                 </div>
               </div>
             </div>
-            <hr/>
+            <hr />
             <h4>Media</h4>
-            <Form event_id={this.props.match.params.id}/>
-            <AllImages event_id={this.props.match.params.id}/>
+            <Form event_id={this.props.match.params.id} />
+            <AllImages event_id={this.props.match.params.id} />
           </div>
         </div>
+        <ChatScreen roomId={this.state.roomId} key={this.state.roomId}/>
       </div>
     );
     return (
-      <div className="event_page">
+      <div className="event_page fh hidden-y d-flex flex-column">
         <NavBar />
         {!this.state.loading ? eventPage : null}
       </div>
@@ -216,4 +233,4 @@ class EventPage extends Component {
   }
 }
 
-export default withAuth(EventPage);
+export default withUser(EventPage);

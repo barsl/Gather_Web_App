@@ -59,7 +59,7 @@ class Form extends React.Component {
               ></input>
               <label
                 className={['custom-file-label', classes.FileInput].join(' ')}
-                for="customFile"
+                htmlFor="customFile"
               >
                 Choose file
               </label>
