@@ -1,0 +1,4 @@
+.ChatScreen {
+    background-color: var(--primary-gray);
+    min-width: 20%;
+}

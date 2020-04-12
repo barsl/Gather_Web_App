@@ -9,3 +9,25 @@
 .button-ctrls > input:last-child {
   margin-left: 0.25em;
 }
+
+.HorizontalFlex {
+  display: flex;
+  flex-direction: row;
+}
+
+.VerticalFlex {
+  display: flex;
+  flex-direction: column;
+}
+
+.MainContent {
+  max-width: 80%;
+  min-width: 80%;
+}
+
+.Left {
+  min-width: 40%
+}
+.Right {
+  min-width: 40%;
+}
