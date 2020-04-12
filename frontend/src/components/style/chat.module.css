@@ -22,18 +22,40 @@
 
 .Message {
     width: 75%;
+    margin-left: auto;
+}
+
+.ReceivedMessage {
+    width: 75%;
+    margin-right: auto;
 }
 
 .SenderName {
+    width: 100%;
+    display: inline-block;
+    text-align: right;
+    font-size: 9pt;
+}
+.ReceivedSenderName {
+    width: 100%;
+    display: inline-block;
+    text-align: left;
     font-size: 9pt;
 }
 
 .MessageBox {
-    /* border: 1px solid black; */
     background-color: var(--primary-pink);
     color:white;
     overflow-wrap: break-word;
-    /* hyphens: auto; */
+    font-size: 11pt;
+    border-radius: 0.25em;
+    padding: 3px;
+}
+
+.ReceivedMessageBox {
+    background-color: var(--primary-teal);
+    color:white;
+    overflow-wrap: break-word;
     font-size: 11pt;
     border-radius: 0.25em;
     padding: 3px;

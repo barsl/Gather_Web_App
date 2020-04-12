@@ -45,6 +45,10 @@
   overflow-y: hidden;
 }
 
+.sticky-top {
+  z-index: 0 !important; 
+}
+
 @media (max-width: 576px) {
   .hidden-y {
     overflow-y: auto;

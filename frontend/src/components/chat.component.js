@@ -71,7 +71,7 @@ class ChatScreen extends Component {
     return (
       <div className={[classes.ChatScreen, 'sticky-top'].join(' ')}>
         <h5 className={classes.ChatHeader}>Chat</h5>
-        <MessageList messages={this.state.messages} />
+        <MessageList userName={this.props.userName} messages={this.state.messages} />
         <SendMessageForm onSubmit={this.sendMessage} />
       </div>
     );

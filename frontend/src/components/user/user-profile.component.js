@@ -160,9 +160,9 @@ class UserProfile extends Component {
   render() {
     const contactInfo = !this.state.editingInfo ? (
       <>
-        <p>First Name: {this.state.firstName}</p>
-        <p>Last Name: {this.state.lastName}</p>
-        <p>Address: {this.state.address}</p>
+        <p> <label className="font-weight-bold m-0"> First Name: </label> {this.state.firstName}</p>
+        <p> <label className="font-weight-bold m-0"> Last Name: </label> {this.state.lastName}</p>
+        <p> <label className="font-weight-bold"> Address: </label> {this.state.address}</p>
         <input
           type="button"
           className={["btn", "btn-primary", classes['btn-primary']].join(' ')}
@@ -224,7 +224,7 @@ class UserProfile extends Component {
       <div>
         <Navbar />
         <div className="container-fluid px-4 py-3">
-          <h3> {this.props.user.username} </h3>
+          <h3 className={"font-weight-bold"}> {this.props.user.username} </h3>
           <hr />
           <h4>Contact Information</h4>
           {contactInfo}

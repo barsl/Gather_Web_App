@@ -221,7 +221,7 @@ class EventPage extends Component {
             <AllImages event_id={this.props.match.params.id} />
           </div>
         </div>
-        <ChatScreen roomId={this.state.roomId} key={this.state.roomId}/>
+        <ChatScreen userName={this.props.user.username} roomId={this.state.roomId} key={this.state.roomId}/>
       </div>
     );
     return (
