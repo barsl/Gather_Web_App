@@ -130,7 +130,7 @@ export default withAuth(
             loading: false,
           });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
     }
@@ -247,15 +247,15 @@ export default withAuth(
     render() {
       const tagsSet = new Set(this.state.tags);
       const chatScreen = (
-        <div className="chat_screen">
-          <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />
-        </div>
+        <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />
       );
       const editPage = (
         <div
-          className={[eventPage.HorizontalFlex, eventPage.OuterContainer].join(
-            ' ',
-          )}
+          className={[
+            eventPage.HorizontalFlex,
+            eventPage.OuterContainer,
+            'scroll-y',
+          ].join(' ')}
         >
           <div
             className={[eventPage.VerticalFlex, eventPage.MainContent].join(
@@ -265,7 +265,9 @@ export default withAuth(
             <div className="container-fluid px-4 py-3">
               <form onSubmit={this.onSubmit}>
                 <div className={eventPage.HorizontalFlex}>
-                  <h3 className="font-weight-bold">Editing: {this.state.title}</h3>
+                  <h3 className="font-weight-bold">
+                    Editing: {this.state.title}
+                  </h3>
                   <div className={eventPage.ButtonGroup}>
                     <div className={classes['button-ctrls']}>
                       <input
@@ -332,7 +334,7 @@ export default withAuth(
                         emptyMessage="No matching tags..."
                       />
                     </div>
-                    
+
                     <div className="form-group">
                       <label className={eventPage.Label}>Start date: </label>
                       <div>
@@ -417,14 +419,10 @@ export default withAuth(
 
       return (
         <div className="edit_page">
-          <div className="main_edit_screen">
+          <div className="main_edit_screen fh hidden-y d-flex flex-column">
             <NavBar />
             {!this.state.loading ? editPage : null}
           </div>
-          {/* {!this.state.loading && chatScreen} */}
-
-          {/* <Form event_id={this.props.match.params.id}/>
-          <AllImages event_id={this.props.match.params.id}/> */}
         </div>
       );
     }

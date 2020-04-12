@@ -9,7 +9,7 @@ import io from 'socket.io-client';
 import TagList from '../core/Tag/TagList/TagList';
 import {getAddressFromCoordinates} from '../../util/MapUtil';
 import classes from './style/event-page.module.css';
-import {getFormattedDateStringNumeric} from '../../util/DateUtil';
+import {getFormattedDateStringLong} from '../../util/DateUtil';
 import Form from '../Form';
 import AllImages from '../AllImages';
 
@@ -170,11 +170,11 @@ class EventPage extends Component {
 
                 <div className="form-group">
                   <label className={classes.Label}>Start date: </label>
-                  {getFormattedDateStringNumeric(this.state.startDate)}
+                  {' ' + getFormattedDateStringLong(this.state.startDate)}
                 </div>
                 <div className="form-group">
                   <label className={classes.Label}>End date: </label>
-                  {getFormattedDateStringNumeric(this.state.endDate)}
+                  {' ' + getFormattedDateStringLong(this.state.endDate)}
                 </div>
 
                 <div className="form-group">

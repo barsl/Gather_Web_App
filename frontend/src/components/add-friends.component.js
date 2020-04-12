@@ -11,6 +11,7 @@ class AddFriends extends Component {
 
     this.state = {
       users: [],
+      availableUsers: [],
       user: '',
       message: {
         type: null,
@@ -23,13 +24,34 @@ class AddFriends extends Component {
     axios
       .get('/users/', {withCredentials: true})
       .then(({data}) => {
+        const friendsSet = new Set(
+          this.props.user.friends.map(u => u.username),
+        );
         this.setState({
-          users: data.filter(u => u.username !== this.props.user.username),
+          users: data,
+          availableUsers: data.filter(
+            u =>
+              u.username !== this.props.user.username &&
+              !friendsSet.has(u.username),
+          ),
         });
       })
       .catch(error => {
         console.log('Unable to get users list. ' + error);
       });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.user.friends !== this.props.user.friends) {
+      const friendsSet = new Set(this.props.user.friends.map(u => u.username));
+      this.setState({
+        availableUsers: this.state.users.filter(
+          u =>
+            u.username !== this.props.user.username &&
+            !friendsSet.has(u.username),
+        ),
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -42,7 +64,9 @@ class AddFriends extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-    const friend = this.state.users.find(u => u.username === this.state.user);
+    const friend = this.state.availableUsers.find(
+      u => u.username === this.state.user,
+    );
     if (!friend) {
       this.setState({
         message: {
@@ -81,7 +105,7 @@ class AddFriends extends Component {
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
             <Search
-              data={this.state.users.map(u => u.username)}
+              data={this.state.availableUsers.map(u => u.username)}
               onChange={this.onChangeUser}
               emptyMessage="No users found."
               fillOnSelect
@@ -92,7 +116,7 @@ class AddFriends extends Component {
             <input
               type="submit"
               value="Send request"
-              className='btn btn-primary'
+              className="btn btn-primary"
             />
             <p
               className={[
