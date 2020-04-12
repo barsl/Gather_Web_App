@@ -7,7 +7,7 @@ import ChatScreen from '../chat.component';
 import GoogleMap from '../map.component';
 import '../style/map.css';
 import classes from './style/edit-event.module.css';
-import withAuth from '../auth/hoc/withAuth';
+import withUser from '../auth/hoc/withUser';
 import io from 'socket.io-client';
 import Search from '../core/Search/Search';
 import TagList from '../core/Tag/TagList/TagList';
@@ -17,7 +17,7 @@ import {
 } from '../../util/MapUtil';
 import eventPage from './style/event-page.module.css';
 
-export default withAuth(
+export default withUser(
   class EditEvent extends Component {
     constructor(props) {
       super(props);
@@ -80,7 +80,7 @@ export default withAuth(
     }
 
     componentDidMount() {
-      if (!this.props.loadingAuth && this.props.authenticated) {
+      if (!this.props.loadingUser && this.props.user) {
         this.fetchEvents();
       }
       this.socket.emit('JOIN_EVENT', this.props.match.params.id);
@@ -91,11 +91,11 @@ export default withAuth(
     }
 
     componentDidUpdate(prevProps) {
-      // if authentication complete (ie. no longer loading) && authenticated
+      // if authentication complete (ie. no longer loading) && user
       if (
-        prevProps.loadingAuth &&
-        !this.props.loadingAuth &&
-        this.props.authenticated
+        prevProps.loadingUser &&
+        !this.props.loadingUser &&
+        this.props.user
       ) {
         this.fetchEvents();
       }
@@ -247,7 +247,7 @@ export default withAuth(
     render() {
       const tagsSet = new Set(this.state.tags);
       const chatScreen = (
-        <ChatScreen roomId={this.state.roomId} key={this.state.roomId} />
+        <ChatScreen userName={this.props.user.username} roomId={this.state.roomId} key={this.state.roomId} />
       );
       const editPage = (
         <div

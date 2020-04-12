@@ -44,6 +44,15 @@ class Credits extends Component {
                         <li>
                             <a href="https://medium.com/better-programming/image-upload-with-cloudinary-mern-f18812d5d023">Cloudinary</a>
                         </li>
+                        <li>
+                        <a href="https://www.flaticon.com/free-icon/high-five_1000325">Icon</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+                        </li>
+                        <li>
+                        <div> Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a></div>
+                        </li>
+                        <li>
+                        <div> Icons made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+                        </li>
                     </ul>
                 </div>
             </div>
