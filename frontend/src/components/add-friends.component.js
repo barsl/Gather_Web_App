@@ -1,111 +1,78 @@
-import React, { Component } from "react";
-import axios from "axios";
-import "react-datepicker/dist/react-datepicker.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { withRouter, Redirect } from "react-router-dom";
-
+import React, {Component} from 'react';
+import axios from 'axios';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Search from './core/Search/Search';
 
 class AddFriends extends Component {
   constructor(props) {
     super(props);
 
     this.onChangeUser = this.onChangeUser.bind(this);
-
     this.onSubmit = this.onSubmit.bind(this);
-
 
     this.state = {
       users: [],
-      isAuthenticated: true
+      user: null,
+      error: null,
     };
   }
 
   componentDidMount() {
     axios
-      .get("/users/", { withCredentials: true })
-      .then(({ data }) => {
+      .get('/users/', {withCredentials: true})
+      .then(({data}) => {
         this.setState({
-          users: data,
+          users: data.filter(u => u.username !== this.props.user.username),
         });
       })
       .catch(error => {
-        this.setState({
-          isAuthenticated: false
-        });
-        console.log("Unable to get current user. " + error);
-      });
-
-      axios
-      .get("/users/currentUser", { withCredentials: true })
-      .then(({ data }) => {
-        this.setState({
-          current_id: data._id,
-          userFriends: data.friends
-        });
-      })
-      .catch(error => {
-        this.setState({
-          isAuthenticated: false
-        });
-        console.log("Unable to get current user. " + error);
+        console.log('Unable to get users list. ' + error);
       });
   }
 
-
-
-  onChangeUser(e) {
-    this.setState({
-      user: e.target.value
-    });
-
-    // 
+  onChangeUser(user) {
+    this.setState({user});
   }
 
   onSubmit(e) {
     e.preventDefault();
-    // get target = state.username
-    const curr ={
-      req: this.state.current_id
+    const friend = this.state.users.find(u => u.username === this.state.user);
+    this.setState({
+      error: !friend
+        ? `No user with the username "${this.state.user}" was found.`
+        : null,
+    });
+    if (friend) {
+      // add current user id to friend_requests[] of target
+      axios
+        .patch(
+          `/users/${friend._id}/friend_requests/`,
+          {op: 'add', value: this.props.user.id},
+          {withCredentials: true},
+        )
+        .then(res => console.log(res.data))
+        .catch(console.error);
     }
-
-    var target = this.state.user;
-    // add current user id to friend_requests[] of target
-    axios.post('http://localhost:5000/friends/requests/add/' + target, curr)
-    .then(res => console.log(res.data));
-    // window.location = '/';
   }
 
   render() {
-    if (!this.state.isAuthenticated) return <Redirect to="/" />;
     return (
       <div>
-        <h3>Send Request</h3>
+        <h3>Add friend</h3>
         <form onSubmit={this.onSubmit}>
-        <div className="form-group">
-                <label>Username</label>
-                <select
-                  ref="userInput"
-                  className="form-control"
-                  onChange={this.onChangeUser}
-                >
-                  <option value=""></option>
-                  {this.state.users.map(function({ _id, username }) {
-                    return (
-                      <option key={username} value={_id}>
-                        {username}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-
+          <div className="form-group">
+            <Search
+              data={this.state.users.map(u => u.username)}
+              onChange={this.onChangeUser}
+              emptyMessage="No users found."
+              fillOnSelect
+            />
+            <p className="text-danger">{this.state.error}</p>
+          </div>
 
           <div className="form-group">
-            <input
-              type="submit"
-              value="Submit"
-              className="btn btn-primary"
-            />
+            <input type="submit" value="Submit" className="btn btn-primary" />
           </div>
         </form>
       </div>
@@ -113,4 +80,4 @@ class AddFriends extends Component {
   }
 }
 
-export default withRouter(AddFriends);
+export default AddFriends;
