@@ -219,26 +219,27 @@ class CreateEvent extends Component {
       <div>
         <Navbar />
         <div className="container-fluid px-4 py-3">
-          <div className={eventPage.HorizontalFlex}>
-            <h3 className="font-weight-bold m-0">Create New Event</h3>
-            <div className={eventPage.ButtonGroup}>
-              <div className={classes['button-ctrls']}>
-                <input
-                  type="submit"
-                  value="Create Event"
-                  className="btn btn-primary"
-                />
-                <input
-                  type="button"
-                  value="Cancel"
-                  className="btn btn-secondary"
-                  onClick={this.cancelHandler}
-                />
+          <form onSubmit={this.onSubmit}>
+            <div className={eventPage.HorizontalFlex}>
+              <h3 className="font-weight-bold m-0">Create New Event</h3>
+              <div className={eventPage.ButtonGroup}>
+                <div className={classes['button-ctrls']}>
+                  <input
+                    type="submit"
+                    value="Create Event"
+                    className="btn btn-primary"
+                  />
+                  <input
+                    type="button"
+                    value="Cancel"
+                    className="btn btn-secondary"
+                    onClick={this.cancelHandler}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <hr />
-          <form onSubmit={this.onSubmit}>
+            <hr />
+
             <div className={eventPage.HorizontalFlex}>
               <div
                 className={[eventPage.VerticalFlex, eventPage.Left].join(' ')}
