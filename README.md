@@ -4,6 +4,9 @@
 ### Team Members
 Bar Slutsky, Dasha Besshaposhnikova, Jason Chen
 
+### API Doc
+https://github.com/UTSCC09/project-team_jason_dasha_bar/blob/master/Gather%20API%20Doc.pdf
+
 ### Description of App
 The application will help users to plan social meet-ups by allowing users to create scheduled plans including the location, time, attending members, and topic/interest of the meeting. The meetings can either be private among friends or a public gathering for people who have similar interests. There will be an algorithm for the application that will suggest public meetings to the user based on their personal interests in their profile and allow them to meet new people. The main purpose of this app will be to allow users to schedule activities that work for everybody by keeping track of everyone’s times of availability. The application will also include a calendar view and map view to display planned meet-ups. There will also be an interactive map that allows users to create plans and suggest locations for their meet-ups. Lastly there will be a voice chat and messaging service that allows users to discuss their meet-ups.
 
